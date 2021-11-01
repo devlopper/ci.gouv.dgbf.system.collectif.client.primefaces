@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+    <cyk:page value="#{activityRevenueCostUnitEditAdjustmentsPage}">
+    	<ui:define name="centerCenter">
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(activityRevenueCostUnitEditAdjustmentsPage.layout)}">
+    			<ui:param name="layout" value="#{activityRevenueCostUnitEditAdjustmentsPage.layout}"/> 
+    			
+    			<ui:define name="cell3">
+		    		<p:outputPanel id="#{activityRevenueCostUnitEditAdjustmentsPage.budgetSpecializationUnitCategoriesDashboardOutputPanelIdentifier}">
+		    			<div class="p-grid nested-grid">
+			    			<p:repeat var="budgetSpecializationUnitCategory" value="#{activityRevenueCostUnitEditAdjustmentsPage.budgetSpecializationUnitCategoriesBySection}" varStatus="status">
+			    				<div class="p-col cyk-dashboard-box cyk-dashboard-box-#{status.index}" style="padding: 5px 5px 0px 5px;">				    				
+	                                <div class="p-grid" style="padding: 3px;">
+	                                	<div class="p-col-12 cyk-padding-0 cyk-margin-0 cyk-dashboard-box-header"><h:outputText value="#{budgetSpecializationUnitCategory}"/></div>
+	                                	<div class="p-col-6 cyk-padding-0 cyk-margin-0"><h:outputText value="Voté" /></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0 cyk-text-align-right"><h:outputText value="#{userInterfaceController.formatNumber(budgetSpecializationUnitCategory.revenue.initial)}"/></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0"><h:outputText value="Actuel" /></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0 cyk-text-align-right"><h:outputText value="#{userInterfaceController.formatNumber(budgetSpecializationUnitCategory.revenue.initialPlusMovement)}"/></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0"><h:outputText value="Ajustement" /></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0 cyk-text-align-right"><h:outputText value="#{userInterfaceController.formatNumber(budgetSpecializationUnitCategory.revenue.adjustment)}"/></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0"><h:outputText value="Collectif" /></div>
+                                		<div class="p-col-6 cyk-padding-0 cyk-margin-0 cyk-text-align-right"><h:outputText value="#{userInterfaceController.formatNumber(budgetSpecializationUnitCategory.revenue.initialPlusAdjustment)}"/></div>                       	
+	                                </div>    
+	                            </div>
+			    			</p:repeat>
+			    		</div>
+		    		</p:outputPanel>
+    			</ui:define>
+    			
+    			<ui:define name="cell9">    									
+  					<ui:decorate template="#{primefacesHelper.getModelTemplate(activityRevenueCostUnitEditAdjustmentsPage.activityRevenueCostUnitsDataTable)}">
+    					<ui:param name="dataTable" value="#{activityRevenueCostUnitEditAdjustmentsPage.activityRevenueCostUnitsDataTable}"/>	    					
+    					<ui:define name="columnsAfterRowIndexBodies5">
+		    				<p:message id="adjustmentMessage" for="adjustment" showSummary="true" showDetail="false"/>
+		    				<p:inputNumber id="adjustment" value="#{record.revenue.adjustment}" validator="#{activityRevenueCostUnitEditAdjustmentsPage.validateAdjustment}" maxlength="20" 
+		    					decimalPlaces="0" inputStyleClass="cyk-text-align-right">
+		    					<f:attribute name="available" value="#{record.revenue.available}" />
+		    				</p:inputNumber>
+					    </ui:define>						    
+    				</ui:decorate>    	   							 					
+    			</ui:define>
+    		</ui:decorate>
+    		
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(activityRevenueCostUnitEditAdjustmentsPage.activitySearchDialog)}">
+	    		<ui:param name="dialog" value="#{activityRevenueCostUnitEditAdjustmentsPage.activitySearchDialog}"/>
+	    		<ui:define name="dialogBody">
+	    			<ui:decorate template="#{primefacesHelper.getModelTemplate(activityRevenueCostUnitEditAdjustmentsPage.activityAutoComplete)}">
+	    				<ui:param name="autoComplete" value="#{activityRevenueCostUnitEditAdjustmentsPage.activityAutoComplete}"/>
+	    			</ui:decorate>
+	    		</ui:define>
+	    	</ui:decorate>	
+
+    	</ui:define>
+    </cyk:page>
+</html>

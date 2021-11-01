@@ -1,0 +1,1 @@
+mvn -f ../../../.. package -Ddev -P package.war,package.wildfly.bootable.jsf,dev

@@ -1,0 +1,1 @@
+mvn -f ../../../.. wildfly-jar:shutdown -P package.wildfly.bootable.jsf,dev

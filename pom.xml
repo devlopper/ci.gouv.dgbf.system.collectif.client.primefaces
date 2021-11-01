@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.cyk.pom.jee.client</groupId>
+		<artifactId>pom-jee-client</artifactId>
+		<version>pom.jee.client.0.1.0</version>
+	</parent>
+	
+	<name>Collectif Client Primefaces</name>
+
+	<groupId>ci.gouv.dgbf.system.collectif.client</groupId>
+	<artifactId>collectif-client-primefaces</artifactId>
+	<packaging>war</packaging>
+
+	<properties>
+		<cyk.variable.system.identifier>collectif</cyk.variable.system.identifier>
+		<cyk.variable.system.name>Collectif Budgetaire</cyk.variable.system.name>
+		<cyk.variable.system.version>0.1</cyk.variable.system.version>
+		<cyk.variable.system.logging.throwable.print.stack.trace>true</cyk.variable.system.logging.throwable.print.stack.trace>
+		<cyk.variable.keycloak.enabled>false</cyk.variable.keycloak.enabled>
+		
+		<web.context>/collectif</web.context>
+		<project.build.file.name>collectif</project.build.file.name>
+		<jboss-web.context-root>/collectif</jboss-web.context-root>
+		
+		<!-- Theme -->
+		<cyk.variable.user.interface.theme.primefaces>atlantis-blue</cyk.variable.user.interface.theme.primefaces>
+		<cyk.variable.user.interface.theme.class.name>org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDefault</cyk.variable.user.interface.theme.class.name>
+		<cyk.variable.user.interface.theme.jsf.contract>org.cyk.jee.user.interface.theme.web.jsf.primefaces.atlantis.dgbf.desktop.default</cyk.variable.user.interface.theme.jsf.contract>
+		<cyk.variable.user.interface.theme.menu.identifier>COLB</cyk.variable.user.interface.theme.menu.identifier>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ci.gouv.dgbf.system.collectif.server.client</groupId>
+			<artifactId>collectif-server-client-rest</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.client.controller.web.jsf.primefaces</groupId>
+			<artifactId>jee-utility-client-controller-web-jsf-primefaces</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.user.interface.theme.web.jsf.primefaces.atlantis.dgbf</groupId>
+			<artifactId>jee-user-interface-theme-web-jsf-primefaces-atlantis-dgbf</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.security.keycloak.client</groupId>
+			<artifactId>jee-utility-security-keycloak-client</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cyk.jee.utility.report.jasper.client</groupId>
+			<artifactId>jee-utility-report-jasper-client</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cyk.jee.utility.client.deployment</groupId>
+			<artifactId>jee-utility-client-deployment</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.primefaces</groupId>
+			<artifactId>jee-utility-primefaces</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<properties>
+				<jboss-web.context-root>/collectif</jboss-web.context-root>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.dev</id>
+			<properties>
+				<deployment.client.proxy.host>192.168.99.100</deployment.client.proxy.host>
+				<deployment.client.proxy.port>8081</deployment.client.proxy.port>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>docker.prod</id>
+			<properties>
+				<deployment.client.proxy.host>mic-${cyk.variable.system.identifier}-api</deployment.client.proxy.host>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>dev</id>
+			<properties>
+				<!--
+				<project.build.file.name>collectif</project.build.file.name>
+				<jboss-web.context-root>/collectif</jboss-web.context-root>
+				-->
+				<cyk.variable.system.proxy.uniform.resource.identifier>http://localhost:8180/api</cyk.variable.system.proxy.uniform.resource.identifier>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>false</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+				<cyk.variable.system.security.authentication.enable>${cyk.variable.keycloak.enabled}</cyk.variable.system.security.authentication.enable>
+				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
+				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
+				
+				<scriptsFile>script/wildfly/bootablejar/dev/cli.txt</scriptsFile>
+				<propertiesFile>script/wildfly/bootablejar/dev/properties.txt</propertiesFile>
+				<wildfly.port>10190</wildfly.port>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>prod</id>
+			<properties>
+				<project.build.file.name>collectif</project.build.file.name>
+				<jboss-web.context-root>/collectif</jboss-web.context-root>
+				<cyk.variable.system.web.context>/collectif</cyk.variable.system.web.context>
+				<deployment.client.proxy.host>mic-collectif-api</deployment.client.proxy.host>
+				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
+				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-collectif-api/api</cyk.variable.system.proxy.uniform.resource.identifier>
+				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
+				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
+			</properties>
+		</profile>
+		
+	</profiles>
+</project>

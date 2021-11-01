@@ -1,0 +1,19 @@
+FROM adoptopenjdk/openjdk11-openj9:jre-11.0.3_7_openj9-0.14.0-alpine
+# -- Files --
+ADD gitignore/wildfly/bootablejar/collectif-bootable.jar /opt/collectif-bootable.jar
+ADD target/collectif.war /opt/collectif.war
+
+EXPOSE 8080
+
+# -- SINGLE SIGN ON SYSTEM : KEYCLOAK --
+ENV keycloak.auth-server-url https://security.dgbf.ci:8443/auth
+ENV KEYCLOAK_REALM SIIBTEST
+ENV keycloak.resource mic-collectif
+ENV keycloak.secret=bd87d6be-8462-4b1a-ab3d-f6830a4421d9
+
+# -- USER INTERFACE --
+ENV SIIBC_NAME SIGOBE
+# ENV cyk.variable.system.web.home.url http://siib.dgbf.ci
+ENV cyk.variable.system.web.context /collectif
+
+ENTRYPOINT ["java", "-jar","-Djava.net.preferIPv4Stack=true","-Djava.net.preferIPv4Addresses=true","/opt/collectif-bootable.jar","--deployment=/opt/collectif.war"]

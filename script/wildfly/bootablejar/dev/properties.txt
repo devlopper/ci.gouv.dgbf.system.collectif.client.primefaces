@@ -1,0 +1,9 @@
+cyk.variable.system.web.home.url=http://localhost:8080/acteur/client
+keycloak.auth-server-url=http://localhost:8230/auth
+keycloak.realm=SIIB
+keycloak.resource=mic-acteur
+keycloak.secret=9105b4d4-cae7-499a-962b-9b229c4538f1
+KEYCLOAK_REALM=SIIB
+mic-acteur-api-host=localhost
+mic-acteur-api-port=3000
+SIIB_ENVIRONMENT=test
