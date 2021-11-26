@@ -1,0 +1,1 @@
+mvn -f ../../pom.xml clean package wildfly-swarm:run -P microprofile.jboss.wildfly.swarm

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+		
+	<cyk:page value="#{expenditureAdjustBySectionPageTest}">
+    	<ui:define name="centerCenter">
+    		
+			<ui:fragment rendered="#{expenditureAdjustBySectionPageTest.filterController.activitySelectionController != null}">
+				<ui:include src="/private/activity/__selection__.xhtml">
+					<ui:param name="activitySelectionController" value="#{expenditureAdjustBySectionPageTest.filterController.activitySelectionController}"/>
+				</ui:include>
+			</ui:fragment>
+			
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(expenditureAdjustBySectionPageTest.layout)}">
+    			<ui:param name="layout" value="#{expenditureAdjustBySectionPageTest.layout}"/>
+    		</ui:decorate>
+    		 		
+    	</ui:define>
+    </cyk:page>
+</html>

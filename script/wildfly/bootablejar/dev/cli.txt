@@ -1,0 +1,2 @@
+/socket-binding-group=standard-sockets:write-attribute(name=port-offset,value=200)
+/system-property=keycloak.auth-server-url:add(value=http://localhost:8230/auth)

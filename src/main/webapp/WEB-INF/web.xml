@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	
+	<display-name>${cyk.variable.system.name}</display-name>
+	
+	<welcome-file-list>
+		<welcome-file>/private/index.jsf</welcome-file>
+	</welcome-file-list>
+	
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+	
+	<!-- System -->
+	
+	<context-param>
+		<param-name>cyk.variable.system.identifier</param-name>
+		<param-value>${cyk.variable.system.identifier}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.name</param-name>
+		<param-value>${cyk.variable.system.name}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.version</param-name>
+		<param-value>${cyk.variable.system.version}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp</param-name>
+		<param-value>${cyk.variable.system.timestamp}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.timestamp.as.string</param-name>
+		<param-value>${cyk.variable.system.timestamp.as.string}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.proxy.uniform.resource.identifier</param-name>
+		<param-value>${cyk.variable.system.proxy.uniform.resource.identifier}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.web.context</param-name>
+		<param-value>${cyk.variable.system.web.context}</param-value>
+	</context-param>	
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.class.name</param-name>
+		<param-value>${cyk.variable.user.interface.theme.class.name}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.jsf.contract</param-name>
+		<param-value>${cyk.variable.user.interface.theme.jsf.contract}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.primefaces</param-name>
+		<param-value>${cyk.variable.user.interface.theme.primefaces}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.logging.throwable.print.stack.trace</param-name>
+		<param-value>${cyk.variable.system.logging.throwable.print.stack.trace}</param-value>
+	</context-param>
+	
+	<!-- User Interface -->
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.menu.identifier</param-name>
+		<param-value>${cyk.variable.user.interface.theme.menu.identifier}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.menu.is.dynamic</param-name>
+		<param-value>${cyk.variable.user.interface.theme.menu.is.dynamic}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.system.security.authentication.enable</param-name>
+		<param-value>${cyk.variable.system.security.authentication.enable}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.keycloak.enabled</param-name>
+		<param-value>${cyk.variable.keycloak.enabled}</param-value>
+	</context-param>
+	
+	<!-- Static resources -->
+	
+	<!-- Favicon -->
+
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.favicon.file.folder</param-name>
+		<param-value>${cyk.variable.user.interface.theme.favicon.file.folder}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.favicon.file.name.prefix</param-name>
+		<param-value>${cyk.variable.user.interface.theme.favicon.file.name.prefix}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.favicon.file.name.extension</param-name>
+		<param-value>${cyk.variable.user.interface.theme.favicon.file.name.extension}</param-value>
+	</context-param>
+	
+	<!-- Logo -->
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.logo.file.resources.folder</param-name>
+		<param-value>${cyk.variable.user.interface.theme.logo.file.resources.folder}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.logo.file.folder</param-name>
+		<param-value>${cyk.variable.user.interface.theme.logo.file.folder}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.logo.file.name.prefix</param-name>
+		<param-value>${cyk.variable.user.interface.theme.logo.file.name.prefix}</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>cyk.variable.user.interface.theme.logo.file.name.extension</param-name>
+		<param-value>${cyk.variable.user.interface.theme.logo.file.name.extension}</param-value>
+	</context-param>
+</web-app>

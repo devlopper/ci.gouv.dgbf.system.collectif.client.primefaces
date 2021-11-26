@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:cyk="http://primefaces.jsf.web.utility.cyk.org">
+	
+	<!--
+	<p:panel header="Totaux" toggleable="true">
+	-->
+		<div class="p-grid nested-grid">
+			<p:repeat var="expenditureNature" value="#{expenditureNaturesDashboardController.expenditureNatures}" varStatus="status">
+				<div class="p-col cyk-dashboard-box cyk-dashboard-box-#{status.index}" style="padding: 5px 5px 0px 5px;">				    				
+		       		<div class="p-grid" style="padding: 3px;">
+		            	<div class="p-col-12 cyk-padding-0 cyk-margin-0 cyk-dashboard-box-header">
+		            		<h:outputText value="#{expenditureNaturesDashboardController.formatLabel(expenditureNature)}"/>
+		            	</div>
+		            	<ui:param name="amounts" value="#{expenditureNature.entryAuthorization}"/>
+		            	
+		               	<ui:include src="__labelAmount__.xhtml">
+		               		<ui:param name="label" value="Voté"/><ui:param name="amount" value="#{amounts.initial}"/>
+		               	</ui:include>
+		               	
+		               	<ui:include src="__labelAmount__.xhtml">
+		               		<ui:param name="label" value="Actuel"/><ui:param name="amount" value="#{amounts.actual}"/>
+		               	</ui:include>
+		               	
+		               	<ui:include src="__labelAmount__.xhtml">
+		               		<ui:param name="label" value="Ajustement"/><ui:param name="amount" value="#{amounts.adjustment}"/>
+		               	</ui:include>
+		               	
+		               	<ui:include src="__labelAmount__.xhtml">
+		               		<ui:param name="label" value="Mouvements Inclus"/><ui:param name="amount" value="#{amounts.movementIncluded}"/>
+		               	</ui:include>
+		               	
+		               	<ui:include src="__labelAmount__.xhtml">
+		               		<ui:param name="label" value="Collectif"/><ui:param name="amount" value="#{amounts.actualMinusMovementIncludedPlusAdjustment}"/>
+		               	</ui:include>
+		    		</div>    
+		   		</div>
+			</p:repeat>
+		</div>
+	<!--			    	
+	</p:panel>
+	-->
+</ui:composition>
