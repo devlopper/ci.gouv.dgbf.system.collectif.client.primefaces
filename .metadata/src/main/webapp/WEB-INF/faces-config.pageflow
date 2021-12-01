@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf16383502356830" configfile="/collectif-client-primefaces/src/main/webapp/WEB-INF/faces-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="178" id="pf16383502886041" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16383502886042 pf16383502886043 pf16383502886044 pf16383502886045" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/expenditure/list/index.jsf" x="338" y="178" id="pf16383502886046" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16383502886042 pf16383502886043 pf16383502886044" path="/private/expenditure/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/expenditure/adjust/index.jsf" id="pf16383502886047" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16383502886045" path="/private/expenditure/adjust/index.jsf"/>
+  <links id="pf16383502886042" target="pf16383502886046" source="pf16383502886041" outcome="expenditureListView" redirect="true"/>
+  <links id="pf16383502886043" target="pf16383502886046" source="pf16383502886041" outcome="expenditureCreateView" redirect="true"/>
+  <links id="pf16383502886044" target="pf16383502886046" source="pf16383502886041" outcome="expenditureEditView" redirect="true"/>
+  <links id="pf16383502886045" target="pf16383502886047" source="pf16383502886041" outcome="expenditureAdjustView" redirect="true"/>
+</pageflow:Pageflow>

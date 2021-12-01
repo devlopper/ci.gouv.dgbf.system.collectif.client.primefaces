@@ -26,5 +26,11 @@
 			<to-view-id>/private/expenditure/list/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>expenditureAdjustView</from-outcome>
+			<to-view-id>/private/expenditure/adjust/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 </faces-config>

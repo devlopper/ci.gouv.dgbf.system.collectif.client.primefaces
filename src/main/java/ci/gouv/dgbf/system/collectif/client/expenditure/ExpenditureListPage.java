@@ -26,6 +26,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
@@ -300,8 +301,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.PROPERTY_AS_STRINGS
-					,ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.PROPERTY_AMOUNTS);
+			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS);
 		}
 		
 		@Override

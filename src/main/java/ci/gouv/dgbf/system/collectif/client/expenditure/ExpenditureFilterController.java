@@ -23,9 +23,11 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.BudgetaryActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Activity;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ActivityController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
@@ -33,12 +35,15 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNature;
+import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNatureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureNature;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureNatureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.FundingSource;
+import ci.gouv.dgbf.system.collectif.server.client.rest.FundingSourceController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Lessor;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LessorController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Section;
 import ci.gouv.dgbf.system.collectif.server.client.rest.SectionController;
 import lombok.Getter;
@@ -92,6 +97,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			actionInitial = activityInitial.getAction();
 		}
 		*/
+		if(activityInitial == null) {
+			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER));
+			if(activityInitial != null) {
+				//sectionInitial = activityInitial.getSection();
+				//budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
+			}
+		}
+		
 		if(actionInitial == null) {
 			actionInitial = __inject__(ActionController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTION_IDENTIFIER));
 			if(actionInitial != null) {
@@ -145,10 +158,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	public static BudgetaryAct getBudgetaryActFromRequestParameter(BudgetaryActVersion version) {
 		if(version != null && version.getBudgetaryAct() != null)
 			return version.getBudgetaryAct();	
-		/*
-		if(version != null && StringHelper.isNotBlank(version.getBudgetaryActIdentifier()))
-			return DependencyInjection.inject(BudgetaryActController.class).getByIdentifier(version.getBudgetaryActIdentifier(), null);
-		*/
 		return DependencyInjection.inject(BudgetaryActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGETARY_ACT_IDENTIFIER), null);
 	}
 	
@@ -156,31 +165,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(StringHelper.isBlank(identifier))
 			return null;
 		Controller.GetArguments arguments = new Controller.GetArguments();
-		arguments.setProjections(List.of("identifiant","code","libelle","acte_budgetaire","identifiant_acte_budgetaire"));
+		arguments.setProjections(List.of(BudgetaryActVersionDto.JSON_IDENTIFIER,BudgetaryActVersionDto.JSON_CODE,BudgetaryActVersionDto.JSON_NAME,BudgetaryActVersionDto.JSON_BUDGETARY_ACT));
 		return __inject__(BudgetaryActVersionController.class).getByIdentifier(identifier, arguments);
-		/*
-		Arguments<BudgetaryActVersion> arguments = new Arguments<BudgetaryActVersion>().queryIdentifier(BudgetaryActVersionQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.projections(ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_IDENTIFIER
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_CODE
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_NAME
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_NUMBER)
-				.transientFieldsNames(ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_ACT);
-		if(Boolean.TRUE.equals(computeSumsAndTotal)) {
-			arguments.transientFieldsNames(ci.gouv.dgbf.system.collectif.server.persistence.entities.BudgetaryActVersion.FIELD_EXPENDITURE_NATURES_SUMS_AND_TOTAL);
-		}
-		BudgetaryActVersion instance = null;
-		if(StringHelper.isNotBlank(identifier)) {
-			arguments.filterByIdentifier(identifier);			
-			instance = EntityReader.getInstance().readOne(BudgetaryActVersion.class,arguments);
-		}
-		if(instance != null)
-			return instance;
-		arguments.flags(BudgetaryActVersionQuerier.FLAG_LAST);
-		instance = EntityReader.getInstance().readOne(BudgetaryActVersion.class,arguments);
-		if(instance != null)
-			return instance;
-		return null;
-		*/
 	}
 	
 	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(Boolean computeSumsAndTotal) {
@@ -228,11 +214,11 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_EXPENDITURE_NATURE_SELECT_ONE, ExpenditureNature.class);
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
 		buildInputSelectOne(FIELD_ACTION_SELECT_ONE, Action.class);
-		/*buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
+		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
 		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);
-		buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
-		buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
-		*/
+		//buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
+		//buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
+		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
 	}
@@ -244,8 +230,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		expenditureNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
 		actionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
-		/*activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne));
-		economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne));
+		/*economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		fundingSourceSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		lessorSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));*/ 
 	}
@@ -307,7 +293,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	private SelectOneCombo buildBudgetaryActSelectOne(BudgetaryAct budgetaryAct) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryAct,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryAct.class
-				,SelectOneCombo.FIELD_CHOICES,getBudgetaryActSelectOneChoices(),SelectOneCombo.FIELD_LISTENER
+				,SelectOneCombo.FIELD_CHOICES,getBudgetaryActSelectOneChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryAct>() {
 			
 			@Override
@@ -321,7 +307,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		//input.setValueAsFirstChoiceIfNull();
 		//input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
-	} 
+	}
 	
 	private SelectOneCombo buildBudgetaryActVersionSelectOne(BudgetaryActVersion budgetaryActVersion) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryActVersion,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryActVersion.class,SelectOneCombo.FIELD_LISTENER
@@ -460,28 +446,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private SelectOneCombo buildActivitySelectOne(Activity activity) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,activity,SelectOneCombo.FIELD_CHOICE_CLASS,Activity.class
 				,SelectOneCombo.FIELD_LISTENER,new SelectOneCombo.Listener.AbstractImpl<Activity>() {
-			/*public Collection<Activity> computeChoices(AbstractInputChoice<Activity> input) {
-				if(AbstractInput.getValue(budgetaryActVersionSelectOne) == null)
-					return null;
-				if(AbstractInput.getValue(budgetSpecializationUnitSelectOne) == null && AbstractInput.getValue(actionSelectOne) == null)
-					return null;
+			@Override
+			protected Collection<Activity> __computeChoices__(AbstractInputChoice<Activity> input,Class<?> entityClass) {
 				Collection<Activity> choices = null;
-				
-				BudgetaryActVersion budgetaryActVersion = (BudgetaryActVersion) budgetaryActVersionSelectOne.getValue();
-				if(AbstractInput.getValue(actionSelectOne) != null)
-					choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_DYNAMIC,ACTIVITY_ECONOMIC_NATURES_FUNDING_SOURCES_LESSORS
-							, ActivityQuerier.PARAMETER_NAME_ACTION_IDENTIFIER,FieldHelper.readSystemIdentifier(actionSelectOne.getValue())
-							, ActivityQuerier.PARAMETER_NAME_BUDGETARY_ACT_VERSION_IDENTIFIER,FieldHelper.readSystemIdentifier(budgetaryActVersion)
-							);
-				else if(AbstractInput.getValue(budgetSpecializationUnitSelectOne) != null)
-					choices = EntityReader.getInstance().readMany(Activity.class, ActivityQuerier.QUERY_IDENTIFIER_READ_DYNAMIC,ACTIVITY_ECONOMIC_NATURES_FUNDING_SOURCES_LESSORS
-							, ActivityQuerier.PARAMETER_NAME_BUDGET_SPECIALIZATION_UNIT_IDENTIFIER,FieldHelper.readSystemIdentifier(budgetSpecializationUnitSelectOne.getValue())
-							, ActivityQuerier.PARAMETER_NAME_BUDGETARY_ACT_VERSION_IDENTIFIER,FieldHelper.readSystemIdentifier(budgetaryActVersion)
-							);
+				if(AbstractInput.getValue(actionSelectOne) == null)
+					return null;
+				choices = __inject__(ActivityController.class).getByParentIdentifier(Parameters.ACTION_IDENTIFIER
+						, (String)FieldHelper.readSystemIdentifier(actionSelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
-			*/
 			@Override
 			public void select(AbstractInputChoiceOne input, Activity activity) {
 				super.select(input, activity);
@@ -499,15 +473,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private SelectOneCombo buildEconomicNatureSelectOne(EconomicNature economicNature) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,economicNature,SelectOneCombo.FIELD_CHOICE_CLASS,EconomicNature.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<EconomicNature>() {
-			/*@Override
-			public Collection<EconomicNature> computeChoices(AbstractInputChoice<EconomicNature> input) {
-				Activity activity = (Activity) AbstractInput.getValue(activitySelectOne);
-				Collection<EconomicNature> choices = activity == null
-						? EntityReader.getInstance().readMany(EconomicNature.class,EconomicNatureQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
-						: activity.getEconomicNatures();
+			@Override
+			protected Collection<EconomicNature> __computeChoices__(AbstractInputChoice<EconomicNature> input,Class<?> entityClass) {
+				Collection<EconomicNature> choices = null;
+				if(AbstractInput.getValue(activitySelectOne) == null)
+					return null;
+				choices = __inject__(EconomicNatureController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
-			}*/
+			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"N.E.");
 		return input;
 	}
@@ -515,15 +490,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private SelectOneCombo buildFundingSourceSelectOne(FundingSource fundingSource) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,fundingSource,SelectOneCombo.FIELD_CHOICE_CLASS,FundingSource.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<FundingSource>() {
-			/*@Override
-			public Collection<FundingSource> computeChoices(AbstractInputChoice<FundingSource> input) {
-				Activity activity = (Activity) AbstractInput.getValue(activitySelectOne);
-				Collection<FundingSource> choices = activity == null						
-						? EntityReader.getInstance().readMany(FundingSource.class,FundingSourceQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
-						: activity.getFundingSources();
+			@Override
+			protected Collection<FundingSource> __computeChoices__(AbstractInputChoice<FundingSource> input,Class<?> entityClass) {
+				Collection<FundingSource> choices = null;
+				if(AbstractInput.getValue(activitySelectOne) == null)
+					return null;
+				choices = __inject__(FundingSourceController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
-			}*/
+			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"S.F.");
 		return input;
 	}
@@ -531,15 +507,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private SelectOneCombo buildLessorSelectOne(Lessor lessor) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,lessor,SelectOneCombo.FIELD_CHOICE_CLASS,Lessor.class,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<Lessor>() {
-			/*@Override
-			public Collection<Lessor> computeChoices(AbstractInputChoice<Lessor> input) {
-				Activity activity = (Activity) AbstractInput.getValue(activitySelectOne);
-				Collection<Lessor> choices =  activity == null
-						? EntityReader.getInstance().readMany(Lessor.class,LessorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC)
-						: activity.getLessors();
+			@Override
+			protected Collection<Lessor> __computeChoices__(AbstractInputChoice<Lessor> input,Class<?> entityClass) {
+				Collection<Lessor> choices = null;
+				if(AbstractInput.getValue(activitySelectOne) == null)
+					return null;
+				choices = __inject__(LessorController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
-			}*/
+			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Bailleur");
 		return input;
 	}
@@ -579,7 +556,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		if(activitySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,10));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,11));	
 			//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
 		}
 		
