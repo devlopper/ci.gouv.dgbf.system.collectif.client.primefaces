@@ -23,11 +23,13 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.ActivityDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetaryActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Activity;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActivityController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.AdministrativeUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
@@ -63,6 +65,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private BudgetaryAct budgetaryActInitial;
 	private BudgetaryActVersion budgetaryActVersionInitial;
 	private Section sectionInitial;
+	private AdministrativeUnit administrativeUnitInitial;
 	private ExpenditureNature expenditureNatureInitial;
 	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
 	private Action actionInitial;
@@ -81,27 +84,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			budgetaryActVersionInitial = getBudgetaryActVersionFromRequestParameter(computeBudgetaryActVersionSumsAndTotal);
 		if(budgetaryActInitial == null)
 			budgetaryActInitial = getBudgetaryActFromRequestParameter(budgetaryActVersionInitial);
-		/*
-		activityInitial = EntityReader.getInstance().readOneBySystemIdentifierAsParent(Activity.class, new Arguments<Activity>()
-				.queryIdentifier(ActivityQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.filterByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.stringify(Activity.class)))
-				.filterFieldValue(ActivityQuerier.PARAMETER_NAME_BUDGETARY_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetaryActVersionInitial))
-				.transientFieldsNames(ci.gouv.dgbf.system.collectif.server.persistence.entities.Activity.FIELDS_SECTION_EXPENDITURE_NATURE_BUDGET_SPECIALIZATION_UNIT_ACTION
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.Activity.FIELD_ECONOMIC_NATURES
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.Activity.FIELD_FUNDING_SOURCES
-						,ci.gouv.dgbf.system.collectif.server.persistence.entities.Activity.FIELD_LESSORS));
-		if(activityInitial != null) {
-			sectionInitial = activityInitial.getSection();
-			expenditureNatureInitial = activityInitial.getExpenditureNature();
-			budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
-			actionInitial = activityInitial.getAction();
-		}
-		*/
+		
 		if(activityInitial == null) {
-			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER));
+			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER)
+					,new Controller.GetArguments().projections(ActivityDto.JSON_IDENTIFIER,ActivityDto.JSON_CODE,ActivityDto.JSON_NAME,ActivityDto.JSONS_SECTION_ADMINISTRATIVE_UNIT_EXPENDITURE_NATURE_BUDGET_SPECIALIZATION_UNIT_ACTION
+							,ActivityDto.JSON_ECONOMIC_NATURES,ActivityDto.JSON_FUNDING_SOURCES,ActivityDto.JSON_LESSORS));
 			if(activityInitial != null) {
-				//sectionInitial = activityInitial.getSection();
-				//budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
+				sectionInitial = activityInitial.getSection();
+				administrativeUnitInitial = activityInitial.getAdministrativeUnit();
+				expenditureNatureInitial = activityInitial.getExpenditureNature();
+				budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
+				actionInitial = activityInitial.getAction();
 			}
 		}
 		
@@ -125,21 +118,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 
 		if(expenditureNatureInitial == null)
 			expenditureNatureInitial = __inject__(ExpenditureNatureController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.EXPENDITURE_NATURE_IDENTIFIER));
-		/*
+		
 		if(economicNatureInitial == null)
-			economicNatureInitial = EntityReader.getInstance().readOneBySystemIdentifier(EconomicNature.class, EconomicNatureQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE
-					,WebController.getInstance().getRequestParameter(ParameterName.stringify(EconomicNature.class)));
+			economicNatureInitial = __inject__(EconomicNatureController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ECONOMIC_NATURE_IDENTIFIER));
 		
 		if(fundingSourceInitial == null)
-			fundingSourceInitial = EntityReader.getInstance().readOneBySystemIdentifier(FundingSource.class, FundingSourceQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE
-					,WebController.getInstance().getRequestParameter(ParameterName.stringify(FundingSource.class)));
+			fundingSourceInitial = __inject__(FundingSourceController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.FUNDING_SOURCE_IDENTIFIER));
 		
 		if(lessorInitial == null)
-			lessorInitial = EntityReader.getInstance().readOneBySystemIdentifier(Lessor.class, LessorQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE
-					,WebController.getInstance().getRequestParameter(ParameterName.stringify(Lessor.class)));
+			lessorInitial = __inject__(LessorController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.LESSOR_IDENTIFIER));
 		
 		//readExpenditureAountsSum();
-		*/
 	}
 	
 	public ExpenditureFilterController() {
@@ -216,8 +205,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_ACTION_SELECT_ONE, Action.class);
 		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
 		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);
-		//buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
-		//buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
+		buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
+		buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
 		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
@@ -231,9 +220,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
 		actionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
 		activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne));
-		/*economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		fundingSourceSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
-		lessorSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));*/ 
+		lessorSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -282,6 +271,12 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return Parameters.ACTION_IDENTIFIER;
 		if(input == activitySelectOne)
 			return Parameters.ACTIVITY_IDENTIFIER;
+		if(input == economicNatureSelectOne)
+			return Parameters.ECONOMIC_NATURE_IDENTIFIER;
+		if(input == fundingSourceSelectOne)
+			return Parameters.FUNDING_SOURCE_IDENTIFIER;
+		if(input == lessorSelectOne)
+			return Parameters.LESSOR_IDENTIFIER;
 		return super.buildParameterName(fieldName, input);
 	}
 		
@@ -347,15 +342,15 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				
 				if(budgetSpecializationUnitSelectOne != null) {
 					budgetSpecializationUnitSelectOne.updateChoices();
-					//budgetSpecializationUnitSelectOne.selectByValueSystemIdentifier();
+					budgetSpecializationUnitSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 				}
 				if(actionSelectOne != null) {
-					actionSelectOne.updateChoices();
-					actionSelectOne.selectFirstChoice();
+					//actionSelectOne.updateChoices();
+					//actionSelectOne.selectFirstChoice();
 				}
 				if(activitySelectOne != null) {
-					activitySelectOne.updateChoices();
-					activitySelectOne.selectFirstChoice();
+					//activitySelectOne.updateChoices();
+					//activitySelectOne.selectFirstChoice();
 				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Section");
@@ -382,6 +377,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"N.D.");
 		input.updateChoices();
+		input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
 	}
 	
@@ -405,14 +401,15 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				super.select(input, budgetSpecializationUnit);
 				if(actionSelectOne != null) {
 					actionSelectOne.updateChoices();
-					//actionSelectOne.selectFirstChoice();
+					actionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 				}
 				if(activitySelectOne != null) {
-					activitySelectOne.updateChoices();
+					//activitySelectOne.updateChoices();
 					//activitySelectOne.selectFirstChoice();
 				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"U.S.B.");
+		//input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
 	}
 	
@@ -423,7 +420,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			@Override
 			protected Collection<Action> __computeChoices__(AbstractInputChoice<Action> input,Class<?> entityClass) {
 				Collection<Action> choices = null;
-				if(AbstractInput.getValue(sectionSelectOne) == null)
+				if(AbstractInput.getValue(budgetSpecializationUnitSelectOne) == null)
 					return null;
 				choices = __inject__(ActionController.class).getByParentIdentifier(Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(budgetSpecializationUnitSelectOne.getValue()));
@@ -436,7 +433,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				super.select(input, action);
 				if(activitySelectOne != null) {
 					activitySelectOne.updateChoices();
-					//activitySelectOne.selectFirstChoice();
+					activitySelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Action");
@@ -459,14 +456,21 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			@Override
 			public void select(AbstractInputChoiceOne input, Activity activity) {
 				super.select(input, activity);
-				if(economicNatureSelectOne != null)
+				if(economicNatureSelectOne != null) {
 					economicNatureSelectOne.updateChoices();
-				if(fundingSourceSelectOne != null)
+					economicNatureSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+				}
+				if(fundingSourceSelectOne != null) {
 					fundingSourceSelectOne.updateChoices();
-				if(lessorSelectOne != null)
+					fundingSourceSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+				}
+				if(lessorSelectOne != null) {
 					lessorSelectOne.updateChoices();
+					lessorSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Activité");
+		//input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
 	}
 	
@@ -478,7 +482,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				Collection<EconomicNature> choices = null;
 				if(AbstractInput.getValue(activitySelectOne) == null)
 					return null;
-				choices = __inject__(EconomicNatureController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+				if(activityInitial != null && activityInitial.getIdentifier().equals(FieldHelper.readSystemIdentifier(activitySelectOne.getValue())))
+					choices = activityInitial.getEconomicNatures();
+				else
+					choices = __inject__(EconomicNatureController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
@@ -495,7 +502,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				Collection<FundingSource> choices = null;
 				if(AbstractInput.getValue(activitySelectOne) == null)
 					return null;
-				choices = __inject__(FundingSourceController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+				if(activityInitial != null && activityInitial.getIdentifier().equals(FieldHelper.readSystemIdentifier(activitySelectOne.getValue())))
+					choices = activityInitial.getFundingSources();
+				else
+					choices = __inject__(FundingSourceController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
@@ -512,7 +522,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				Collection<Lessor> choices = null;
 				if(AbstractInput.getValue(activitySelectOne) == null)
 					return null;
-				choices = __inject__(LessorController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+				if(activityInitial != null && activityInitial.getIdentifier().equals(FieldHelper.readSystemIdentifier(activitySelectOne.getValue())))
+					choices = activityInitial.getLessors();
+				else
+					choices = __inject__(LessorController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
@@ -567,12 +580,12 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		if(fundingSourceSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne.getOutputLabel().setTitle("Source de financement"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne,Cell.FIELD_WIDTH,3));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne,Cell.FIELD_WIDTH,2));
 		}
 		
 		if(lessorSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne.getOutputLabel().setTitle("Bailleur"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne,Cell.FIELD_WIDTH,7));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne,Cell.FIELD_WIDTH,8));
 		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
@@ -582,35 +595,39 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(budgetaryActInitial != null) {
-			strings.add("Acte : "+budgetaryActInitial.getName());
-		}
 		
-		if(budgetaryActVersionInitial != null) {
-			strings.add(budgetaryActVersionInitial.getName());
-		}
+		Collection<String> __strings__ = new ArrayList<>();
 		
-		if(sectionInitial != null) {
-			strings.add("Section "+sectionInitial.getCode());
-		}
+		if(budgetaryActInitial != null)
+			__strings__.add(budgetaryActInitial.getName());
+		if(budgetaryActVersionInitial != null)
+			__strings__.add(budgetaryActVersionInitial.getName());
+		if(!__strings__.isEmpty())
+			strings.add(StringHelper.concatenate(__strings__, " - "));
+		
+		__strings__ = new ArrayList<>();
+		if(sectionInitial != null)
+			__strings__.add("Section "+sectionInitial.getCode());
 		
 		if(activityInitial == null) {
 			if(expenditureNatureInitial != null)
-				strings.add("Nature de dépense "+expenditureNatureInitial.toString());
+				__strings__.add("Nature de dépense "+expenditureNatureInitial.toString());
 		}
 		
 		if(budgetSpecializationUnitInitial != null) {
 			if(actionInitial == null && activityInitial == null)
-				strings.add(budgetSpecializationUnitInitial.toString());
+				__strings__.add(budgetSpecializationUnitInitial.toString());
 			else
-				strings.add((budgetSpecializationUnitInitial.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnitInitial.getCode());
+				__strings__.add((budgetSpecializationUnitInitial.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnitInitial.getCode());
 		}
 		if(actionInitial != null) {
 			if(activityInitial == null)
-				strings.add(actionInitial.toString());
+				__strings__.add(actionInitial.toString());
 			else
-				strings.add("Action "+actionInitial.getCode());
+				__strings__.add("Action "+actionInitial.getCode());
 		}
+		if(!__strings__.isEmpty())
+			strings.add(StringHelper.concatenate(__strings__, " - "));
 		
 		if(activityInitial == null) {
 			
@@ -716,12 +733,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return AbstractInput.getValue(activitySelectOne) == null;
 		if(Activity.class.equals(klass))
 			return Boolean.TRUE;
+		/*
 		if(EconomicNature.class.equals(klass))
 			return AbstractInput.getValue(activitySelectOne) == null;
-		//if(FundingSource.class.equals(klass))
-		//	return AbstractInput.getValue(activitySelectOne) == null;
-		//if(Lessor.class.equals(klass))
-		//	return AbstractInput.getValue(activitySelectOne) == null;
+		if(FundingSource.class.equals(klass))
+			return AbstractInput.getValue(activitySelectOne) == null;
+		if(Lessor.class.equals(klass))
+			return AbstractInput.getValue(activitySelectOne) == null;
+		*/
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
