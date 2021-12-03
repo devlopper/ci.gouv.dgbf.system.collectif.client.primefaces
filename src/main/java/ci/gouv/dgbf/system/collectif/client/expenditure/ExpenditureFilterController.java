@@ -23,7 +23,9 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.ActionDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActivityDto;
+import ci.gouv.dgbf.system.collectif.server.api.service.BudgetSpecializationUnitDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetaryActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
@@ -99,7 +101,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		}
 		
 		if(actionInitial == null) {
-			actionInitial = __inject__(ActionController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTION_IDENTIFIER));
+			actionInitial = __inject__(ActionController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTION_IDENTIFIER),new Controller.GetArguments().projections(ActionDto.JSON_IDENTIFIER,ActionDto.JSON_CODE
+					,ActionDto.JSON_NAME,ActionDto.JSONS_SECTION_BUDGET_SPECIALIZATION_UNIT));
 			if(actionInitial != null) {
 				sectionInitial = actionInitial.getSection();
 				budgetSpecializationUnitInitial = actionInitial.getBudgetSpecializationUnit();
@@ -107,7 +110,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		}
 		
 		if(budgetSpecializationUnitInitial == null) {
-			budgetSpecializationUnitInitial = __inject__(BudgetSpecializationUnitController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER));
+			budgetSpecializationUnitInitial = __inject__(BudgetSpecializationUnitController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER)
+					,new Controller.GetArguments().projections(BudgetSpecializationUnitDto.JSON_IDENTIFIER,BudgetSpecializationUnitDto.JSON_CODE,BudgetSpecializationUnitDto.JSON_NAME,BudgetSpecializationUnitDto.JSON_SECTION));
 			if(budgetSpecializationUnitInitial != null) {
 				sectionInitial = budgetSpecializationUnitInitial.getSection();
 			}
