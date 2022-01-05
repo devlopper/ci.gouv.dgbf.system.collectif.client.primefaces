@@ -181,10 +181,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
 						, isInvestment(filterController),Boolean.FALSE, filterController);
 			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
 						, isInvestment(filterController),Boolean.FALSE, filterController);
 			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel", ExpenditureAmounts.FIELD_ACTUAL, fieldName
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
 						, isInvestment(filterController),Boolean.FALSE, filterController);
 			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
@@ -193,10 +193,13 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
 						, fieldName,isInvestment(filterController), Boolean.FALSE, filterController);
 			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement", ExpenditureAmounts.FIELD_ADJUSTMENT
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ExpenditureAmounts.FIELD_ADJUSTMENT
+						, fieldName, isInvestment(filterController),adjustmentEditable, filterController);
+			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
 						, fieldName, isInvestment(filterController),adjustmentEditable, filterController);
 			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
 						, isInvestment(filterController),Boolean.FALSE, filterController);
 			
 			return map;
@@ -288,8 +291,8 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			return (Number) FieldHelper.read(amounts, fieldName2);
 		}
 		
-		private static final Collection<String> VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME = List.of(ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED
-				,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT
+		private static final Collection<String> VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME = List.of(/*ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT
+				,*/ExpenditureAmounts.FIELD_ACTUAL,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
 				,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 	}
 	

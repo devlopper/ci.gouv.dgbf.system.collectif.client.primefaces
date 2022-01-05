@@ -155,10 +155,12 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	}
 	
 	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
-		if(StringHelper.isBlank(identifier))
-			return null;
 		Controller.GetArguments arguments = new Controller.GetArguments();
 		arguments.setProjections(List.of(BudgetaryActVersionDto.JSON_IDENTIFIER,BudgetaryActVersionDto.JSON_CODE,BudgetaryActVersionDto.JSON_NAME,BudgetaryActVersionDto.JSON_BUDGETARY_ACT));
+		if(StringHelper.isBlank(identifier)) {
+			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_BUDGETARY_ACT_VERSION, Boolean.TRUE));
+			return __inject__(BudgetaryActVersionController.class).getOne(arguments);
+		}
 		return __inject__(BudgetaryActVersionController.class).getByIdentifier(identifier, arguments);
 	}
 	
@@ -683,10 +685,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			columnsFieldsNames.add(Expenditure.FIELD_LESSOR_AS_STRING);
 		
 		addAmountsColumnsNames(columnsFieldsNames, ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
-				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED
-				,ExpenditureAmounts.FIELD_AVAILABLE
-				,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
-		
+				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED//,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED
+				//,ExpenditureAmounts.FIELD_AVAILABLE
+				,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+				);
 		return columnsFieldsNames;
 	}
 	
