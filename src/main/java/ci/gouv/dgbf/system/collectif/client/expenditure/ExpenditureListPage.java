@@ -115,6 +115,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Expenditure.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_BUILDABLE, Boolean.FALSE);
 		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
@@ -300,6 +301,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	public static class LazyDataModel extends org.cyk.utility.primefaces.collection.LazyDataModel<Expenditure> implements Serializable {
 		
 		private ExpenditureFilterController filterController;
+		
+		public LazyDataModel() {
+			setEntityClass(Expenditure.class);
+		}
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,

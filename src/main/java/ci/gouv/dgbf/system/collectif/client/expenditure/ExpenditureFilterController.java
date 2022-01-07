@@ -97,6 +97,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				expenditureNatureInitial = activityInitial.getExpenditureNature();
 				budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
 				actionInitial = activityInitial.getAction();
+				
+				System.out.println("ExpenditureFilterController.ExpenditureFilterController() NATURE : "+activityInitial.getExpenditureNature().isInvestment());
 			}
 		}
 		
@@ -700,9 +702,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				collection.add(FieldHelper.join(Expenditure.FIELD_ENTRY_AUTHORIZATION,name));
 			}else if(ExpenditureAmounts.FIELD_ADJUSTMENT.equals(name)) {
 				if(Boolean.TRUE.equals(isEntryAuthorizationAdjustmentEditable)) {
-					//collection.add(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT);
-					//if(Boolean.TRUE.equals(isInvestment()))
-					//	collection.add(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT);
+					collection.add(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT);
+					if(Boolean.TRUE.equals(isInvestment()))
+						collection.add(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT);
 				}else {
 					collection.add(FieldHelper.join(Expenditure.FIELD_ENTRY_AUTHORIZATION,name));
 					if(Boolean.TRUE.equals(isInvestment()))
