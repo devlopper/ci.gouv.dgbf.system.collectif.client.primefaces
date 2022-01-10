@@ -21,9 +21,9 @@ import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersion;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersionController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.RegulatoryAct;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,26 +32,26 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class RegulatoryActFilterController extends AbstractFilterController implements Serializable {
 
-private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includedSelectOne;
+private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,includedSelectOne;
 	
-	private BudgetaryAct budgetaryActInitial;
-	private BudgetaryActVersion budgetaryActVersionInitial;
+	private LegislativeAct legislativeActInitial;
+	private LegislativeActVersion legislativeActVersionInitial;
 	private Boolean includedInitial;
 	
 	public RegulatoryActFilterController() {
-		if(budgetaryActVersionInitial == null)
-			budgetaryActVersionInitial = Helper.getBudgetaryActVersionFromRequestParameter(null);
-		if(budgetaryActInitial == null)
-			budgetaryActInitial = Helper.getBudgetaryActFromRequestParameter(budgetaryActVersionInitial);
+		if(legislativeActVersionInitial == null)
+			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(null);
+		if(legislativeActInitial == null)
+			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		includedInitial = ValueConverter.getInstance().convertToBoolean(buildParameterName(RegulatoryAct.FIELD_INCLUDED));
 	}
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
 		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
-			return budgetaryActInitial;
+			return legislativeActInitial;
 		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
-			return budgetaryActVersionInitial;
+			return legislativeActVersionInitial;
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName))
 			return includedInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
@@ -59,8 +59,8 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, BudgetaryActVersion.class);
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, BudgetaryActVersion.class);
+		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_INCLUDED_SELECT_ONE, Boolean.class);
 		
 		enableValueChangeListeners();
@@ -68,36 +68,36 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	}
 	
 	private void enableValueChangeListeners() {
-		budgetaryActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,budgetaryActVersionSelectOne));
-		budgetaryActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
+		legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		budgetaryActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
 		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
-			return buildBudgetaryActSelectOne((BudgetaryAct) value);
+			return buildLegislativeActSelectOne((LegislativeAct) value);
 		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
-			return buildBudgetaryActVersionSelectOne((BudgetaryActVersion) value);
+			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName))
 			return buildIncludedSelectOne((Boolean) value);
 		return null;
 	}
 	
-	private SelectOneCombo buildBudgetaryActSelectOne(BudgetaryAct budgetaryAct) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryAct,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryAct.class
-				,SelectOneCombo.FIELD_CHOICES,BudgetaryAct.buildChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryAct>() {
+	private SelectOneCombo buildLegislativeActSelectOne(LegislativeAct legislativeAct) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,legislativeAct,SelectOneCombo.FIELD_CHOICE_CLASS,LegislativeAct.class
+				,SelectOneCombo.FIELD_CHOICES,LegislativeAct.buildChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<LegislativeAct>() {
 			
 			@Override
-			public void select(AbstractInputChoiceOne input, BudgetaryAct budgetaryAct) {
-				super.select(input, budgetaryAct);
-				if(budgetaryActVersionSelectOne != null)  
-					budgetaryActVersionSelectOne.updateChoices();
-				budgetaryActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
+			public void select(AbstractInputChoiceOne input, LegislativeAct legislativeAct) {
+				super.select(input, legislativeAct);
+				if(legislativeActVersionSelectOne != null)  
+					legislativeActVersionSelectOne.updateChoices();
+				legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acte");
 		//input.setValueAsFirstChoiceIfNull();
@@ -105,22 +105,22 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 		return input;
 	}
 	
-	private SelectOneCombo buildBudgetaryActVersionSelectOne(BudgetaryActVersion budgetaryActVersion) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryActVersion,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryActVersion.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryActVersion>() {
+	private SelectOneCombo buildLegislativeActVersionSelectOne(LegislativeActVersion legislativeActVersion) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,legislativeActVersion,SelectOneCombo.FIELD_CHOICE_CLASS,LegislativeActVersion.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<LegislativeActVersion>() {
 			@Override
-			protected Collection<BudgetaryActVersion> __computeChoices__(AbstractInputChoice<BudgetaryActVersion> input, Class<?> entityClass) {
-				if(AbstractInput.getValue(budgetaryActSelectOne) == null)
+			protected Collection<LegislativeActVersion> __computeChoices__(AbstractInputChoice<LegislativeActVersion> input, Class<?> entityClass) {
+				if(AbstractInput.getValue(legislativeActSelectOne) == null)
 					return null;
-				BudgetaryAct budgetaryAct = (BudgetaryAct) budgetaryActSelectOne.getValue();
-				Collection<BudgetaryActVersion> choices = DependencyInjection.inject(BudgetaryActVersionController.class).getByBudgetaryActIdentifier(budgetaryAct.getIdentifier());
+				LegislativeAct legislativeAct = (LegislativeAct) legislativeActSelectOne.getValue();
+				Collection<LegislativeActVersion> choices = DependencyInjection.inject(LegislativeActVersionController.class).getByActIdentifier(legislativeAct.getIdentifier());
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
 			
 			@Override
-			public void select(AbstractInputChoiceOne input, BudgetaryActVersion budgetaryActVersion) {
-				super.select(input, budgetaryActVersion);
+			public void select(AbstractInputChoiceOne input, LegislativeActVersion legislativeActVersion) {
+				super.select(input, legislativeActVersion);
 				
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Version");
@@ -140,9 +140,9 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	
 	@Override
 	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
-		if(BudgetaryAct.class.equals(klass))
-			return AbstractInput.getValue(budgetaryActVersionSelectOne) == null;
-		if(BudgetaryActVersion.class.equals(klass))
+		if(LegislativeAct.class.equals(klass))
+			return AbstractInput.getValue(legislativeActVersionSelectOne) == null;
+		if(LegislativeActVersion.class.equals(klass))
 			return Boolean.TRUE;
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
@@ -164,14 +164,14 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
-		if(budgetaryActSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActSelectOne,Cell.FIELD_WIDTH,4));	
+		if(legislativeActSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne,Cell.FIELD_WIDTH,4));	
 		}
 		
-		if(budgetaryActVersionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActVersionSelectOne,Cell.FIELD_WIDTH,2));
+		if(legislativeActVersionSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,2));
 		}
 		
 		if(includedSelectOne != null) {
@@ -186,21 +186,21 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
-		if(budgetaryActInitial != null) {
-			strings.add(budgetaryActInitial.getName());
+		if(legislativeActInitial != null) {
+			strings.add(legislativeActInitial.getName());
 		}		
-		if(budgetaryActVersionInitial != null) {
-			strings.add(budgetaryActVersionInitial.getName());
+		if(legislativeActVersionInitial != null) {
+			strings.add(legislativeActVersionInitial.getName());
 		}
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
 	public String generateWindowTitleValue() {
 		StringBuilder stringBuilder = new StringBuilder("Acte de gestion");
-		if(budgetaryActInitial == null)
+		if(legislativeActInitial == null)
 			return stringBuilder.toString();		
-		if(budgetaryActVersionInitial == null) {
-			stringBuilder.append(" disponible dans le "+budgetaryActInitial.getName());
+		if(legislativeActVersionInitial == null) {
+			stringBuilder.append(" disponible dans le "+legislativeActInitial.getName());
 			return stringBuilder.toString();
 		}		
 		if(includedInitial != null) {
@@ -209,7 +209,7 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 			else
 				stringBuilder.append(" non inclus ");	
 		}	
-		stringBuilder.append("dans le "+budgetaryActInitial.getName()+" | "+budgetaryActVersionInitial.getName());
+		stringBuilder.append("dans le "+legislativeActInitial.getName()+" | "+legislativeActVersionInitial.getName());
 		return stringBuilder.toString();
 	}
 	
@@ -221,12 +221,12 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 		return columnsFieldsNames;
 	}
 	
-	public BudgetaryAct getBudgetaryAct() {
-		return (BudgetaryAct) AbstractInput.getValue(budgetaryActSelectOne);
+	public LegislativeAct getLegislativeAct() {
+		return (LegislativeAct) AbstractInput.getValue(legislativeActSelectOne);
 	}
 	
-	public BudgetaryActVersion getBudgetaryActVersion() {
-		return (BudgetaryActVersion) AbstractInput.getValue(budgetaryActVersionSelectOne);
+	public LegislativeActVersion getLegislativeActVersion() {
+		return (LegislativeActVersion) AbstractInput.getValue(legislativeActVersionSelectOne);
 	}
 	
 	public Boolean getIncluded() {
@@ -236,13 +236,14 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,RegulatoryActFilterController controller,Boolean initial) {
-		/*BudgetaryActVersion budgetaryActVersion = Boolean.TRUE.equals(initial) ? controller.budgetaryActVersionInitial : controller.getBudgetaryActVersion();
-		if(budgetaryActVersion == null)
-			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGETARY_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetaryActInitial : controller.getBudgetaryAct()), filter);
+		LegislativeActVersion legislativeActVersion = Boolean.TRUE.equals(initial) ? controller.legislativeActVersionInitial : controller.getLegislativeActVersion();
+		if(legislativeActVersion == null)
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
-			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGETARY_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetaryActVersion), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
+		/*filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
 		*/
+		System.out.println("RegulatoryActFilterController.populateFilter() ::: "+filter);
 		return filter;
 	}
 	
@@ -250,7 +251,7 @@ private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,includ
 		return populateFilter(new Filter.Dto(), controller,initial);
 	}
 	
-	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "budgetaryActSelectOne";
-	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "budgetaryActVersionSelectOne";
+	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
+	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 	public static final String FIELD_INCLUDED_SELECT_ONE = "includedSelectOne";
 }

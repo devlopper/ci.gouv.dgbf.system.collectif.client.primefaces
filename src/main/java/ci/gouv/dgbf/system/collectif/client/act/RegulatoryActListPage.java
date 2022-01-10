@@ -134,6 +134,8 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 		protected Filter.Dto getFilter(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
 			return RegulatoryActFilterController.instantiateFilter(filterController, Boolean.TRUE);
 		}
+		
+		
 	}
 	
 	public static final String OUTCOME = "regulatoryActListView";

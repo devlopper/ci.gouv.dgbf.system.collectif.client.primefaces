@@ -9,32 +9,32 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.collectif.server.api.service.BudgetaryActVersionDto;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActController;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersion;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersionController;
+import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 
 public interface Helper {
 
-	public static BudgetaryAct getBudgetaryActFromRequestParameter(BudgetaryActVersion version) {
-		if(version != null && version.getBudgetaryAct() != null)
-			return version.getBudgetaryAct();
-		return DependencyInjection.inject(BudgetaryActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGETARY_ACT_IDENTIFIER), null);
+	public static LegislativeAct getLegislativeActFromRequestParameter(LegislativeActVersion version) {
+		if(version != null && version.getAct() != null)
+			return version.getAct();
+		return DependencyInjection.inject(LegislativeActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_IDENTIFIER), null);
 	}
 	
-	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
 		Controller.GetArguments arguments = new Controller.GetArguments();
-		arguments.setProjections(List.of(BudgetaryActVersionDto.JSON_IDENTIFIER,BudgetaryActVersionDto.JSON_CODE,BudgetaryActVersionDto.JSON_NAME,BudgetaryActVersionDto.JSON_BUDGETARY_ACT));
+		arguments.setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_BUDGETARY_ACT));
 		if(StringHelper.isBlank(identifier)) {
-			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_BUDGETARY_ACT_VERSION, Boolean.TRUE));
-			return DependencyInjection.inject(BudgetaryActVersionController.class).getOne(arguments);
+			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_LEGISLATIVE_ACT_VERSION, Boolean.TRUE));
+			return DependencyInjection.inject(LegislativeActVersionController.class).getOne(arguments);
 		}
-		return DependencyInjection.inject(BudgetaryActVersionController.class).getByIdentifier(identifier, arguments);
+		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifier(identifier, arguments);
 	}
 	
-	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(Boolean computeSumsAndTotal) {
-		return getBudgetaryActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.BUDGETARY_ACT_VERSION_IDENTIFIER)
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(Boolean computeSumsAndTotal) {
+		return getLegislativeActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
 				, computeSumsAndTotal);
 	}
 }

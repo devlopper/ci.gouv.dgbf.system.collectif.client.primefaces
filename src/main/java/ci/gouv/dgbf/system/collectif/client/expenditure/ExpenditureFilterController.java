@@ -33,9 +33,9 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.ActivityController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.AdministrativeUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnitController;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersion;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersionController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNature;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNatureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
@@ -55,15 +55,15 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class ExpenditureFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo budgetaryActSelectOne,budgetaryActVersionSelectOne,sectionSelectOne,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
+	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,sectionSelectOne,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
 		,activitySelectOne,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne;
 	//private ActivitySelectionController activitySelectionController;
 	
-	private Boolean isBudgetaryActColumnShowable,isBudgetaryActVersionColumnShowable,isSectionColumnShowable,isExpenditureNatureColumnShowable
+	private Boolean isLegislativeActColumnShowable,isLegislativeActVersionColumnShowable,isSectionColumnShowable,isExpenditureNatureColumnShowable
 	,isBudgetSpecializationUnitColumnShowable,isActionColumnShowable,isActivityColumnShowable,isFundingSourceColumnShowable,isLessorColumnShowable;
 	
-	private BudgetaryAct budgetaryActInitial;
-	private BudgetaryActVersion budgetaryActVersionInitial;
+	private LegislativeAct legislativeActInitial;
+	private LegislativeActVersion legislativeActVersionInitial;
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
 	private ExpenditureNature expenditureNatureInitial;
@@ -79,11 +79,11 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	private Expenditure expendituresAmountsSum;
 	
-	public ExpenditureFilterController(Boolean computeBudgetaryActVersionSumsAndTotal) {		
-		if(budgetaryActVersionInitial == null)
-			budgetaryActVersionInitial = Helper.getBudgetaryActVersionFromRequestParameter(computeBudgetaryActVersionSumsAndTotal);
-		if(budgetaryActInitial == null)
-			budgetaryActInitial = Helper.getBudgetaryActFromRequestParameter(budgetaryActVersionInitial);
+	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {		
+		if(legislativeActVersionInitial == null)
+			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(computeLegislativeActVersionSumsAndTotal);
+		if(legislativeActInitial == null)
+			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		
 		if(activityInitial == null) {
 			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER)
@@ -156,9 +156,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
 		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
-			return budgetaryActInitial;
+			return legislativeActInitial;
 		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
-			return budgetaryActVersionInitial;
+			return legislativeActVersionInitial;
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
 		if(FIELD_EXPENDITURE_NATURE_SELECT_ONE.equals(fieldName))
@@ -180,8 +180,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, BudgetaryAct.class);
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, BudgetaryActVersion.class);
+		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeAct.class);
+		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_EXPENDITURE_NATURE_SELECT_ONE, ExpenditureNature.class);
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
@@ -196,8 +196,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	}
 	
 	private void enableValueChangeListeners() {
-		budgetaryActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,budgetaryActVersionSelectOne));
-		budgetaryActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
+		legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne));
 		expenditureNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
@@ -209,16 +209,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		budgetaryActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		sectionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
 		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
-			return buildBudgetaryActSelectOne((BudgetaryAct) value);
+			return buildLegislativeActSelectOne((LegislativeAct) value);
 		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
-			return buildBudgetaryActVersionSelectOne((BudgetaryActVersion) value);
+			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return buildSectionSelectOne((Section) value);
 		if(FIELD_EXPENDITURE_NATURE_SELECT_ONE.equals(fieldName))
@@ -240,10 +240,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
-		if(input == budgetaryActSelectOne)
-			return Parameters.BUDGETARY_ACT_IDENTIFIER;
-		if(input == budgetaryActVersionSelectOne)
-			return Parameters.BUDGETARY_ACT_VERSION_IDENTIFIER;
+		if(input == legislativeActSelectOne)
+			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
+		if(input == legislativeActVersionSelectOne)
+			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
 		if(input == sectionSelectOne)
 			return Parameters.SECTION_IDENTIFIER;
 		if(input == expenditureNatureSelectOne)
@@ -263,17 +263,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		return super.buildParameterName(fieldName, input);
 	}
 	
-	private SelectOneCombo buildBudgetaryActSelectOne(BudgetaryAct budgetaryAct) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryAct,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryAct.class
-				,SelectOneCombo.FIELD_CHOICES,BudgetaryAct.buildChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryAct>() {
+	private SelectOneCombo buildLegislativeActSelectOne(LegislativeAct legislativeAct) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,legislativeAct,SelectOneCombo.FIELD_CHOICE_CLASS,LegislativeAct.class
+				,SelectOneCombo.FIELD_CHOICES,LegislativeAct.buildChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<LegislativeAct>() {
 			
 			@Override
-			public void select(AbstractInputChoiceOne input, BudgetaryAct budgetaryAct) {
-				super.select(input, budgetaryAct);
-				if(budgetaryActVersionSelectOne != null)  
-					budgetaryActVersionSelectOne.updateChoices();
-				budgetaryActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
+			public void select(AbstractInputChoiceOne input, LegislativeAct legislativeAct) {
+				super.select(input, legislativeAct);
+				if(legislativeActVersionSelectOne != null)  
+					legislativeActVersionSelectOne.updateChoices();
+				legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acte");
 		//input.setValueAsFirstChoiceIfNull();
@@ -281,22 +281,22 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		return input;
 	}
 	
-	private SelectOneCombo buildBudgetaryActVersionSelectOne(BudgetaryActVersion budgetaryActVersion) {
-		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryActVersion,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryActVersion.class,SelectOneCombo.FIELD_LISTENER
-				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryActVersion>() {
+	private SelectOneCombo buildLegislativeActVersionSelectOne(LegislativeActVersion legislativeActVersion) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,legislativeActVersion,SelectOneCombo.FIELD_CHOICE_CLASS,LegislativeActVersion.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<LegislativeActVersion>() {
 			@Override
-			protected Collection<BudgetaryActVersion> __computeChoices__(AbstractInputChoice<BudgetaryActVersion> input, Class<?> entityClass) {
-				if(AbstractInput.getValue(budgetaryActSelectOne) == null)
+			protected Collection<LegislativeActVersion> __computeChoices__(AbstractInputChoice<LegislativeActVersion> input, Class<?> entityClass) {
+				if(AbstractInput.getValue(legislativeActSelectOne) == null)
 					return null;
-				BudgetaryAct budgetaryAct = (BudgetaryAct) budgetaryActSelectOne.getValue();
-				Collection<BudgetaryActVersion> choices = DependencyInjection.inject(BudgetaryActVersionController.class).getByBudgetaryActIdentifier(budgetaryAct.getIdentifier());
+				LegislativeAct legislativeAct = (LegislativeAct) legislativeActSelectOne.getValue();
+				Collection<LegislativeActVersion> choices = DependencyInjection.inject(LegislativeActVersionController.class).getByActIdentifier(legislativeAct.getIdentifier());
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
 			
 			@Override
-			public void select(AbstractInputChoiceOne input, BudgetaryActVersion budgetaryActVersion) {
-				super.select(input, budgetaryActVersion);
+			public void select(AbstractInputChoiceOne input, LegislativeActVersion legislativeActVersion) {
+				super.select(input, legislativeActVersion);
 				
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Version");
@@ -514,14 +514,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
-		if(budgetaryActSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActSelectOne.getOutputLabel().setTitle("Acte budgétaire"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActSelectOne,Cell.FIELD_WIDTH,7));	
+		if(legislativeActSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne.getOutputLabel().setTitle("Acte budgétaire"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne,Cell.FIELD_WIDTH,7));	
 		}
 		
-		if(budgetaryActVersionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActVersionSelectOne.getOutputLabel().setTitle("Version de l'acte budgétaire"),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetaryActVersionSelectOne,Cell.FIELD_WIDTH,3));
+		if(legislativeActVersionSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel().setTitle("Version de l'acte budgétaire"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,3));
 		}
 		
 		if(sectionSelectOne != null) {
@@ -575,10 +575,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		Collection<String> __strings__ = new ArrayList<>();
 		
-		if(budgetaryActInitial != null)
-			__strings__.add(budgetaryActInitial.getName());
-		if(budgetaryActVersionInitial != null)
-			__strings__.add(budgetaryActVersionInitial.getName());
+		if(legislativeActInitial != null)
+			__strings__.add(legislativeActInitial.getName());
+		if(legislativeActVersionInitial != null)
+			__strings__.add(legislativeActVersionInitial.getName());
 		if(!__strings__.isEmpty())
 			strings.add(StringHelper.concatenate(__strings__, " - "));
 		
@@ -634,9 +634,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isBudgetaryActColumnShowable,Boolean.TRUE)) && budgetaryActInitial == null)
+		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isLegislativeActColumnShowable,Boolean.TRUE)) && legislativeActInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_BUDGETARY_ACT_AS_STRING);
-		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isBudgetaryActVersionColumnShowable,Boolean.TRUE)) && budgetaryActVersionInitial == null)
+		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isLegislativeActVersionColumnShowable,Boolean.TRUE)) && legislativeActVersionInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_BUDGETARY_ACT_VERSION_AS_STRING);
 		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isSectionColumnShowable,Boolean.TRUE)) && sectionInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_SECTION_AS_STRING);
@@ -695,9 +695,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected Boolean isSelectRedirectorArgumentsParameter(Class<?> klass, AbstractInput<?> input) {
-		if(BudgetaryAct.class.equals(klass))
-			return AbstractInput.getValue(budgetaryActVersionSelectOne) == null;
-		if(BudgetaryActVersion.class.equals(klass))
+		if(LegislativeAct.class.equals(klass))
+			return AbstractInput.getValue(legislativeActVersionSelectOne) == null;
+		if(LegislativeActVersion.class.equals(klass))
 			return Boolean.TRUE;
 		if(ExpenditureNature.class.equals(klass))
 			return AbstractInput.getValue(activitySelectOne) == null;
@@ -721,12 +721,12 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
-	public BudgetaryAct getBudgetaryAct() {
-		return (BudgetaryAct) AbstractInput.getValue(budgetaryActSelectOne);
+	public LegislativeAct getLegislativeAct() {
+		return (LegislativeAct) AbstractInput.getValue(legislativeActSelectOne);
 	}
 	
-	public BudgetaryActVersion getBudgetaryActVersion() {
-		return (BudgetaryActVersion) AbstractInput.getValue(budgetaryActVersionSelectOne);
+	public LegislativeActVersion getLegislativeActVersion() {
+		return (LegislativeActVersion) AbstractInput.getValue(legislativeActVersionSelectOne);
 	}
 	
 	public Section getSection() {
@@ -770,11 +770,11 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ExpenditureFilterController controller,Boolean initial) {
-		BudgetaryActVersion budgetaryActVersion = Boolean.TRUE.equals(initial) ? controller.budgetaryActVersionInitial : controller.getBudgetaryActVersion();
-		if(budgetaryActVersion == null)
-			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGETARY_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetaryActInitial : controller.getBudgetaryAct()), filter);
+		LegislativeActVersion legislativeActVersion = Boolean.TRUE.equals(initial) ? controller.legislativeActVersionInitial : controller.getLegislativeActVersion();
+		if(legislativeActVersion == null)
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
-			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGETARY_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(budgetaryActVersion), filter);
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.SECTION_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.sectionInitial : controller.getSection()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.EXPENDITURE_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.expenditureNatureInitial : controller.getExpenditureNature()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetSpecializationUnitInitial : controller.getBudgetSpecializationUnit()), filter);
@@ -792,8 +792,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	/**/
 	
-	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "budgetaryActSelectOne";
-	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "budgetaryActVersionSelectOne";
+	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
+	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_EXPENDITURE_NATURE_SELECT_ONE = "expenditureNatureSelectOne";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE = "budgetSpecializationUnitSelectOne";

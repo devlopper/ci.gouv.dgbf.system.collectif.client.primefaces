@@ -19,7 +19,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 	@Override
 	public void __initialize__(ServletContext context) {
 		super.__initialize__(context);
-		//SpecificServiceGetter.AbstractImpl.MAP.put(BudgetaryAct.class, BudgetaryActService.class);
 		DependencyInjection.setQualifierClassTo(ci.gouv.dgbf.system.collectif.server.api.System.class, MenuBuilderMapInstantiator.class/*,EntitySaver.class*/);
 		//__inject__(ApplicationScopeLifeCycleListener.class).initialize(null);
 		

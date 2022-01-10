@@ -45,8 +45,6 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
 		filterController = new ExpenditureFilterController();   
-		//System.out.println("ExpenditureListPage.__listenBeforePostConstruct__()"); 
-		//System.out.println(ResponseHelper.getEntityAsListFromJson(BudgetaryAct.class,specificServiceGetter.get(BudgetaryAct.class).get(null, null, null, null, null, null)));
 	}
 	
 	@Override
