@@ -14,10 +14,10 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 	@Override
 	protected void __instantiateSessionMenuBuilderItems__(Object key, MenuBuilder sessionMenuBuilder, Object request,Principal principal) {
 		sessionMenuBuilder.addItems(
-				__inject__(MenuItemBuilder.class).setCommandableName("Elaboration").setCommandableIcon(Icon.SUITCASE)
+				__inject__(MenuItemBuilder.class).setCommandableName("Collectif").setCommandableIcon(Icon.SUITCASE)
 				.addChild(
 						__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les dépenses").setCommandableNavigationIdentifier("expenditureAdjustView").setCommandableIcon(Icon.PENCIL)
-						//,__inject__(MenuItemBuilder.class).setCommandableName("Saisir les resources").setCommandableNavigationIdentifier("activityRevenueCostUnitEditAdjustmentsView").setCommandableIcon(Icon.BANK)
+						,__inject__(MenuItemBuilder.class).setCommandableName("Actes de gestion").setCommandableNavigationIdentifier("regulatoryActListView").setCommandableIcon(Icon.BANK)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Finex").setCommandableNavigationIdentifier("activityCostUnitFundingEditAdjustmentsFinexView").setCommandableIcon(Icon.PENCIL)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lignes").setCommandableNavigationIdentifier("activityCostUnitFundingListView").setCommandableIcon(Icon.LIST)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Incohérences").setCommandableNavigationIdentifier("activityCostUnitFundingDashboardListWhereAvailablePaymentCreditIsNotEnoughView").setCommandableIcon(Icon.EYE)

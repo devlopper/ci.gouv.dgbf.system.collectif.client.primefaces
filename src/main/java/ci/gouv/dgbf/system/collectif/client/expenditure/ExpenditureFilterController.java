@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.collectif.client.expenditure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.DependencyInjection;
@@ -22,11 +21,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
+import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActionDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActivityDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetSpecializationUnitDto;
-import ci.gouv.dgbf.system.collectif.server.api.service.BudgetaryActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Activity;
@@ -35,7 +34,6 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.AdministrativeUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnitController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryAct;
-import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetaryActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNature;
@@ -83,9 +81,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	public ExpenditureFilterController(Boolean computeBudgetaryActVersionSumsAndTotal) {		
 		if(budgetaryActVersionInitial == null)
-			budgetaryActVersionInitial = getBudgetaryActVersionFromRequestParameter(computeBudgetaryActVersionSumsAndTotal);
+			budgetaryActVersionInitial = Helper.getBudgetaryActVersionFromRequestParameter(computeBudgetaryActVersionSumsAndTotal);
 		if(budgetaryActInitial == null)
-			budgetaryActInitial = getBudgetaryActFromRequestParameter(budgetaryActVersionInitial);
+			budgetaryActInitial = Helper.getBudgetaryActFromRequestParameter(budgetaryActVersionInitial);
 		
 		if(activityInitial == null) {
 			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER)
@@ -97,8 +95,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				expenditureNatureInitial = activityInitial.getExpenditureNature();
 				budgetSpecializationUnitInitial = activityInitial.getBudgetSpecializationUnit();
 				actionInitial = activityInitial.getAction();
-				
-				System.out.println("ExpenditureFilterController.ExpenditureFilterController() NATURE : "+activityInitial.getExpenditureNature().isInvestment());
 			}
 		}
 		
@@ -148,27 +144,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				.flags(ExpenditureQuerier.FLAG_SUM_ALL_AMOUNTS).filter(instantiateFilter(this,Boolean.TRUE)));
 		*/
 		return expendituresAmountsSum;
-	}
-	
-	public static BudgetaryAct getBudgetaryActFromRequestParameter(BudgetaryActVersion version) {
-		if(version != null && version.getBudgetaryAct() != null)
-			return version.getBudgetaryAct();	
-		return DependencyInjection.inject(BudgetaryActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGETARY_ACT_IDENTIFIER), null);
-	}
-	
-	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
-		Controller.GetArguments arguments = new Controller.GetArguments();
-		arguments.setProjections(List.of(BudgetaryActVersionDto.JSON_IDENTIFIER,BudgetaryActVersionDto.JSON_CODE,BudgetaryActVersionDto.JSON_NAME,BudgetaryActVersionDto.JSON_BUDGETARY_ACT));
-		if(StringHelper.isBlank(identifier)) {
-			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_BUDGETARY_ACT_VERSION, Boolean.TRUE));
-			return __inject__(BudgetaryActVersionController.class).getOne(arguments);
-		}
-		return __inject__(BudgetaryActVersionController.class).getByIdentifier(identifier, arguments);
-	}
-	
-	public static BudgetaryActVersion getBudgetaryActVersionFromRequestParameter(Boolean computeSumsAndTotal) {
-		return getBudgetaryActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.BUDGETARY_ACT_VERSION_IDENTIFIER)
-				, computeSumsAndTotal);
 	}
 	
 	@Override
@@ -287,16 +262,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return Parameters.LESSOR_IDENTIFIER;
 		return super.buildParameterName(fieldName, input);
 	}
-		
-	public static Collection<BudgetaryAct> getBudgetaryActSelectOneChoices() { 
-		Collection<BudgetaryAct> choices = DependencyInjection.inject(BudgetaryActController.class).get();
-		CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
-		return choices;
-	}
 	
 	private SelectOneCombo buildBudgetaryActSelectOne(BudgetaryAct budgetaryAct) {
 		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,budgetaryAct,SelectOneCombo.FIELD_CHOICE_CLASS,BudgetaryAct.class
-				,SelectOneCombo.FIELD_CHOICES,getBudgetaryActSelectOneChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
+				,SelectOneCombo.FIELD_CHOICES,BudgetaryAct.buildChoices(),SelectOneCombo.FIELD_CHOICES_INITIALIZED,Boolean.TRUE,SelectOneCombo.FIELD_LISTENER
 				,new SelectOneCombo.Listener.AbstractImpl<BudgetaryAct>() {
 			
 			@Override

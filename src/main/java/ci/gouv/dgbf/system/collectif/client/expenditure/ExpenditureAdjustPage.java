@@ -11,10 +11,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 
-import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
-import org.cyk.utility.__kernel__.log.LogHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;

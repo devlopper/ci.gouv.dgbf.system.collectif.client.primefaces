@@ -32,5 +32,13 @@
 			<to-view-id>/private/expenditure/adjust/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<!-- Regulatory Act -->
+		
+		<navigation-case>
+			<from-outcome>regulatoryActListView</from-outcome>
+			<to-view-id>/private/regulatoryact/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 </faces-config>
