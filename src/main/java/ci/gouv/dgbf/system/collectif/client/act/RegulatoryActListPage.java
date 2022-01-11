@@ -13,9 +13,12 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
@@ -113,6 +116,19 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			}
 			
 			return map;
+		}
+		
+		@Override
+		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
+			return ContextMenu.class;
+		}
+		
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(record == null || recordIndex == null)
+				return null;
+			if(Boolean.TRUE.equals(((RegulatoryAct)record).getIncluded()))
+				return "cyk-background-highlight";
+			return null;
 		}
 	}
 	

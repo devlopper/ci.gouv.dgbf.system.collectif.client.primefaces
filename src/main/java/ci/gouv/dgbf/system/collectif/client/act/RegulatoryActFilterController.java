@@ -243,7 +243,6 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
 		/*filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
 		*/
-		System.out.println("RegulatoryActFilterController.populateFilter() ::: "+filter);
 		return filter;
 	}
 	
