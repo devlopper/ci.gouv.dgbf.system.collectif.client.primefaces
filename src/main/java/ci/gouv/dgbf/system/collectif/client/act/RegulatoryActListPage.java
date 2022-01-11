@@ -11,14 +11,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
@@ -26,6 +31,7 @@ import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.server.api.service.RegulatoryActDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.RegulatoryAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.RegulatoryActController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -33,6 +39,7 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class RegulatoryActListPage extends AbstractEntityListPageContainerManagedImpl<RegulatoryAct> implements Serializable {
 
+	private RegulatoryActController regulatoryActController;
 	private RegulatoryActFilterController filterController;
 	@Inject private SpecificServiceGetter specificServiceGetter;
 	
@@ -86,6 +93,15 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-eye", new MenuItem.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				System.out.println(
+						"RegulatoryActListPage.buildDataTable(...).new AbstractImpl() {...}.__runExecuteFunction__()");
+				return null;
+			}
+		});
 		
 		return dataTable;
 	}
