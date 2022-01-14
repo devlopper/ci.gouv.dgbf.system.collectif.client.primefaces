@@ -9,8 +9,8 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -43,7 +43,8 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(null);
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
-		includedInitial = ValueConverter.getInstance().convertToBoolean(buildParameterName(RegulatoryAct.FIELD_INCLUDED));
+		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(buildParameterName(RegulatoryAct.FIELD_INCLUDED)));
+		System.out.println("RegulatoryActFilterController.RegulatoryActFilterController() ::: "+WebController.getInstance().getRequestParameter(buildParameterName(RegulatoryAct.FIELD_INCLUDED))+" = "+includedInitial);
 	}
 	
 	@Override
@@ -144,6 +145,8 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			return AbstractInput.getValue(legislativeActVersionSelectOne) == null;
 		if(LegislativeActVersion.class.equals(klass))
 			return Boolean.TRUE;
+		if(input == includedSelectOne)
+			return input.getValue() != null;
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
@@ -182,7 +185,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));	
 		return cellsMaps;
 	}
-	
+	/*
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
@@ -194,9 +197,9 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		}
 		return StringHelper.concatenate(strings, " | ");
 	}
-	
-	public String generateWindowTitleValue() {
-		StringBuilder stringBuilder = new StringBuilder("Acte de gestion");
+	*/
+	public String generateWindowTitleValue(String prefix) {
+		StringBuilder stringBuilder = new StringBuilder(prefix);
 		if(legislativeActInitial == null)
 			return stringBuilder.toString();		
 		if(legislativeActVersionInitial == null) {
@@ -242,8 +245,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
-		/*filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
-		*/
+		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
 		return filter;
 	}
 	

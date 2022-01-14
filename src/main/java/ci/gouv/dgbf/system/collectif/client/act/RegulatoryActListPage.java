@@ -156,6 +156,9 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(RegulatoryAct.FIELD_INCLUDED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Inclus");
+				map.put(Column.FIELD_WIDTH, "70");
 			}
 			
 			return map;
