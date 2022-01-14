@@ -218,6 +218,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_YEAR,RegulatoryAct.FIELD_NAME,RegulatoryAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT,RegulatoryAct.FIELD_PAYMENT_CREDIT_AMOUNT));
 		if(includedInitial == null)
 			columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_INCLUDED_AS_STRING));
+		columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_AUDIT));
 		return columnsFieldsNames;
 	}
 	

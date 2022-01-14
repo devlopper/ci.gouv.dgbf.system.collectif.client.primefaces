@@ -152,6 +152,10 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			}else if(RegulatoryAct.FIELD_PAYMENT_CREDIT_AMOUNT.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "C.P.");
 				map.put(Column.FIELD_WIDTH, "150");
+			}else if(RegulatoryAct.FIELD_AUDIT.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}
 			
 			return map;
@@ -182,7 +186,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(RegulatoryActDto.JSONS_YEAR_NAME_ENTRY_AUTHORIZATION_AMOUNT_PAYMENT_CREDIT_AMOUNT_INCLUDED_AS_STRING);
+			return List.of(RegulatoryActDto.JSONS_YEAR_NAME_ENTRY_AUTHORIZATION_AMOUNT_PAYMENT_CREDIT_AMOUNT_INCLUDED_AS_STRING,RegulatoryActDto.JSON___AUDIT__);
 		}
 		
 		@Override
