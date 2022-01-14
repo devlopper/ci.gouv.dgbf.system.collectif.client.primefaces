@@ -169,6 +169,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			}else if(Expenditure.FIELD_LESSOR_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Bailleur");
 				map.put(Column.FIELD_VISIBLE, isInvestment(filterController));
+			}else if(Expenditure.FIELD___AUDIT__.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+				map.put(Column.FIELD_WIDTH, "200");
 			}
 			
 			//Amounts
@@ -305,9 +309,8 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		}
 		
 		@Override
-		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
-				int firstTupleIndex, int numberOfTuples) {
-			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS);
+		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
+			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS,ExpenditureDto.JSON___AUDIT__);
 		}
 		
 		@Override

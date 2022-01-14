@@ -660,6 +660,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				//,ExpenditureAmounts.FIELD_AVAILABLE
 				,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				);
+		columnsFieldsNames.add(Expenditure.FIELD___AUDIT__);
 		return columnsFieldsNames;
 	}
 	
