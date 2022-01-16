@@ -44,7 +44,6 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(buildParameterName(RegulatoryAct.FIELD_INCLUDED)));
-		System.out.println("RegulatoryActFilterController.RegulatoryActFilterController() ::: "+WebController.getInstance().getRequestParameter(buildParameterName(RegulatoryAct.FIELD_INCLUDED))+" = "+includedInitial);
 	}
 	
 	@Override
