@@ -16,7 +16,10 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 		sessionMenuBuilder.addItems(
 				__inject__(MenuItemBuilder.class).setCommandableName("Collectif").setCommandableIcon(Icon.SUITCASE)
 				.addChild(
-						__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les dépenses").setCommandableNavigationIdentifier("expenditureAdjustView").setCommandableIcon(Icon.PENCIL)
+						__inject__(MenuItemBuilder.class).setCommandableName("Lister les dépenses").setCommandableNavigationIdentifier("expenditureListView").setCommandableIcon(Icon.LIST)
+						,__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les dépenses").setCommandableNavigationIdentifier("expenditureAdjustView").setCommandableIcon(Icon.PENCIL)
+						,__inject__(MenuItemBuilder.class).setCommandableName("Lister les ressources").setCommandableNavigationIdentifier("resourceListView").setCommandableIcon(Icon.LIST)
+						,__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les ressources").setCommandableNavigationIdentifier("resourceAdjustView").setCommandableIcon(Icon.PENCIL)
 						,__inject__(MenuItemBuilder.class).setCommandableName("Actes de gestion").setCommandableNavigationIdentifier("regulatoryActListView").setCommandableIcon(Icon.BANK)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Finex").setCommandableNavigationIdentifier("activityCostUnitFundingEditAdjustmentsFinexView").setCommandableIcon(Icon.PENCIL)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lignes").setCommandableNavigationIdentifier("activityCostUnitFundingListView").setCommandableIcon(Icon.LIST)

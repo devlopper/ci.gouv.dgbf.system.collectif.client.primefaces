@@ -33,6 +33,20 @@
 			<redirect />
 		</navigation-case>
 		
+		<!-- Resource -->
+		
+		<navigation-case>
+			<from-outcome>resourceListView</from-outcome>
+			<to-view-id>/private/resource/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>resourceAdjustView</from-outcome>
+			<to-view-id>/private/resource/adjust/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Regulatory Act -->
 		
 		<navigation-case>
