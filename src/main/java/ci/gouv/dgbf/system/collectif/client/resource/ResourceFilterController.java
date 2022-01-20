@@ -196,7 +196,7 @@ public class ResourceFilterController extends AbstractFilterController implement
 		if(input == budgetSpecializationUnitSelectOne)
 			return Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER;
 		if(input == activitySelectOne)
-			return Parameters.ACTIVITY_IDENTIFIER;
+			return Parameters.RESOURCE_ACTIVITY_IDENTIFIER;
 		if(input == economicNatureSelectOne)
 			return Parameters.ECONOMIC_NATURE_IDENTIFIER;
 		return super.buildParameterName(fieldName, input);
@@ -337,7 +337,7 @@ public class ResourceFilterController extends AbstractFilterController implement
 				if(activityInitial != null && activityInitial.getIdentifier().equals(FieldHelper.readSystemIdentifier(activitySelectOne.getValue())))
 					choices = activityInitial.getEconomicNatures();
 				else
-					choices = __inject__(EconomicNatureController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
+					choices = __inject__(EconomicNatureController.class).getByParentIdentifier(Parameters.RESOURCE_ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
@@ -524,7 +524,7 @@ public class ResourceFilterController extends AbstractFilterController implement
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ResourceFilterController controller,Boolean initial) {
-		/*LegislativeActVersion legislativeActVersion = Boolean.TRUE.equals(initial) ? controller.legislativeActVersionInitial : controller.getLegislativeActVersion();
+		LegislativeActVersion legislativeActVersion = Boolean.TRUE.equals(initial) ? controller.legislativeActVersionInitial : controller.getLegislativeActVersion();
 		if(legislativeActVersion == null)
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
@@ -533,7 +533,6 @@ public class ResourceFilterController extends AbstractFilterController implement
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.budgetSpecializationUnitInitial : controller.getBudgetSpecializationUnit()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.RESOURCE_ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.activityInitial : controller.getActivity()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.ECONOMIC_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.economicNatureInitial : controller.getEconomicNature()), filter);
-		*/
 		return filter;
 	}
 	

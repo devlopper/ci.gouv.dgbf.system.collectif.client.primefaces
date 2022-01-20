@@ -274,7 +274,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(ResourceDto.JSON_IDENTIFIER/*,ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS,ResourceDto.JSON___AUDIT__*/);
+			return List.of(ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS,ResourceDto.JSON___AUDIT__);
 		}
 		
 		@Override
