@@ -54,5 +54,13 @@
 			<to-view-id>/private/regulatoryact/list/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<!-- Generated Act -->
+		
+		<navigation-case>
+			<from-outcome>generatedActListView</from-outcome>
+			<to-view-id>/private/generatedact/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 </faces-config>
