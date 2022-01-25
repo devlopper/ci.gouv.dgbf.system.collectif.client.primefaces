@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf16383502356830" configfile="/collectif-client-primefaces/src/main/webapp/WEB-INF/faces-config.xml">
-  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="178" id="pf16383502886041" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16383502886042 pf16383502886044 pf16383502886045 pf16418103766030 pf16425960153650 pf16425960153651 pf16425960153652 pf16430999170360" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="178" id="pf16383502886041" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16383502886042 pf16383502886044 pf16383502886045 pf16418103766030 pf16425960153650 pf16425960153651 pf16425960153652 pf16430999170360 pf16431192858622 pf16431192858623" path="*"/>
   <nodes xsi:type="pageflow:PFPage" name="private/expenditure/list/index.jsf" x="338" y="178" id="pf16383502886046" referenceLink="//@navigationRule.0/@navigationCase.2/@toViewId|" inlinks="pf16383502886042 pf16383502886044 pf16425960153650" path="/private/expenditure/list/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/expenditure/adjust/index.jsf" id="pf16383502886047" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16383502886045" path="/private/expenditure/adjust/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/regulatoryact/list/index.jsf" id="pf16418103766031" referenceLink="//@navigationRule.0/@navigationCase.7/@toViewId|" inlinks="pf16418103766030" path="/private/regulatoryact/list/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/resource/list/index.jsf" id="pf16425960153653" referenceLink="//@navigationRule.0/@navigationCase.4/@toViewId|" inlinks="pf16425960153651" path="/private/resource/list/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/resource/adjust/index.jsf" id="pf16425960153654" referenceLink="//@navigationRule.0/@navigationCase.5/@toViewId|" inlinks="pf16425960153652" path="/private/resource/adjust/index.jsf"/>
-  <nodes xsi:type="pageflow:PFPage" name="private/generatedact/list/index.jsf" id="pf16430999170371" referenceLink="//@navigationRule.0/@navigationCase.7/@toViewId|" inlinks="pf16430999170360" path="/private/generatedact/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/generatedact/list/index.jsf" id="pf16430999170371" referenceLink="//@navigationRule.0/@navigationCase.8/@toViewId|" inlinks="pf16430999170360" path="/private/generatedact/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/legislativeact/list/index.jsf" id="pf16431192858634" referenceLink="//@navigationRule.0/@navigationCase.9/@toViewId|" inlinks="pf16431192858622" path="/private/legislativeact/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/legislativeactversion/list/index.jsf" id="pf16431192858635" referenceLink="//@navigationRule.0/@navigationCase.9/@toViewId|" inlinks="pf16431192858623" path="/private/legislativeactversion/list/index.jsf"/>
   <links id="pf16383502886042" target="pf16383502886046" source="pf16383502886041" outcome="expenditureListView" redirect="true"/>
   <links id="pf16383502886044" target="pf16383502886046" source="pf16383502886041" outcome="expenditureCreateView" redirect="true"/>
   <links id="pf16383502886045" target="pf16383502886047" source="pf16383502886041" outcome="expenditureAdjustView" redirect="true"/>
@@ -15,4 +17,6 @@
   <links id="pf16425960153651" target="pf16425960153653" source="pf16383502886041" outcome="resourceListView" redirect="true"/>
   <links id="pf16425960153652" target="pf16425960153654" source="pf16383502886041" outcome="resourceAdjustView" redirect="true"/>
   <links id="pf16430999170360" target="pf16430999170371" source="pf16383502886041" outcome="generatedActListView" redirect="true"/>
+  <links id="pf16431192858622" target="pf16431192858634" source="pf16383502886041" outcome="legislativeActListView" redirect="true"/>
+  <links id="pf16431192858623" target="pf16431192858635" source="pf16383502886041" outcome="legislativeActVersionListView" redirect="true"/>
 </pageflow:Pageflow>

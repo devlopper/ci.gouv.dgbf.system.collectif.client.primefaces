@@ -62,5 +62,21 @@
 			<to-view-id>/private/generatedact/list/index.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<!-- Legislative Act -->
+		
+		<navigation-case>
+			<from-outcome>legislativeActListView</from-outcome>
+			<to-view-id>/private/legislativeact/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!-- Legislative Act Version -->
+		
+		<navigation-case>
+			<from-outcome>legislativeActVersionListView</from-outcome>
+			<to-view-id>/private/legislativeactversion/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 </faces-config>
