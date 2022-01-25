@@ -9,7 +9,10 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.ExerciseDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.Exercise;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExerciseController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
@@ -17,6 +20,11 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionCon
 
 public interface Helper {
 
+	public static Exercise getExerciseFromRequestParameter() {
+		return DependencyInjection.inject(ExerciseController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.EXERCISE_IDENTIFIER), new Controller.GetArguments()
+				.projections(ExerciseDto.JSON_IDENTIFIER,ExerciseDto.JSON_CODE,ExerciseDto.JSON_NAME,ExerciseDto.JSON_YEAR));
+	}
+	
 	public static LegislativeAct getLegislativeActFromRequestParameter(LegislativeActVersion version) {
 		if(version != null && version.getAct() != null)
 			return version.getAct();
