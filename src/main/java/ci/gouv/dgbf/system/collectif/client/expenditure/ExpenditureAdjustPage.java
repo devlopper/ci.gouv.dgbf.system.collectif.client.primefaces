@@ -74,7 +74,7 @@ public class ExpenditureAdjustPage extends AbstractPageContainerManagedImpl impl
 	}
 	
 	private DataTable buildDataTable() {
-		dataTable = ExpenditureListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
+		dataTable = ExpenditureListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl().setAdjustmentEditable(Boolean.TRUE)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL,new LazyDataModel().setFilterController(filterController)
 				,ExpenditureListPage.OUTCOME,OUTCOME
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT

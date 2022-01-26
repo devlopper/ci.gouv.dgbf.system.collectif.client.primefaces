@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.collectif.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -182,6 +183,14 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	
 	public LegislativeActVersion getLegislativeActVersion() {
 		return (LegislativeActVersion) AbstractInput.getValue(legislativeActVersionSelectOne);
+	}
+	
+	@Override
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new LinkedHashMap<>();
+		if(legislativeActVersionInitial != null)
+			map.put(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, List.of(legislativeActVersionInitial.getIdentifier()));
+		return map;
 	}
 	
 	/**/

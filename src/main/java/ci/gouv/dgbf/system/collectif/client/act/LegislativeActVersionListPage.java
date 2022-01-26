@@ -29,6 +29,10 @@ import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.client.expenditure.ExpenditureListPage;
+import ci.gouv.dgbf.system.collectif.client.resource.ResourceListPage;
+import ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure;
+import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
@@ -92,6 +96,14 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
+		
+		dataTable.setEntityIdentifierParameterName(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER);
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,ExpenditureListPage.OUTCOME, MenuItem.FIELD_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME_PLURAL
+				,MenuItem.FIELD_ICON,"fa fa-arrow-circle-down");
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,ResourceListPage.OUTCOME, MenuItem.FIELD_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.Resource.NAME_PLURAL
+				,MenuItem.FIELD_ICON,"fa fa-arrow-circle-up");
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,GeneratedActListPage.OUTCOME, MenuItem.FIELD_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.GeneratedAct.NAME_PLURAL
+				,MenuItem.FIELD_ICON,"fa fa-file-text");
 		/*
 		LegislativeActVersionFilterController finalFilterController = filterController;
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {
@@ -179,7 +191,7 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON___AUDIT__);
+			return List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON___AUDIT__);
 		}
 		
 		@Override

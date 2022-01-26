@@ -18,10 +18,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Col
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import lombok.Getter;
@@ -83,6 +85,9 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
+		
+		dataTable.setEntityIdentifierParameterName(Parameters.LEGISLATIVE_ACT_IDENTIFIER);
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,LegislativeActVersionListPage.OUTCOME, MenuItem.FIELD_VALUE,"Versions",MenuItem.FIELD_ICON,"fa fa-eye");
 		/*
 		LegislativeActFilterController finalFilterController = filterController;
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {
@@ -170,7 +175,7 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(LegislativeActDto.JSON_CODE,LegislativeActDto.JSON_NAME,LegislativeActDto.JSON___AUDIT__);
+			return List.of(LegislativeActDto.JSON_IDENTIFIER,LegislativeActDto.JSON_CODE,LegislativeActDto.JSON_NAME,LegislativeActDto.JSON___AUDIT__);
 		}
 		
 		@Override

@@ -11,10 +11,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 
-import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -30,7 +32,6 @@ import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.server.api.service.GeneratedActDto;
-import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.GeneratedAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.GeneratedActController;
 import lombok.Getter;
@@ -94,38 +95,33 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
-		/*
-		GeneratedActFilterController finalFilterController = filterController;
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				GeneratedAct regulatoryAct = (GeneratedAct)action.readArgument();
-				if(regulatoryAct == null)
-					throw new RuntimeException("Sélectionner un acte de gestion");
-				LegislativeActVersion legislativeActVersion = finalFilterController == null ? null : finalFilterController.getLegislativeActVersionInitial();
-				if(legislativeActVersion == null)
-					throw new RuntimeException("Sélectionner une version de collectif");
-				Response response = DependencyInjection.inject(GeneratedActController.class).include(legislativeActVersion, Boolean.FALSE, regulatoryAct);
-				//PrimeFaces.current().ajax().update(":form:"+dataTable.getIdentifier());
-				return ResponseHelper.getEntity(String.class, response);
-			}
-		});
 		
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Eclure", "fa fa-long-arrow-up", new MenuItem.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				GeneratedAct regulatoryAct = (GeneratedAct)action.readArgument();
-				if(regulatoryAct == null)
-					throw new RuntimeException("Sélectionner un acte de gestion");
-				LegislativeActVersion legislativeActVersion = finalFilterController == null ? null : finalFilterController.getLegislativeActVersionInitial();
-				if(legislativeActVersion == null)
-					throw new RuntimeException("Sélectionner une version de collectif");
-				Response response = DependencyInjection.inject(GeneratedActController.class).exclude(legislativeActVersion, Boolean.FALSE, regulatoryAct);
-				//PrimeFaces.current().ajax().update(":form:"+dataTable.getIdentifier());
-				return ResponseHelper.getEntity(String.class, response);
-			}
-		});
-		*/
+		GeneratedActFilterController finalFilterController = filterController;
+		if(finalFilterController.getLegislativeActVersionInitial() != null) {
+			if(Boolean.TRUE.equals(finalFilterController.getLegislativeActVersionInitial().getActGeneratable()))
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Générer",MenuItem.FIELD_ICON,"fa fa-gears",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {				
+						__inject__(GeneratedActController.class).generateByLegislativeActVersion(finalFilterController.getLegislativeActVersionInitial());
+						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OUTCOME).setParameters(finalFilterController.asMap()));
+						return null;
+					}
+				});
+			
+			if(Boolean.TRUE.equals(finalFilterController.getLegislativeActVersionInitial().getGeneratedActDeletable()))
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Supprimer",MenuItem.FIELD_ICON,"fa fa-trash",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					protected Object __runExecuteFunction__(AbstractAction action) {				
+						__inject__(GeneratedActController.class).deleteByLegislativeActVersion(finalFilterController.getLegislativeActVersionInitial());
+						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OUTCOME).setParameters(finalFilterController.asMap()));
+						return null;
+					}
+				});
+		}
 		return dataTable;
 	}
 	
@@ -181,7 +177,7 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(GeneratedActDto.JSON_CODE,GeneratedActDto.JSON_NAME,GeneratedActDto.JSON___AUDIT__);
+			return List.of(GeneratedActDto.JSON_IDENTIFIER,GeneratedActDto.JSON_CODE,GeneratedActDto.JSON_NAME,GeneratedActDto.JSON___AUDIT__);
 		}
 		
 		@Override
