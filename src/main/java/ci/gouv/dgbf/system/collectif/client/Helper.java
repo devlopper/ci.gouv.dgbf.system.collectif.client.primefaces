@@ -34,7 +34,7 @@ public interface Helper {
 	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
 		Controller.GetArguments arguments = new Controller.GetArguments();
 		arguments.setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_BUDGETARY_ACT
-				,LegislativeActVersionDto.JSON_GENERATED_ACT_COUNT,LegislativeActVersionDto.JSON_ACT_GENERATABLE,LegislativeActVersionDto.JSON_GENERATED_ACT_DELETABLE));
+				,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE));
 		if(StringHelper.isBlank(identifier)) {
 			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_LEGISLATIVE_ACT_VERSION, Boolean.TRUE));
 			return DependencyInjection.inject(LegislativeActVersionController.class).getOne(arguments);
