@@ -86,7 +86,7 @@ public class ResourceAdjustPage extends AbstractPageContainerManagedImpl impleme
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						if(CollectionHelper.isEmpty(resources))
-							throw new RuntimeException("Le tableau ne comporte aucune ligne à modifier");
+							throw new RuntimeException(String.format("Le tableau ne comporte aucune %s à modifier",ci.gouv.dgbf.system.collectif.server.api.persistence.Resource.NAME));
 						Collection<Resource> updatables = null;
 						for(Resource resource : resources) {
 							if(!Boolean.TRUE.equals(isHasBeenEdited(resource)))							

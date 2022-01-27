@@ -54,7 +54,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	protected String __getWindowTitleValue__() { 
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
-		return filterController.generateWindowTitleValue("Lignes budgétaires");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME_PLURAL);
 	}
 	
 	@Override

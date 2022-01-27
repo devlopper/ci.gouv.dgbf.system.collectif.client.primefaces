@@ -90,7 +90,7 @@ public class ExpenditureAdjustPage extends AbstractPageContainerManagedImpl impl
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {
 						if(CollectionHelper.isEmpty(expenditures))
-							throw new RuntimeException("Le tableau ne comporte aucune ligne à modifier");
+							throw new RuntimeException(String.format("Le tableau ne comporte aucune %s à modifier",ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME));
 						Collection<Expenditure> updatables = null;
 						for(Expenditure expenditure : expenditures) {
 							if(!Boolean.TRUE.equals(isHasBeenEdited(expenditure)))							
