@@ -21,6 +21,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
+import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActionDto;
@@ -57,7 +58,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 
 	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,sectionSelectOne,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
 		,activitySelectOne,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne;
-	//private ActivitySelectionController activitySelectionController;
+	private ActivitySelectionController activitySelectionController;
 	
 	private Boolean isLegislativeActColumnShowable,isLegislativeActVersionColumnShowable,isSectionColumnShowable,isExpenditureNatureColumnShowable
 	,isBudgetSpecializationUnitColumnShowable,isActionColumnShowable,isActivityColumnShowable,isFundingSourceColumnShowable,isLessorColumnShowable;
@@ -148,8 +149,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	public ExpenditureFilterController build() {
-		//if(activitySelectionController == null)
-		//	activitySelectionController = new ActivitySelectionController();
+		if(activitySelectionController == null)
+			activitySelectionController = new ActivitySelectionController();
+		//activitySelectionController.setIsMultiple(Boolean.TRUE);
+		activitySelectionController.build();
 		return (ExpenditureFilterController) super.build();
 	}
 	
@@ -546,8 +549,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		if(activitySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,11));	
-			//cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectOne,Cell.FIELD_WIDTH,10));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activitySelectionController.getShowDialogCommandButton(),Cell.FIELD_WIDTH,1));
 		}
 		
 		if(economicNatureSelectOne != null) {

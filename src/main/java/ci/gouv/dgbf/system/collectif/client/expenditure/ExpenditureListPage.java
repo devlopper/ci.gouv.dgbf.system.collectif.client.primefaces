@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
@@ -25,15 +24,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Dat
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
-import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,12 +41,13 @@ import lombok.experimental.Accessors;
 public class ExpenditureListPage extends AbstractEntityListPageContainerManagedImpl<Expenditure> implements Serializable {
 
 	private ExpenditureFilterController filterController;
-	@Inject private SpecificServiceGetter specificServiceGetter;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ExpenditureFilterController();   
+		filterController = new ExpenditureFilterController();
+		
+		
 	}
 	
 	@Override
@@ -107,7 +106,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		filterController.build();
 		
 		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
-		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);	
+		if(filterController.getActivitySelectionController() == null)
+			filterController.setActivitySelectionController(new ActivitySelectionController());
+		filterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
 		
 		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
 		if(dataTableListenerImpl == null)
@@ -125,9 +127,12 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
 		Map<String, List<String>> parameters = new HashMap<>();
-		//if(MapHelper.readByKey(arguments, "exercice") != null)
-		//	parameters.put("exercice", List.of((String)MapHelper.readByKey(arguments, "exercice")));
-		parameters.put(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getLegislativeActVersion())));
+		if(filterController.getLegislativeActVersionInitial() != null)
+			parameters.put(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getLegislativeActVersionInitial())));
+		if(filterController.getLegislativeActInitial() != null && !parameters.containsKey(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER))
+			parameters.put(Parameters.LEGISLATIVE_ACT_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getLegislativeActInitial())));
+		if(filterController.getActivityInitial() != null)
+			parameters.put(Parameters.ACTIVITY_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getActivityInitial())));
 		
 		if(Boolean.TRUE.equals(dataTableListenerImpl.getAdjustmentEditable())) {
 			
