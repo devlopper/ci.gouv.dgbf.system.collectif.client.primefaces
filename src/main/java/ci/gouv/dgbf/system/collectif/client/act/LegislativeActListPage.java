@@ -86,6 +86,8 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
+		
 		dataTable.setEntityIdentifierParameterName(Parameters.LEGISLATIVE_ACT_IDENTIFIER);
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,LegislativeActVersionListPage.OUTCOME, MenuItem.FIELD_VALUE,"Versions",MenuItem.FIELD_ICON,"fa fa-eye");
 		/*

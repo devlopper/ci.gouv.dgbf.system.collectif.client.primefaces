@@ -71,6 +71,12 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>legislativeActCreateView</from-outcome>
+			<to-view-id>/private/legislativeact/create.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Legislative Act Version -->
 		
 		<navigation-case>
