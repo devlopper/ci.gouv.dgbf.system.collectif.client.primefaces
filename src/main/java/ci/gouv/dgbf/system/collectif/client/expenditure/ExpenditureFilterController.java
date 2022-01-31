@@ -658,43 +658,11 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isLessorColumnShowable,Boolean.TRUE)) && lessorInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_LESSOR_AS_STRING);
 		
-		addAmountsColumnsNames(columnsFieldsNames, ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
-				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED//,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED
-				//,ExpenditureAmounts.FIELD_AVAILABLE
-				,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment(), ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
+				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				);
 		columnsFieldsNames.add(Expenditure.FIELD___AUDIT__);
 		return columnsFieldsNames;
-	}
-	
-	private void addAmountsColumnsNames(Collection<String> collection,Collection<String> names) {
-		if(collection == null || CollectionHelper.isEmpty(names))
-			return;
-		for(String name : names) {
-			if(ExpenditureAmounts.FIELD_INITIAL.equals(name)) {
-				collection.add(FieldHelper.join(Expenditure.FIELD_ENTRY_AUTHORIZATION,name));
-			}else if(ExpenditureAmounts.FIELD_ADJUSTMENT.equals(name)) {
-				if(Boolean.TRUE.equals(isEntryAuthorizationAdjustmentEditable)) {
-					collection.add(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT);
-					if(Boolean.TRUE.equals(isInvestment()))
-						collection.add(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT);
-				}else {
-					collection.add(FieldHelper.join(Expenditure.FIELD_ENTRY_AUTHORIZATION,name));
-					if(Boolean.TRUE.equals(isInvestment()))
-						collection.add(FieldHelper.join(Expenditure.FIELD_PAYMENT_CREDIT,name));
-				}
-			}else {
-				collection.add(FieldHelper.join(Expenditure.FIELD_ENTRY_AUTHORIZATION,name));
-				if(Boolean.TRUE.equals(isInvestment()))
-					collection.add(FieldHelper.join(Expenditure.FIELD_PAYMENT_CREDIT,name));
-			}
-		}
-	}
-	
-	private void addAmountsColumnsNames(Collection<String> collection,String...names) {
-		if(collection == null || ArrayHelper.isEmpty(names))
-			return;
-		addAmountsColumnsNames(collection, CollectionHelper.listOf(names));
 	}
 	
 	@Override

@@ -27,6 +27,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
+import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
@@ -46,8 +47,6 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
 		filterController = new ExpenditureFilterController();
-		
-		
 	}
 	
 	@Override
@@ -60,38 +59,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	@Override
 	protected DataTable __buildDataTable__() {
 		DataTable dataTable = buildDataTable(ExpenditureFilterController.class,filterController);
-		//dataTable.setHeaderToolbarLeftCommands(null);
-		//dataTable.setRecordMenu(null);
-		//dataTable.setRecordCommands(null);
-		//dataTable.setMenuColumn(null);
 		return dataTable;
 	}
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
-		/*
-		
-		filterController = (ExpenditureFilterController) lazyDataModelListenerImpl.getFilterController();
-		if(filterController == null)
-			lazyDataModelListenerImpl.setFilterController(filterController = new ExpenditureFilterController());		
-		lazyDataModelListenerImpl.enableFilterController();
-		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
-		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
-		filterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
-		
-		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
-		if(dataTableListenerImpl == null)
-			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
-		dataTableListenerImpl.setFilterController(filterController);
-		
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Expenditure.class);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());	
-		
-		DataTable dataTable = DataTable.build(arguments);
-		dataTable.setAreColumnsChoosable(Boolean.TRUE);
-		dataTable.getOrderNumberColumn().setWidth("60");
-		*/
-		
 		if(arguments == null) 
 			arguments = new HashMap<>();
 		ExpenditureFilterController filterController = (ExpenditureFilterController) MapHelper.readByKey(arguments, ExpenditureFilterController.class);
@@ -186,10 +157,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			}else if(Expenditure.FIELD_FUNDING_SOURCE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "S.F.");
 				map.put(Column.FIELD_WIDTH, "80");
-				map.put(Column.FIELD_VISIBLE, isInvestment(filterController));
+				map.put(Column.FIELD_VISIBLE, isInvestment());
 			}else if(Expenditure.FIELD_LESSOR_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Bailleur");
-				map.put(Column.FIELD_VISIBLE, isInvestment(filterController));
+				map.put(Column.FIELD_VISIBLE, isInvestment());
 			}else if(Expenditure.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
@@ -198,33 +169,33 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			
 			//Amounts
 			
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
-						, null,Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
-						, isInvestment(filterController),Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
-						, isInvestment(filterController),Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
-						, isInvestment(filterController),Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
-						, isInvestment(filterController),Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
-						, fieldName,isInvestment(filterController), Boolean.FALSE, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ExpenditureAmounts.FIELD_ADJUSTMENT
-						, fieldName, isInvestment(filterController),adjustmentEditable, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
-						, fieldName, isInvestment(filterController),adjustmentEditable, filterController);
-			else if(isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
-						, isInvestment(filterController),Boolean.FALSE, filterController);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
+						, null,Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
+						, fieldName,isInvestment(), Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ExpenditureAmounts.FIELD_ADJUSTMENT
+						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
+						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			
 			return map;
 		}
@@ -243,81 +214,12 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			return super.getStyleClassByRecord(record, recordIndex);
 		}
 		*/
-		/*@Override
-		public String getTooltipByRecord(Object record, Integer recordIndex) {
-			if(record instanceof Expenditure) {
-				Expenditure expenditure = (Expenditure) record;
-				if(Boolean.TRUE.equals(isInvestment(filterController)))					
-					return String.format(ROW_TOOLTIP_INVESTMENT_FORMAT
-							,NumberHelper.format(expenditure.getEntryAuthorization(Boolean.TRUE).getInitial())
-							,NumberHelper.format(expenditure.getPaymentCredit(Boolean.TRUE).getInitial())
-							,NumberHelper.format(expenditure.getEntryAuthorization(Boolean.TRUE).getMovement())
-							,NumberHelper.format(expenditure.getPaymentCredit(Boolean.TRUE).getMovement())
-							,NumberHelper.format(expenditure.getEntryAuthorization(Boolean.TRUE).getMovementIncluded())
-							,NumberHelper.format(expenditure.getPaymentCredit(Boolean.TRUE).getMovementIncluded())
-							);
-				else
-					return String.format(ROW_TOOLTIP_NOT_INVESTMENT_FORMAT,NumberHelper.format(expenditure.getEntryAuthorization(Boolean.TRUE).getMovementIncluded()));
-			}	
-			return super.getTooltipByRecord(record, recordIndex);
-		}
-		*/
-		private static Boolean isInvestment(ExpenditureFilterController filterController) {
+
+		private Boolean isInvestment() {
 			if(filterController == null)
 				return null;
 			return filterController.isInvestment();
 		}
-		
-		//private static final String ROW_TOOLTIP_INVESTMENT_FORMAT = "Budget Initial AE|CP : %s|%s , Mouvements AE|CP : %s|%s , Mouvements Inclus AE|CP : %s|%s";
-		//private static final String ROW_TOOLTIP_NOT_INVESTMENT_FORMAT = "Mouvements Inclus : %s";
-		
-		private static Boolean isEntryAuthorizationOrPaymentCredit(String amountTypeFieldName,String amountValueFieldName,String fieldName) {
-			Boolean value = FieldHelper.join(amountTypeFieldName,amountValueFieldName).equals(fieldName) 
-					|| (amountTypeFieldName+StringHelper.applyCase(amountValueFieldName, Case.FIRST_CHARACTER_UPPER)).equals(fieldName);
-			return value;
-		}
-		
-		private static Boolean isEntryAuthorizationOrPaymentCredit(String amountValueFieldName,String fieldName) {
-			Boolean value = isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_ENTRY_AUTHORIZATION,amountValueFieldName, fieldName) 
-					|| isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_PAYMENT_CREDIT,amountValueFieldName, fieldName);			
-			return value;
-		}
-
-		private static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String fieldName1,String fieldName2,Boolean editable,Expenditure expenditureAmountsSum) {
-			map.put(Column.FIELD_VALUE_TYPE, Value.Type.CURRENCY);
-			map.put(Column.FIELD_WIDTH, "100");
-			map.put(Column.FIELD_HEADER_TEXT, name);
-			map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
-			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);
-			map.put(Column.ConfiguratorImpl.FIELD_SHOW_FOOTER, Boolean.TRUE);
-			map.put(Column.ConfiguratorImpl.FIELD_FOOTER_OUTPUT_TEXT_VALUE, getAmount(expenditureAmountsSum, fieldName1, fieldName2));
-		}
-		
-		private static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
-				,Boolean both,Boolean editable,ExpenditureFilterController filterController) {
-			Expenditure expenditureAmountsSum = filterController == null ? null : filterController.sumExpendituresAmounts();
-			if(Boolean.TRUE.equals(both)) {
-				if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_ENTRY_AUTHORIZATION,amountValueFieldName,fieldName))
-					setAmountColumnArgumentsMap(map, name+" A.E.", Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, expenditureAmountsSum);
-				else if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_PAYMENT_CREDIT,amountValueFieldName,fieldName))
-					setAmountColumnArgumentsMap(map, name+" C.P.", Expenditure.FIELD_PAYMENT_CREDIT, amountValueFieldName, editable, expenditureAmountsSum);
-			}else {
-				setAmountColumnArgumentsMap(map, name, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, expenditureAmountsSum);
-			}
-		}
-		
-		private static Number getAmount(Expenditure expenditure,String fieldName1,String fieldName2) {
-			if(expenditure == null)
-				return null;			
-			ExpenditureAmounts amounts = (ExpenditureAmounts) FieldHelper.read(expenditure, fieldName1);
-			if(amounts == null)
-				return null;
-			return (Number) FieldHelper.read(amounts, fieldName2);
-		}
-		
-		private static final Collection<String> VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME = List.of(/*ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT
-				,*/ExpenditureAmounts.FIELD_ACTUAL,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
-				,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 	}
 	
 	@Getter @Setter @Accessors(chain=true)

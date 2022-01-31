@@ -16,7 +16,9 @@ import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Exercise;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import lombok.Getter;
 import lombok.Setter;
@@ -110,7 +112,10 @@ public class LegislativeActFilterController extends AbstractFilterController imp
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(LegislativeAct.FIELD_CODE,LegislativeAct.FIELD_NAME));
+		columnsFieldsNames.addAll(List.of(LegislativeAct.FIELD_CODE,LegislativeAct.FIELD_NAME,LegislativeAct.FIELD_EXERCISE_YEAR,LegislativeAct.FIELD_IN_PROGRESS_AS_STRING));
+		Helper.addAmountsColumnsNames(columnsFieldsNames,null,null, Amounts.FIELD_INITIAL,Amounts.FIELD_MOVEMENT,Amounts.FIELD_ACTUAL
+				,Amounts.FIELD_MOVEMENT_INCLUDED,Amounts.FIELD_ADJUSTMENT,Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+				);
 		columnsFieldsNames.addAll(List.of(LegislativeAct.FIELD___AUDIT__));
 		return columnsFieldsNames;
 	}

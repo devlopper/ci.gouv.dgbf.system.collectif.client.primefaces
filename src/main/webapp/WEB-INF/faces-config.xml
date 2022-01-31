@@ -81,7 +81,13 @@
 		
 		<navigation-case>
 			<from-outcome>legislativeActVersionListView</from-outcome>
-			<to-view-id>/private/legislativeactversion/list/index.jsf</to-view-id>
+			<to-view-id>/private/legislativeact/version/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>legislativeActVersionCreateView</from-outcome>
+			<to-view-id>/private/legislativeact/version/create.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>

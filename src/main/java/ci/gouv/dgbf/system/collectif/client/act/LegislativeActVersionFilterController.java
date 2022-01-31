@@ -114,6 +114,13 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 		return (LegislativeAct) AbstractInput.getValue(legislativeActSelectOne);
 	}
 	
+	@Override
+	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
+		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
+			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
+		return super.buildParameterName(fieldName, input);
+	}
+	
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,LegislativeActVersionFilterController controller,Boolean initial) {

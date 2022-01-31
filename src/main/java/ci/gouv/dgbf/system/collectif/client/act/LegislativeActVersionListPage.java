@@ -82,11 +82,13 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, LegislativeActVersion.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_BUILDABLE, Boolean.FALSE);
-		
+
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
+		
+		dataTable.addHeaderToolbarLeftCommandsByArgumentsOpenViewInDialogCreate();
 		
 		dataTable.setEntityIdentifierParameterName(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER);
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,ExpenditureListPage.OUTCOME, MenuItem.FIELD_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME_PLURAL

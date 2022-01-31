@@ -8,10 +8,13 @@ import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -21,11 +24,18 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
+import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -90,23 +100,18 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 		
 		dataTable.setEntityIdentifierParameterName(Parameters.LEGISLATIVE_ACT_IDENTIFIER);
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,LegislativeActVersionListPage.OUTCOME, MenuItem.FIELD_VALUE,"Versions",MenuItem.FIELD_ICON,"fa fa-eye");
-		/*
-		LegislativeActFilterController finalFilterController = filterController;
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Créer version", "fa fa-plus-square-o", new MenuItem.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				LegislativeAct regulatoryAct = (LegislativeAct)action.readArgument();
-				if(regulatoryAct == null)
-					throw new RuntimeException("Sélectionner un acte de gestion");
-				LegislativeAct legislativeAct = finalFilterController == null ? null : finalFilterController.getLegislativeActInitial();
+				LegislativeAct legislativeAct = (LegislativeAct)action.readArgument();
 				if(legislativeAct == null)
-					throw new RuntimeException("Sélectionner une version de collectif");
-				Response response = DependencyInjection.inject(LegislativeActController.class).include(legislativeAct, Boolean.FALSE, regulatoryAct);
-				//PrimeFaces.current().ajax().update(":form:"+dataTable.getIdentifier());
+					throw new RuntimeException("Sélectionner "+ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeAct.NAME);
+				Response response = DependencyInjection.inject(LegislativeActVersionController.class).create(null, null, null, legislativeAct.getIdentifier());
 				return ResponseHelper.getEntity(String.class, response);
 			}
 		});
-		
+		/*
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Eclure", "fa fa-long-arrow-up", new MenuItem.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -141,21 +146,61 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
 				map.put(Column.FIELD_WIDTH, "70");
 			}else if(LegislativeAct.FIELD_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
-			}/*else if(LegislativeAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "A.E.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(LegislativeAct.FIELD_PAYMENT_CREDIT_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "C.P.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(LegislativeAct.FIELD_AUDIT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(LegislativeAct.FIELD_EXERCISE_YEAR.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Exercice");
+				map.put(Column.FIELD_WIDTH, "100");
+			}else if(LegislativeAct.FIELD_IN_PROGRESS_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "En cours");
+				map.put(Column.FIELD_WIDTH, "100");
+			}/*else if(LegislativeAct.FIELD_EXPECTED_ENTRY_AUTHORIZATION_ADJUSTMENT.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Ajustement A.E. attendu");
 				map.put(Column.FIELD_WIDTH, "200");
+			}else if(LegislativeAct.FIELD_EXPECTED_PAYMENT_CREDIT_ADJUSTMENT.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Ajustement C.P. attendu");
+				map.put(Column.FIELD_WIDTH, "200");
+			}else if(LegislativeAct.FIELD_REMAINS_ENTRY_AUTHORIZATION_TO_BE_ADJUSTED.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Reste A.E. à ajuster");
+				map.put(Column.FIELD_WIDTH, "200");
+			}else if(LegislativeAct.FIELD_REMAINS_PAYMENT_CREDIT_TO_BE_ADJUSTED.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Reste C.P. à ajuster");
+				map.put(Column.FIELD_WIDTH, "200");
+			}*/else if(LegislativeAct.FIELD___AUDIT__.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_WIDTH, "350");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-			}else if(LegislativeAct.FIELD_INCLUDED_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Inclus");
-				map.put(Column.FIELD_WIDTH, "70");
-			}*/
+			}
+	
+			//Amounts
+			
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
+						, null,Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
+						, null,Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+						, null,Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
+						, null,Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
+						, null,Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
+						, fieldName,null, Boolean.FALSE, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ExpenditureAmounts.FIELD_ADJUSTMENT
+						, fieldName, null,null, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
+						, fieldName, null,null, null);
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+						, null,Boolean.FALSE, null);
+			
 			
 			return map;
 		}
@@ -177,7 +222,7 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(LegislativeActDto.JSON_IDENTIFIER,LegislativeActDto.JSON_CODE,LegislativeActDto.JSON_NAME,LegislativeActDto.JSON___AUDIT__);
+			return List.of(LegislativeActDto.JSONS_STRINGS,LegislativeActDto.JSONS_AMOUTNS,LegislativeActDto.JSON___AUDIT__);
 		}
 		
 		@Override
@@ -185,7 +230,14 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 			return LegislativeActFilterController.instantiateFilter(filterController, Boolean.TRUE);
 		}
 		
-		
+		@Override
+		protected void process(LegislativeAct legislativeAct) {
+			super.process(legislativeAct);
+			if(legislativeAct.getEntryAuthorization() == null)
+				legislativeAct.setEntryAuthorization(new EntryAuthorization());
+			if(legislativeAct.getPaymentCredit() == null)
+				legislativeAct.setPaymentCredit(new PaymentCredit());
+		}
 	}
 	
 	public static final String OUTCOME = "legislativeActListView";
