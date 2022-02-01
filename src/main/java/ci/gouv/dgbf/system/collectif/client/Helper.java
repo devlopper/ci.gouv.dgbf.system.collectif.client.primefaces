@@ -72,7 +72,7 @@ public interface Helper {
 	
 	public static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String fieldName1,String fieldName2,Boolean editable,Object amountsSum) {
 		map.put(Column.FIELD_VALUE_TYPE, Value.Type.CURRENCY);
-		map.put(Column.FIELD_WIDTH, "100");
+		map.put(Column.FIELD_WIDTH, "120");
 		map.put(Column.FIELD_HEADER_TEXT, name);
 		map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
 		map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);

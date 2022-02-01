@@ -31,7 +31,6 @@ import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
-import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
@@ -147,8 +146,11 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 				map.put(Column.FIELD_WIDTH, "70");
 			}else if(LegislativeAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
-			}else if(LegislativeAct.FIELD_EXERCISE_YEAR.equals(fieldName)) {
+			}else if(LegislativeAct.FIELD_EXERCISE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exercice");
+				map.put(Column.FIELD_WIDTH, "100");
+			}else if(LegislativeAct.FIELD_DEFAULT_VERSION_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Version");
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(LegislativeAct.FIELD_IN_PROGRESS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "En cours");

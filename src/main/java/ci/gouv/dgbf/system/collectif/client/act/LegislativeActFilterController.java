@@ -112,7 +112,7 @@ public class LegislativeActFilterController extends AbstractFilterController imp
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(LegislativeAct.FIELD_CODE,LegislativeAct.FIELD_NAME,LegislativeAct.FIELD_EXERCISE_YEAR,LegislativeAct.FIELD_IN_PROGRESS_AS_STRING));
+		columnsFieldsNames.addAll(List.of(LegislativeAct.FIELD_CODE,LegislativeAct.FIELD_NAME,LegislativeAct.FIELD_EXERCISE_AS_STRING,LegislativeAct.FIELD_DEFAULT_VERSION_AS_STRING,LegislativeAct.FIELD_IN_PROGRESS_AS_STRING));
 		Helper.addAmountsColumnsNames(columnsFieldsNames,null,null, Amounts.FIELD_INITIAL,Amounts.FIELD_MOVEMENT,Amounts.FIELD_ACTUAL
 				,Amounts.FIELD_MOVEMENT_INCLUDED,Amounts.FIELD_ADJUSTMENT,Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				);
