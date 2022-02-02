@@ -130,6 +130,53 @@ public interface Helper {
 		addAmountsColumnsNames(collection,isEntryAuthorizationAdjustmentEditable,isInvestment, CollectionHelper.listOf(names));
 	}
 	
+	/**/
+	
+	public interface DataTable {
+		
+		public interface Amounts {
+			
+			static void processColumnArguments(Map<Object,Object> map,String fieldName,Boolean both,Boolean editable,Object amountsSum) {
+				if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_INITIAL, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_INITIAL, fieldName
+							, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_MOVEMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_MOVEMENT, fieldName
+							, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_MOVEMENT_INCLUDED, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_MOVEMENT_INCLUDED, fieldName
+							, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL, fieldName
+							, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
+							, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_AVAILABLE, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_AVAILABLE
+							, fieldName, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ADJUSTMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ADJUSTMENT
+							, fieldName, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_EXPECTED_ADJUSTMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation attendue(VA)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_EXPECTED_ADJUSTMENT
+							, fieldName, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_EXPECTED_ADJUSTMENT_MINUS_ADJUSTMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Gap Variation(GV)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_EXPECTED_ADJUSTMENT_MINUS_ADJUSTMENT
+							, fieldName, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
+							, fieldName, both,editable, amountsSum);
+				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+							, both,editable, amountsSum);
+			}
+		}
+	}
+	
+	/**/
+	
 	Collection<String> VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME = List.of(/*ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT
-			,*/Amounts.FIELD_ACTUAL,Amounts.FIELD_MOVEMENT_INCLUDED,Amounts.FIELD_ADJUSTMENT,Amounts.FIELD_ACTUAL_PLUS_ADJUSTMENT,Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
+			,*/Amounts.FIELD_ACTUAL,Amounts.FIELD_MOVEMENT_INCLUDED,Amounts.FIELD_EXPECTED_ADJUSTMENT,Amounts.FIELD_ADJUSTMENT,Amounts.FIELD_EXPECTED_ADJUSTMENT_MINUS_ADJUSTMENT
+			,Amounts.FIELD_ACTUAL_PLUS_ADJUSTMENT,Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 }

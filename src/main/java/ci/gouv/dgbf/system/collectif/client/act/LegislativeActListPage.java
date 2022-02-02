@@ -31,7 +31,6 @@ import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
-import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
@@ -144,66 +143,27 @@ public class LegislativeActListPage extends AbstractEntityListPageContainerManag
 			if(LegislativeAct.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
 				map.put(Column.FIELD_WIDTH, "70");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(LegislativeAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
 			}else if(LegislativeAct.FIELD_EXERCISE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exercice");
 				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(LegislativeAct.FIELD_DEFAULT_VERSION_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Version");
 				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(LegislativeAct.FIELD_IN_PROGRESS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "En cours");
 				map.put(Column.FIELD_WIDTH, "100");
-			}/*else if(LegislativeAct.FIELD_EXPECTED_ENTRY_AUTHORIZATION_ADJUSTMENT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Ajustement A.E. attendu");
-				map.put(Column.FIELD_WIDTH, "200");
-			}else if(LegislativeAct.FIELD_EXPECTED_PAYMENT_CREDIT_ADJUSTMENT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Ajustement C.P. attendu");
-				map.put(Column.FIELD_WIDTH, "200");
-			}else if(LegislativeAct.FIELD_REMAINS_ENTRY_AUTHORIZATION_TO_BE_ADJUSTED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Reste A.E. à ajuster");
-				map.put(Column.FIELD_WIDTH, "200");
-			}else if(LegislativeAct.FIELD_REMAINS_PAYMENT_CREDIT_TO_BE_ADJUSTED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Reste C.P. à ajuster");
-				map.put(Column.FIELD_WIDTH, "200");
-			}*/else if(LegislativeAct.FIELD___AUDIT__.equals(fieldName)) {
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(LegislativeAct.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_WIDTH, "350");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-			}
-	
-			//Amounts
-			
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
-						, null,Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
-						, null,Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
-						, null,Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
-						, null,Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
-						, null,Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
-						, fieldName,null, Boolean.FALSE, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ExpenditureAmounts.FIELD_ADJUSTMENT
-						, fieldName, null,null, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
-						, fieldName, null,null, null);
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
-						, null,Boolean.FALSE, null);
-			
-			
+			}else
+				Helper.DataTable.Amounts.processColumnArguments(map, fieldName,null,null,null);
 			return map;
 		}
 		

@@ -23,11 +23,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityL
 import org.cyk.utility.persistence.query.Filter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.client.expenditure.ExpenditureListPage;
 import ci.gouv.dgbf.system.collectif.client.resource.ResourceListPage;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -147,22 +150,18 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 			if(LegislativeActVersion.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
 				map.put(Column.FIELD_WIDTH, "70");
-			}else if(LegislativeActVersion.FIELD_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
-			}/*else if(LegislativeActVersion.FIELD_ENTRY_AUTHORIZATION_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "A.E.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(LegislativeActVersion.FIELD_PAYMENT_CREDIT_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "C.P.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(LegislativeActVersion.FIELD_AUDIT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Audit");
-				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-			}else if(LegislativeActVersion.FIELD_INCLUDED_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Inclus");
-				map.put(Column.FIELD_WIDTH, "70");
-			}*/
+			}else if(LegislativeActVersion.FIELD_NAME.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Libellé");
+			}else if(LegislativeActVersion.FIELD_ACT_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Collectif");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(LegislativeActVersion.FIELD___AUDIT__.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_WIDTH, "350");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else
+				Helper.DataTable.Amounts.processColumnArguments(map, fieldName,null,null,null);
 			
 			return map;
 		}
@@ -184,7 +183,7 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON___AUDIT__);
+			return List.of(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON___AUDIT__);
 		}
 		
 		@Override
@@ -192,7 +191,14 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 			return LegislativeActVersionFilterController.instantiateFilter(filterController, Boolean.TRUE);
 		}
 		
-		
+		@Override
+		protected void process(LegislativeActVersion legislativeActVersion) {
+			super.process(legislativeActVersion);
+			if(legislativeActVersion.getEntryAuthorization() == null)
+				legislativeActVersion.setEntryAuthorization(new EntryAuthorization());
+			if(legislativeActVersion.getPaymentCredit() == null)
+				legislativeActVersion.setPaymentCredit(new PaymentCredit());
+		}
 	}
 	
 	public static final String OUTCOME = "legislativeActVersionListView";
