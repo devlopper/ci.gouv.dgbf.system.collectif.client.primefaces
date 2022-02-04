@@ -8,10 +8,13 @@ import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -21,6 +24,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
@@ -29,6 +33,8 @@ import ci.gouv.dgbf.system.collectif.client.resource.ResourceListPage;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
@@ -100,6 +106,29 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 				,MenuItem.FIELD_ICON,"fa fa-arrow-circle-up");
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,GeneratedActListPage.OUTCOME, MenuItem.FIELD_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.GeneratedAct.NAME_PLURAL
 				,MenuItem.FIELD_ICON,"fa fa-file-text");
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Importer dépenses", "fa fa-plus-square-o", new MenuItem.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				LegislativeActVersion legislativeActVersion = (LegislativeActVersion)action.readArgument();
+				if(legislativeActVersion == null)
+					throw new RuntimeException("Sélectionner "+ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
+				Response response = DependencyInjection.inject(ExpenditureController.class).import_(legislativeActVersion.getIdentifier());
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		});
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Définir comme version par défaut", "fa fa-plus-square-o", new MenuItem.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				LegislativeActVersion legislativeActVersion = (LegislativeActVersion)action.readArgument();
+				if(legislativeActVersion == null)
+					throw new RuntimeException("Sélectionner "+ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
+				Response response = DependencyInjection.inject(LegislativeActController.class).updateDefaultVersion(legislativeActVersion);
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		});
+		
 		/*
 		LegislativeActVersionFilterController finalFilterController = filterController;
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {
