@@ -186,6 +186,15 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	}
 	
 	@Override
+	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
+		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
+			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
+		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
+			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
+		return super.buildParameterName(fieldName, input);
+	}
+	
+	@Override
 	public Map<String, List<String>> asMap() {
 		Map<String, List<String>> map = new LinkedHashMap<>();
 		if(legislativeActVersionInitial != null)

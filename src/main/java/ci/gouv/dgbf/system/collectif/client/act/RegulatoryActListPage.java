@@ -54,7 +54,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 	protected String __getWindowTitleValue__() { 
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
-		return filterController.generateWindowTitleValue("Acte de gestion");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.collectif.server.api.persistence.RegulatoryAct.NAME);
 	}
 	
 	@Override
@@ -111,7 +111,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			}
 		});
 		
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Eclure", "fa fa-long-arrow-up", new MenuItem.Listener.AbstractImpl() {
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Exclure", "fa fa-long-arrow-up", new MenuItem.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				RegulatoryAct regulatoryAct = (RegulatoryAct)action.readArgument();

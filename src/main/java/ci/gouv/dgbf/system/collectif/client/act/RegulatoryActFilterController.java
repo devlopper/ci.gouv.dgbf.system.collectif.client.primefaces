@@ -43,7 +43,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(null);
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
-		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(buildParameterName(RegulatoryAct.FIELD_INCLUDED)));
+		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_INCLUDED));
 	}
 	
 	@Override
@@ -151,7 +151,11 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
-		if(RegulatoryAct.FIELD_INCLUDED.equals(fieldName) || input == includedSelectOne)
+		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
+			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
+		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
+			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
+		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName) || input == includedSelectOne)
 			return Parameters.REGULATORY_ACT_INCLUDED;
 		return super.buildParameterName(fieldName, input);
 	}
@@ -211,7 +215,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			else
 				stringBuilder.append(" non inclus ");	
 		}	
-		stringBuilder.append("dans le "+legislativeActInitial.getName()+" | "+legislativeActVersionInitial.getName());
+		stringBuilder.append(" dans le "+legislativeActInitial.getName()+" | "+legislativeActVersionInitial.getName());
 		return stringBuilder.toString();
 	}
 	
@@ -244,7 +248,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);		
 		return filter;
 	}
 	
