@@ -125,16 +125,12 @@
 		<profile>
 			<id>prod</id>
 			<properties>
-				<project.build.file.name>collectif</project.build.file.name>
-				<jboss-web.context-root>/collectif</jboss-web.context-root>
 				<cyk.variable.system.web.context>/collectif</cyk.variable.system.web.context>
 				<deployment.client.proxy.host>mic-collectif-api</deployment.client.proxy.host>
 				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
 				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-collectif-api/api</cyk.variable.system.proxy.uniform.resource.identifier>
 				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
 				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
-				<web-app.security-constraint.web-resource-collection.administrator.url-pattern>/private/*</web-app.security-constraint.web-resource-collection.administrator.url-pattern>
-				<web-app.security-constraint.web-resource-collection.user.url-pattern>/mon_compte/*</web-app.security-constraint.web-resource-collection.user.url-pattern>
 			</properties>
 		</profile>
 		

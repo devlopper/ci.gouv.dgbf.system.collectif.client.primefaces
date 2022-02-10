@@ -10,6 +10,7 @@ ENV keycloak.auth-server-url https://security.dgbf.ci:8443/auth
 ENV KEYCLOAK_REALM SIIBTEST
 ENV keycloak.resource mic-collectif
 ENV keycloak.secret=bd87d6be-8462-4b1a-ab3d-f6830a4421d9
+ENV collectif.server.client.rest.uri=http://mic-collectif-api/api
 
 # -- USER INTERFACE --
 ENV SIIBC_NAME SIGOBE
