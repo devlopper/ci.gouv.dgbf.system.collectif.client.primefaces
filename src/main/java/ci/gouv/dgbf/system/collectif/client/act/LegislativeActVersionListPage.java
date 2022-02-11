@@ -36,6 +36,7 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
 import lombok.Setter;
@@ -125,6 +126,17 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 				if(legislativeActVersion == null)
 					throw new RuntimeException("Sélectionner "+ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
 				Response response = DependencyInjection.inject(LegislativeActController.class).updateDefaultVersion(legislativeActVersion);
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		});
+		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dupliquer", "fa fa-plus-square-o", new MenuItem.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				LegislativeActVersion legislativeActVersion = (LegislativeActVersion)action.readArgument();
+				if(legislativeActVersion == null)
+					throw new RuntimeException("Sélectionner "+ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
+				Response response = DependencyInjection.inject(LegislativeActVersionController.class).duplicate(legislativeActVersion);
 				return ResponseHelper.getEntity(String.class, response);
 			}
 		});
