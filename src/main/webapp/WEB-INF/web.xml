@@ -7,7 +7,7 @@
 	<display-name>${cyk.variable.system.name}</display-name>
 	
 	<welcome-file-list>
-		<welcome-file>/private/expenditure/list/index.jsf</welcome-file>
+		<welcome-file>/private/legislativeact/version/read/index.jsf</welcome-file>
 	</welcome-file-list>
 	
 	<servlet>

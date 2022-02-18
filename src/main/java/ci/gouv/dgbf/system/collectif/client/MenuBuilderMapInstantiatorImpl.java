@@ -16,7 +16,9 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 		sessionMenuBuilder.addItems(
 				__inject__(MenuItemBuilder.class).setCommandableName("Collectif").setCommandableIcon(Icon.SUITCASE)
 				.addChild(
-						__inject__(MenuItemBuilder.class).setCommandableName("Collectifs budgétaires").setCommandableNavigationIdentifier("legislativeActListView").setCommandableIcon(Icon.LIST)
+						__inject__(MenuItemBuilder.class).setCommandableName("Création collectif budgétaire").setCommandableNavigationIdentifier("legislativeActCreateView").setCommandableIcon(Icon.PLUS)
+						,__inject__(MenuItemBuilder.class).setCommandableName("Collectif budgétaire en cours").setCommandableNavigationIdentifier("legislativeActReadView").setCommandableIcon(Icon.PLUS)
+						//,__inject__(MenuItemBuilder.class).setCommandableName("Collectifs budgétaires").setCommandableNavigationIdentifier("legislativeActListView").setCommandableIcon(Icon.LIST)
 						,__inject__(MenuItemBuilder.class).setCommandableName("Versions collectifs budgétaires").setCommandableNavigationIdentifier("legislativeActVersionListView").setCommandableIcon(Icon.LIST)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lister les dépenses").setCommandableNavigationIdentifier("expenditureListView").setCommandableIcon(Icon.LIST)
 						,__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les dépenses").setCommandableNavigationIdentifier("expenditureAdjustView").setCommandableIcon(Icon.PENCIL)

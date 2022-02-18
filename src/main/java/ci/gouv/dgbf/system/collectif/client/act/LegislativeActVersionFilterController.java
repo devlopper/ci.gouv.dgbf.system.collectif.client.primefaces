@@ -110,7 +110,7 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 		Helper.addAmountsColumnsNames(columnsFieldsNames,null,null, Amounts.FIELD_INITIAL,Amounts.FIELD_MOVEMENT,Amounts.FIELD_ACTUAL
 				,Amounts.FIELD_MOVEMENT_INCLUDED,Amounts.FIELD_AVAILABLE,Amounts.FIELD_EXPECTED_ADJUSTMENT,Amounts.FIELD_ADJUSTMENT,Amounts.FIELD_EXPECTED_ADJUSTMENT_MINUS_ADJUSTMENT,Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				);
-		columnsFieldsNames.addAll(List.of(LegislativeActVersion.FIELD___AUDIT__));
+		columnsFieldsNames.addAll(List.of(LegislativeActVersion.FIELD_IS_DEFAULT_VERSION_AS_STRING,LegislativeActVersion.FIELD___AUDIT__));
 		return columnsFieldsNames;
 	}
 	

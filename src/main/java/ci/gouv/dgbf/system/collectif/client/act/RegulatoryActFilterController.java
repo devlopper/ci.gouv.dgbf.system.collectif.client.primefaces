@@ -48,9 +48,9 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return legislativeActInitial;
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return legislativeActVersionInitial;
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName))
 			return includedInitial;
@@ -59,8 +59,8 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeActVersion.class);
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_INCLUDED_SELECT_ONE, Boolean.class);
 		
 		enableValueChangeListeners();
@@ -68,19 +68,22 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	}
 	
 	private void enableValueChangeListeners() {
-		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
-		legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
+		if(legislativeActVersionSelectOne != null)
+			legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActSelectOne((LegislativeAct) value);
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName))
 			return buildIncludedSelectOne((Boolean) value);
@@ -151,9 +154,9 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
 			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
 			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName) || input == includedSelectOne)
 			return Parameters.REGULATORY_ACT_INCLUDED;
@@ -256,7 +259,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		return populateFilter(new Filter.Dto(), controller,initial);
 	}
 	
-	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
-	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_SELECT_ONE = "legislativeActSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 	public static final String FIELD_INCLUDED_SELECT_ONE = "includedSelectOne";
 }

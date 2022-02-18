@@ -197,6 +197,10 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 			}else if(LegislativeActVersion.FIELD_ACT_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Collectif");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
+			}else if(LegislativeActVersion.FIELD_IS_DEFAULT_VERSION_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Par défaut");
+				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(LegislativeActVersion.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_WIDTH, "350");
@@ -211,6 +215,12 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		public Class<? extends AbstractMenu> getRecordMenuClass(AbstractCollection collection) {
 			return ContextMenu.class;
 		}
+		
+		public String getStyleClassByRecord(Object record, Integer recordIndex) {
+			if(Boolean.TRUE.equals(((LegislativeActVersion)record).getIsDefaultVersion()))
+				return "cyk-background-highlight-green";
+			return super.getStyleClassByRecord(record, recordIndex);
+		}
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
@@ -224,7 +234,7 @@ public class LegislativeActVersionListPage extends AbstractEntityListPageContain
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON___AUDIT__);
+			return List.of(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSON___AUDIT__);
 		}
 		
 		@Override

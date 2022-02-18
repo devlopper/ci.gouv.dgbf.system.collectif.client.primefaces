@@ -74,11 +74,11 @@ public class LegislativeActVersionCreatePage extends AbstractEntityEditPageConta
 		@Override
 		public Map<Object, Object> getInputArguments(Form form, String fieldName) {
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
-			if(LegislativeAct.FIELD_CODE.equals(fieldName)) {
+			if(LegislativeActVersion.FIELD_CODE.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Code");
-			}else if(LegislativeAct.FIELD_NAME.equals(fieldName)) {
+			}else if(LegislativeActVersion.FIELD_NAME.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Libellé");
-			}else if(LegislativeAct.FIELD_EXERCISE.equals(fieldName)) {
+			}else if(LegislativeActVersion.FIELD_ACT.equals(fieldName)) {
 				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeAct.NAME);
 				Collection<LegislativeAct> choices = __inject__(LegislativeActController.class).get();
 				map.put(AbstractInputChoice.FIELD_CHOICES,choices);

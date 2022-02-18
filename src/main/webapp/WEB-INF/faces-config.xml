@@ -77,6 +77,12 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>legislativeActReadView</from-outcome>
+			<to-view-id>/private/legislativeact/read/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Legislative Act Version -->
 		
 		<navigation-case>

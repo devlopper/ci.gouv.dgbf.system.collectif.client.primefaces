@@ -173,7 +173,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			if(record == null || recordIndex == null)
 				return null;
 			if(Boolean.TRUE.equals(((RegulatoryAct)record).getIncluded()))
-				return "cyk-background-highlight";
+				return "cyk-background-highlight-green";
 			return null;
 		}
 	}
