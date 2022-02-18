@@ -30,6 +30,7 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 		this.legislativeActVersion = legislativeActVersion;
 		entryAuthorizationReadController = new EntryAuthorizationReadController(legislativeActVersion.getEntryAuthorization());
 		paymentCreditReadController = new PaymentCreditReadController(legislativeActVersion.getPaymentCredit());
+		labelWidth = 6;
 	}
 	
 	@Override
@@ -43,8 +44,8 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		return CollectionHelper.listOf(
 				MapHelper.instantiate(Cell.FIELD_CONTROL,buildInfosLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,12)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,6)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,6)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,buildRegulatoryActsDataTableLayout(),Cell.FIELD_WIDTH,12)
 			);
 	}

@@ -10,9 +10,15 @@
 	
     <cyk:page value="#{legislativeActVersionReadPage}">
     	<ui:define name="centerCenter">
-    		<ui:decorate template="#{primefacesHelper.getModelTemplate(legislativeActVersionReadPage.readController.layout)}">
-    			<ui:param name="layout" value="#{legislativeActVersionReadPage.readController.layout}"/> 		
+    		<ui:decorate template="#{primefacesHelper.getModelTemplate(legislativeActVersionReadPage.layout)}">
+    			<ui:param name="layout" value="#{legislativeActVersionReadPage.layout}"/> 		
     		</ui:decorate>
+    		
+    		<ui:fragment rendered="#{legislativeActVersionReadPage.expenditureFilterController.activitySelectionController != null}">
+	    		<ui:include src="/private/activity/__selection__.xhtml">
+		    		<ui:param name="activitySelectionController" value="#{legislativeActVersionReadPage.expenditureFilterController.activitySelectionController}"/>
+		    	</ui:include>
+	    	</ui:fragment>
     	</ui:define>
     </cyk:page>
 </html>

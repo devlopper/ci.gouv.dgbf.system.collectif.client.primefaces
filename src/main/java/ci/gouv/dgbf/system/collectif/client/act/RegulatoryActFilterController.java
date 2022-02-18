@@ -185,7 +185,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		
 		if(includedSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne,Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne,Cell.FIELD_WIDTH,legislativeActSelectOne==null && legislativeActVersionSelectOne == null ? 10 : 2));
 		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));	

@@ -11,6 +11,7 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractReadController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.panel.Panel;
 
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public abstract class AbstractExpenditureAmountsReadController<AMOUNTS extends E
 	public AbstractExpenditureAmountsReadController(AMOUNTS amounts,String name) {
 		this.amounts = amounts;
 		this.name = name;
+		labelWidth = 8;
 	}
 	
 	@Override
@@ -39,15 +41,20 @@ public abstract class AbstractExpenditureAmountsReadController<AMOUNTS extends E
 		if(amounts == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		build(cellsMaps, amounts, name);
-		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-	}
-	
-	/**/
-	
-	public static void build(Collection<Map<Object,Object>> cellsMaps,ExpenditureAmounts amounts,String name) {
-		addLabelValue(cellsMaps, String.format("Ajustement %s attendu",name), amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustment()));
-		addLabelValue(cellsMaps, String.format("Total ajustement %s saisi",name), amounts == null ? null : StringHelper.get(amounts.getAdjustment()));
-		addLabelValue(cellsMaps, String.format("Ecart ajustement %s (attendu - saisi)",name), amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustmentMinusAdjustment()));
+		
+		addLabelValue(cellsMaps, "Budget initial", amounts == null ? null : StringHelper.get(amounts.getInitial()));
+		addLabelValue(cellsMaps, "Mouvement", amounts == null ? null : StringHelper.get(amounts.getMovement()));
+		addLabelValue(cellsMaps, "Budget actuel", amounts == null ? null : StringHelper.get(amounts.getActual()));
+		addLabelValue(cellsMaps, "Mouvement inclu", amounts == null ? null : StringHelper.get(amounts.getMovementIncluded()));
+		addLabelValue(cellsMaps, "Disponible", amounts == null ? null : StringHelper.get(amounts.getAvailable()));
+		
+		addLabelValue(cellsMaps, "Ajustement attendu", amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustment()));
+		addLabelValue(cellsMaps, "Ajustement saisi", amounts == null ? null : StringHelper.get(amounts.getAdjustment()));
+		addLabelValue(cellsMaps, "Ecart ajustement(attendu - saisi)", amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustmentMinusAdjustment()));
+		
+		addLabelValue(cellsMaps, "Total(Budget actuel - Mouvement inclu + Ajustement saisi)", amounts == null ? null : StringHelper.get(amounts.getActualMinusMovementIncludedPlusAdjustment()));
+		
+		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps
+				,Layout.FIELD_CONTAINER,Panel.build(Panel.FIELD_HEADER,name,Panel.FIELD_TOGGLEABLE,Boolean.TRUE));
 	}
 }

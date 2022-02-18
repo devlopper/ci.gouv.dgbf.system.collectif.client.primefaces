@@ -96,5 +96,11 @@
 			<to-view-id>/private/legislativeact/version/create.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>legislativeActVersionReadView</from-outcome>
+			<to-view-id>/private/legislativeact/version/read/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
 	</navigation-rule>
 </faces-config>

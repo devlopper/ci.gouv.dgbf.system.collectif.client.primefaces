@@ -157,9 +157,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return legislativeActInitial;
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return legislativeActVersionInitial;
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return sectionInitial;
@@ -182,8 +182,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeAct.class);
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeAct.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_EXPENDITURE_NATURE_SELECT_ONE, ExpenditureNature.class);
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
@@ -198,8 +198,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	}
 	
 	private void enableValueChangeListeners() {
-		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
-		legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
+		if(legislativeActVersionSelectOne != null)
+			legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne));
 		expenditureNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
@@ -211,15 +213,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		sectionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActSelectOne((LegislativeAct) value);
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		if(FIELD_SECTION_SELECT_ONE.equals(fieldName))
 			return buildSectionSelectOne((Section) value);
@@ -763,8 +766,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	/**/
 	
-	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
-	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_SELECT_ONE = "legislativeActSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 	public static final String FIELD_SECTION_SELECT_ONE = "sectionSelectOne";
 	public static final String FIELD_EXPENDITURE_NATURE_SELECT_ONE = "expenditureNatureSelectOne";
 	public static final String FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE = "budgetSpecializationUnitSelectOne";
