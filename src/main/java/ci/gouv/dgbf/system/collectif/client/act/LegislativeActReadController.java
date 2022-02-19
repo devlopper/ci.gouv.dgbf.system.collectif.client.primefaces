@@ -43,9 +43,9 @@ public class LegislativeActReadController extends AbstractReadController impleme
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		return CollectionHelper.listOf(
 				MapHelper.instantiate(Cell.FIELD_CONTROL,buildInfosLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,buildLocksDataTableLayout(),Cell.FIELD_WIDTH,12)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,6)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,6)
+				//,MapHelper.instantiate(Cell.FIELD_CONTROL,buildVersionsDataTableLayout(),Cell.FIELD_WIDTH,12)
 			);
 	}
 	
@@ -63,11 +63,11 @@ public class LegislativeActReadController extends AbstractReadController impleme
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	private Layout buildLocksDataTableLayout() {
+	/*private Layout buildVersionsDataTableLayout() {
 		if(legislativeActVersionsDataTable == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionsDataTable,Cell.FIELD_WIDTH,12));
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-	}
+	}*/
 }

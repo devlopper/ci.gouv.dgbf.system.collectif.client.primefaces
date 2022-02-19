@@ -16,6 +16,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu.Tab;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
@@ -39,7 +40,6 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private ResourceFilterController resourceFilterController;
 	private RegulatoryActFilterController regulatoryActFilterController;
 	private TabMenu tabMenu;
-	private TabMenu.Tab selectedTab;
 	private Layout layout;
 
 	@Override
@@ -48,7 +48,6 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
 				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
-		selectedTab = TabMenu.Tab.getSelectedByRequestParameter(TABS);
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
@@ -63,29 +62,28 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	}
 	
 	private void buildTabMenu(Collection<Map<Object,Object>> cellsMaps) {		
-		Collection<MenuItem> tabMenuItems = new ArrayList<>();
-		for(TabMenu.Tab tab : TABS) {
-			MenuItem menuItem = new MenuItem().setValue(tab.getName()).addParameter(TabMenu.Tab.PARAMETER_NAME, tab.getParameterValue());
-			if(TAB_REGULATORY_ACTS.equals(tab.getParameterValue())) {
-				HttpServletRequest request = __inject__(HttpServletRequest.class);
-				if(!request.getParameterMap().keySet().contains(Parameters.REGULATORY_ACT_INCLUDED))
-					menuItem.addParameter(Parameters.REGULATORY_ACT_INCLUDED, Boolean.TRUE.toString());
+		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.ConfiguratorImpl.FIELD_TABS,TABS,TabMenu.ConfiguratorImpl.FIELD_TAB_MENU_ITEM_BUILDER,new TabMenu.Tab.MenuItemBuilder.AbstractImpl() {
+			@Override
+			protected void process(TabMenu tabMenu, Tab tab, MenuItem item) {
+				super.process(tabMenu, tab, item);
+				if(TAB_REGULATORY_ACTS.equals(tab.getParameterValue())) {
+					HttpServletRequest request = __inject__(HttpServletRequest.class);
+					if(!request.getParameterMap().keySet().contains(Parameters.REGULATORY_ACT_INCLUDED))
+						item.addParameter(Parameters.REGULATORY_ACT_INCLUDED, Boolean.TRUE.toString());
+				}
 			}
-			tabMenuItems.add(menuItem);
-		}
-		tabMenu = TabMenu.build(TabMenu.ConfiguratorImpl.FIELD_ITEMS_OUTCOME,OUTCOME,TabMenu.FIELD_ACTIVE_INDEX,TabMenu.Tab.getIndexOf(TABS, selectedTab)
-				,TabMenu.ConfiguratorImpl.FIELD_ITEMS,tabMenuItems);
+		});
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,tabMenu,Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTab(Collection<Map<Object,Object>> cellsMaps) {
-		if(selectedTab.getParameterValue().equals(TAB_SUMMARY))
+		if(tabMenu.getSelected().getParameterValue().equals(TAB_SUMMARY))
 			buildTabSummary(cellsMaps);
-		else if(selectedTab.getParameterValue().equals(TAB_REGULATORY_ACTS))
+		else if(tabMenu.getSelected().getParameterValue().equals(TAB_REGULATORY_ACTS))
 			buildTabRegulatoryActs(cellsMaps);
-		else if(selectedTab.getParameterValue().equals(TAB_EXPENDITURES))
+		else if(tabMenu.getSelected().getParameterValue().equals(TAB_EXPENDITURES))
 			buildTabExpenditures(cellsMaps);
-		else if(selectedTab.getParameterValue().equals(TAB_RESOURCES))
+		else if(tabMenu.getSelected().getParameterValue().equals(TAB_RESOURCES))
 			buildTabResources(cellsMaps);
 	}
 	
@@ -172,36 +170,6 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	/**/
-	/*
-	private void buildInformationsLayout(Collection<Map<Object,Object>> cellsMaps) {
-		scopeFilterController = MyAccountScopeListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
-		scopeFilterController.build();
-		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return MyAccountScopeListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-						,new MyAccountScopeListPage.LazyDataModelListenerImpl().setFilterController(scopeFilterController),ScopeListPage.class,MyAccountScopeListPage.class
-						,ScopeListPage.OUTCOME,OUTCOME,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
-			}
-		},Cell.FIELD_WIDTH,12));
-	}
-	
-	private void buildRegulatoryActsDataTable(Collection<Map<Object,Object>> cellsMaps) {
-		scopeFilterController = MyAccountScopeListPage.instantiateFilterController().setScopeTypeRequestable(Boolean.TRUE);
-		scopeFilterController.build();
-		scopeFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(OUTCOME).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_MY_VISIBILITIES);			
-		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
-			@Override
-			public Object buildControl(Cell cell) {
-				return MyAccountScopeListPage.buildDataTable(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL_LISTENER
-						,new MyAccountScopeListPage.LazyDataModelListenerImpl().setFilterController(scopeFilterController),ScopeListPage.class,MyAccountScopeListPage.class
-						,ScopeListPage.OUTCOME,OUTCOME,DataTable.ConfiguratorImpl.FIELD_TITLE_VALUE,ci.gouv.dgbf.system.actor.server.persistence.entities.Scope.LABEL);
-			}
-		},Cell.FIELD_WIDTH,12));
-	}
-	*/
 	/**/
 	
 	public static final String TAB_SUMMARY = "summary";	
