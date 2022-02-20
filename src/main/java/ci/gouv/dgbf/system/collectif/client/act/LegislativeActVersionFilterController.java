@@ -52,11 +52,13 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 	}
 	
 	private void enableValueChangeListeners() {
-		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
 	private void selectByValueSystemIdentifier() {
-		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		if(legislativeActSelectOne != null)
+			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
 	@Override

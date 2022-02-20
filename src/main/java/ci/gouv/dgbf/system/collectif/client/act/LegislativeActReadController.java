@@ -58,6 +58,7 @@ public class LegislativeActReadController extends AbstractReadController impleme
 		addLabelValue(cellsMaps, "Code", legislativeAct.getCode());
 		addLabelValue(cellsMaps, "Libellé", legislativeAct.getName());
 		addLabelValue(cellsMaps, "En cours", legislativeAct.getInProgressAsString());
+		addLabelValue(cellsMaps, "Version par défaut", legislativeAct.getDefaultVersionAsString());
 		addLabelValue(cellsMaps, "Audit", legislativeAct.get__audit__());
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);

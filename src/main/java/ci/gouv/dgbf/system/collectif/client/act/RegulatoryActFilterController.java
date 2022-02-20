@@ -77,6 +77,11 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	private void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		else if(legislativeActVersionSelectOne != null) {
+			legislativeActVersionSelectOne.updateChoices();
+			legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
+		}
+		
 	}
 	
 	@Override
@@ -98,9 +103,10 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			@Override
 			public void select(AbstractInputChoiceOne input, LegislativeAct legislativeAct) {
 				super.select(input, legislativeAct);
-				if(legislativeActVersionSelectOne != null)  
+				if(legislativeActVersionSelectOne != null) {
 					legislativeActVersionSelectOne.updateChoices();
-				legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
+					legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
+				}
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acte");
 		//input.setValueAsFirstChoiceIfNull();
@@ -113,9 +119,9 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 				,new SelectOneCombo.Listener.AbstractImpl<LegislativeActVersion>() {
 			@Override
 			protected Collection<LegislativeActVersion> __computeChoices__(AbstractInputChoice<LegislativeActVersion> input, Class<?> entityClass) {
-				if(AbstractInput.getValue(legislativeActSelectOne) == null)
+				LegislativeAct legislativeAct = legislativeActSelectOne == null ? legislativeActInitial : (LegislativeAct) AbstractInput.getValue(legislativeActSelectOne);
+				if(legislativeAct == null)
 					return null;
-				LegislativeAct legislativeAct = (LegislativeAct) legislativeActSelectOne.getValue();
 				Collection<LegislativeActVersion> choices = DependencyInjection.inject(LegislativeActVersionController.class).getByActIdentifier(legislativeAct.getIdentifier());
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;

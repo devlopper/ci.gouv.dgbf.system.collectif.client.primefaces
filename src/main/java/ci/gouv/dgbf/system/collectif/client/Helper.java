@@ -47,7 +47,7 @@ public interface Helper {
 		arguments.setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
 				,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE));
 		if(StringHelper.isBlank(identifier)) {
-			arguments.setFilter(new Filter.Dto().addField(Parameters.LATEST_LEGISLATIVE_ACT_VERSION, Boolean.TRUE));
+			arguments.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE));
 			return DependencyInjection.inject(LegislativeActVersionController.class).getOne(arguments);
 		}
 		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifier(identifier, arguments);

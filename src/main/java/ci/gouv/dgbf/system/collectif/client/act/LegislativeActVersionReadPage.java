@@ -109,7 +109,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		//HttpServletRequest request = __inject__(HttpServletRequest.class);
 		//if(!request.getParameterMap().keySet().contains(Parameters.REGULATORY_ACT_INCLUDED))
 		//	regulatoryActFilterController.setIncludedInitial(Boolean.TRUE);
-		regulatoryActFilterController.ignore(RegulatoryActFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,RegulatoryActFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
+		regulatoryActFilterController.setReadOnlyByFieldsNames(RegulatoryActFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,RegulatoryActFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		regulatoryActFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_REGULATORY_ACTS);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,RegulatoryActListPage.buildDataTable(RegulatoryActFilterController.class,regulatoryActFilterController,RegulatoryActListPage.OUTCOME,OUTCOME)));
 		/*
@@ -129,7 +129,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private void buildTabExpenditures(Collection<Map<Object,Object>> cellsMaps) {
 		expenditureFilterController = new ExpenditureFilterController();
 		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
-		expenditureFilterController.ignore(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
+		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME)));
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
@@ -149,7 +149,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private void buildTabResources(Collection<Map<Object,Object>> cellsMaps) {
 		resourceFilterController = new ResourceFilterController();
 		resourceFilterController.setLegislativeActVersionInitial(legislativeActVersion);
-		resourceFilterController.ignore(ResourceFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ResourceFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
+		resourceFilterController.setReadOnlyByFieldsNames(ResourceFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ResourceFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		resourceFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_RESOURCES);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME)));
 		//resourceFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
