@@ -85,6 +85,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 			buildTabExpenditures(cellsMaps);
 		else if(tabMenu.getSelected().getParameterValue().equals(TAB_RESOURCES))
 			buildTabResources(cellsMaps);
+		else if(tabMenu.getSelected().getParameterValue().equals(TAB_INCONSISTENCIES))
+			buildTabInconsistencies(cellsMaps);
 	}
 	
 	private void buildTabSummary(Collection<Map<Object,Object>> cellsMaps) {
@@ -166,21 +168,33 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		*/
 	}
 	
+	private void buildTabInconsistencies(Collection<Map<Object,Object>> cellsMaps) {
+		expenditureFilterController = new ExpenditureFilterController();
+		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		expenditureFilterController.setAvailableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial(Boolean.TRUE);
+		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
+		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME)));
+		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
+	}
+	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
 		layout = Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
 	/**/
 	
-	public static final String TAB_SUMMARY = "summary";	
+	public static final String TAB_SUMMARY = "recapitulatif";	
 	public static final String TAB_REGULATORY_ACTS = "actes_gestion";
 	public static final String TAB_EXPENDITURES = "depenses";
-	public static final String TAB_RESOURCES = "recettes";
+	public static final String TAB_RESOURCES = "ressources";
+	public static final String TAB_INCONSISTENCIES = "incoherences";
 	public static final List<TabMenu.Tab> TABS = List.of(
 		new TabMenu.Tab("Récapitulatif",TAB_SUMMARY)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.RegulatoryAct.NAME_PLURAL,TAB_REGULATORY_ACTS)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME_PLURAL,TAB_EXPENDITURES)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.Resource.NAME_PLURAL,TAB_RESOURCES)
+		,new TabMenu.Tab("Incohérences",TAB_INCONSISTENCIES)
 	);
 
 	public static final String OUTCOME = "legislativeActVersionReadView";

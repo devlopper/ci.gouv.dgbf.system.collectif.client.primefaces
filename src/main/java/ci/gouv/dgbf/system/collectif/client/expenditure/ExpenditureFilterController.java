@@ -9,6 +9,7 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
@@ -56,7 +57,7 @@ import lombok.experimental.Accessors;
 public class ExpenditureFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,sectionSelectOne,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
-		,activitySelectOne,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne;
+		,activitySelectOne,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne,adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne,availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne;
 	private ActivitySelectionController activitySelectionController;
 	
 	private Boolean isLegislativeActColumnShowable,isLegislativeActVersionColumnShowable,isSectionColumnShowable,isExpenditureNatureColumnShowable
@@ -73,6 +74,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private EconomicNature economicNatureInitial;
 	private FundingSource fundingSourceInitial;
 	private Lessor lessorInitial;
+	private Boolean adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial;
+	private Boolean availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial;
 	
 	private Boolean isEntryAuthorizationAdjustmentEditable;
 	private Boolean isPaymentCreditAdjustmentEditable;
@@ -130,6 +133,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(lessorInitial == null)
 			lessorInitial = __inject__(LessorController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.LESSOR_IDENTIFIER));
 		
+		adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO));
+		availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO));
 		//readExpenditureAountsSum();
 	}
 	
@@ -177,6 +182,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return fundingSourceInitial;
 		if(FIELD_LESSOR_SELECT_ONE.equals(fieldName))
 			return lessorInitial;
+		if(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE.equals(fieldName))
+			return adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial;
+		if(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE.equals(fieldName))
+			return availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
@@ -192,6 +201,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);
 		buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
 		buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
+		buildInputSelectOne(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE, Boolean.class);
+		buildInputSelectOne(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE, Boolean.class);
 		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
@@ -240,6 +251,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return buildFundingSourceSelectOne((FundingSource) value);
 		if(FIELD_LESSOR_SELECT_ONE.equals(fieldName))
 			return buildLessorSelectOne((Lessor) value);
+		if(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE.equals(fieldName))
+			return buildAdjustmentsNotEqualZeroOrIncludedMovementNotEqualZero((Boolean) value);
+		if(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE.equals(fieldName))
+			return buildAvailableMinusIncludedMovementPlusAdjustmentLessThanZero((Boolean) value);
 		return null;
 	}
 	
@@ -265,7 +280,20 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return Parameters.FUNDING_SOURCE_IDENTIFIER;
 		if(input == lessorSelectOne)
 			return Parameters.LESSOR_IDENTIFIER;
+		if(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE.equals(fieldName) || input == adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne)
+			return Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO;
+		if(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE.equals(fieldName) || input == availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne)
+			return Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO;
 		return super.buildParameterName(fieldName, input);
+	}
+	
+	@Override
+	protected String buildParameterValue(AbstractInput<?> input) {
+		if(input == adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne)
+			return input.getValue() == null ? null : input.getValue().toString();
+		if(input == availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne)
+			return input.getValue() == null ? null : input.getValue().toString();
+		return super.buildParameterValue(input);
 	}
 	
 	private SelectOneCombo buildLegislativeActSelectOne(LegislativeAct legislativeAct) {
@@ -516,6 +544,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		return input;
 	}
 	
+	private SelectOneCombo buildAdjustmentsNotEqualZeroOrIncludedMovementNotEqualZero(Boolean adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial, "Ajustement ou mouvement inclus existe");
+	}
+	
+	private SelectOneCombo buildAvailableMinusIncludedMovementPlusAdjustmentLessThanZero(Boolean availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial) {
+		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial, "Disponible insuffisant");
+	}
+	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
@@ -568,6 +604,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(lessorSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne.getOutputLabel().setTitle("Bailleur"),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne,Cell.FIELD_WIDTH,8));
+		}
+		
+		if(adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne,Cell.FIELD_WIDTH,5));
+		}
+		
+		if(availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne,Cell.FIELD_WIDTH,5));
 		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
@@ -692,6 +738,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(Lessor.class.equals(klass))
 			return AbstractInput.getValue(activitySelectOne) == null;
 		*/
+		if(input == adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne)
+			return input.getValue() != null;
+		if(input == availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne)
+			return input.getValue() != null;
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
@@ -735,6 +785,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		return (Lessor) AbstractInput.getValue(lessorSelectOne);
 	}
 	
+	public Boolean getAdjustmentsNotEqualZeroOrIncludedMovementNotEqualZero() {
+		return (Boolean) AbstractInput.getValue(adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne);
+	}
+	
+	public Boolean getAvailableMinusIncludedMovementPlusAdjustmentLessThanZero() {
+		return (Boolean) AbstractInput.getValue(availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne);
+	}
+	
 	public Boolean isInvestment() {
 		if(expenditureNatureInitial == null)
 			return null;
@@ -757,6 +815,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.ECONOMIC_NATURE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.economicNatureInitial : controller.getEconomicNature()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.FUNDING_SOURCE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.fundingSourceInitial : controller.getFundingSource()), filter);
 		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LESSOR_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.lessorInitial : controller.getLessor()), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO, Boolean.TRUE.equals(initial) ? controller.adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial 
+				: controller.getAdjustmentsNotEqualZeroOrIncludedMovementNotEqualZero(), filter);
+		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO, Boolean.TRUE.equals(initial) ? controller.availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial 
+				: controller.getAvailableMinusIncludedMovementPlusAdjustmentLessThanZero(), filter);
 		return filter;
 	}
 	
@@ -776,6 +838,9 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	public static final String FIELD_ECONOMIC_NATURE_SELECT_ONE = "economicNatureSelectOne";
 	public static final String FIELD_FUNDING_SOURCE_SELECT_ONE = "fundingSourceSelectOne";
 	public static final String FIELD_LESSOR_SELECT_ONE = "lessorSelectOne";
+	public static final String FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE = "adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne";
+	public static final String FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE = "availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne";
+	
 	/*
 	private static final String[] ACTIVITY_ECONOMIC_NATURES_FUNDING_SOURCES_LESSORS = new String[] {
 			ci.gouv.dgbf.system.collectif.server.persistence.entities.Activity.FIELD_ECONOMIC_NATURES
