@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -56,6 +57,8 @@ public class ExpenditureAdjustPage extends AbstractPageContainerManagedImpl impl
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
 		filterController = new ExpenditureFilterController();
+		if(Boolean.TRUE.equals(getIsRenderTypeDialog()))
+			filterController.setRenderType(AbstractFilterController.RenderType.NONE);
 		filterController.setIsEntryAuthorizationAdjustmentEditable(Boolean.TRUE).setIsPaymentCreditAdjustmentEditable(Boolean.TRUE);
 	}
 

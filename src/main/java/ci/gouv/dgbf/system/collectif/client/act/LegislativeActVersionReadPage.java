@@ -11,7 +11,9 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
@@ -30,6 +32,7 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
 public class LegislativeActVersionReadPage extends AbstractPageContainerManagedImpl implements Serializable {
@@ -135,7 +138,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME)));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new DataTableListenerImpl())));
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
@@ -176,7 +180,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setAvailableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial(Boolean.TRUE);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME)));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new DataTableListenerImpl())));
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
 	}
 	
@@ -200,4 +205,13 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	);
 
 	public static final String OUTCOME = "legislativeActVersionReadView";
+	
+	@Getter @Setter @Accessors(chain=true)
+	public static class DataTableListenerImpl extends ExpenditureListPage.DataTableListenerImpl implements Serializable {
+		
+		public DataTableListenerImpl() {
+			adjustmentEditUserInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;
+		}
+		
+	}
 }

@@ -10,7 +10,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -24,7 +23,6 @@ import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
-import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
@@ -93,19 +91,13 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
-		Map<String, List<String>> parameters = new HashMap<>();
-		if(filterController.getLegislativeActVersionInitial() != null)
-			parameters.put(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getLegislativeActVersionInitial())));
-		if(filterController.getLegislativeActInitial() != null && !parameters.containsKey(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER))
-			parameters.put(Parameters.LEGISLATIVE_ACT_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getLegislativeActInitial())));
-		if(filterController.getActivityInitial() != null)
-			parameters.put(Parameters.ACTIVITY_IDENTIFIER, List.of((String)FieldHelper.readSystemIdentifier(filterController.getActivityInitial())));
+		Map<String, List<String>> parameters = filterController.asMap();
 		
-		if(Boolean.TRUE.equals(dataTableListenerImpl.getAdjustmentEditable())) {
+		if(Boolean.TRUE.equals(dataTableListenerImpl.adjustmentEditable)) {
 			
 		}else {
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureAdjustPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
-					, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
+				, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
 		}
 		
 		return dataTable;
@@ -117,10 +109,11 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
-		private ExpenditureFilterController filterController;
+		protected ExpenditureFilterController filterController;
 		//private Expenditure expenditureAmountsSum;
 		//private Boolean showCodeOnlyWherePossible;
-		private Boolean adjustmentEditable/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
+		protected Boolean adjustmentEditable,adjustmentEditableInDialog/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
+		protected UserInterfaceAction adjustmentEditUserInterfaceAction;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {

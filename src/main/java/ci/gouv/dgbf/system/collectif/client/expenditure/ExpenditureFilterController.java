@@ -2,6 +2,8 @@ package ci.gouv.dgbf.system.collectif.client.expenditure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.cyk.utility.__kernel__.DependencyInjection;
@@ -797,6 +799,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(expenditureNatureInitial == null)
 			return null;
 		return expenditureNatureInitial.isInvestment();
+	}
+	
+	@Override
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new HashMap<>();
+		addParameter(map, Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, legislativeActVersionInitial);
+		if(!map.containsKey(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER))
+			addParameter(map, Parameters.LEGISLATIVE_ACT_IDENTIFIER, legislativeActInitial);
+		addParameter(map, Parameters.ACTIVITY_IDENTIFIER, activityInitial);
+		addParameter(map, Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO, availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial);
+		return map;
 	}
 	
 	/**/
