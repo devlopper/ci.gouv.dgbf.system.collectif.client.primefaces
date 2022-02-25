@@ -710,7 +710,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment(), ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
 				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
-				);
+				,ExpenditureAmounts.FIELD_AVAILABLE);
 		columnsFieldsNames.add(Expenditure.FIELD___AUDIT__);
 		return columnsFieldsNames;
 	}

@@ -222,7 +222,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS,ExpenditureDto.JSON___AUDIT__);
+			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS_WITHOUT_AVAILABLE,ExpenditureDto.JSON___AUDIT__);
 		}
 		
 		@Override
