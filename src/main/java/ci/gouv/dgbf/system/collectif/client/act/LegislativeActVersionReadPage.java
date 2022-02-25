@@ -42,6 +42,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private ExpenditureFilterController expenditureFilterController;
 	private ResourceFilterController resourceFilterController;
 	private RegulatoryActFilterController regulatoryActFilterController;
+	private GeneratedActFilterController generatedActFilterController;
 	private TabMenu tabMenu;
 	private Layout layout;
 
@@ -49,7 +50,9 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
-				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSON___AUDIT__)
+				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION
+						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE
+						,LegislativeActVersionDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
 		if(legislativeActVersion == null)
 			return;
@@ -92,6 +95,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 			buildTabResources(cellsMaps);
 		else if(tabMenu.getSelected().getParameterValue().equals(TAB_INCONSISTENCIES))
 			buildTabInconsistencies(cellsMaps);
+		else if(tabMenu.getSelected().getParameterValue().equals(TAB_GENERATED_ACTS))
+			buildTabGeneratedActs(cellsMaps);
 	}
 	
 	private void buildTabSummary(Collection<Map<Object,Object>> cellsMaps) {
@@ -139,7 +144,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
-				,DataTable.FIELD_LISTENER,new DataTableListenerImpl())));
+				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl())));
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
@@ -181,8 +186,17 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
-				,DataTable.FIELD_LISTENER,new DataTableListenerImpl())));
+				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl())));
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
+	}
+	
+	private void buildTabGeneratedActs(Collection<Map<Object,Object>> cellsMaps) {
+		generatedActFilterController = new GeneratedActFilterController();
+		generatedActFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		generatedActFilterController.setReadOnlyByFieldsNames(GeneratedActFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,GeneratedActFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
+		generatedActFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_GENERATED_ACTS);
+		generatedActFilterController.setParameterTabIdentifier(TAB_GENERATED_ACTS);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,GeneratedActListPage.buildDataTable(GeneratedActFilterController.class,generatedActFilterController,GeneratedActListPage.OUTCOME,OUTCOME)));
 	}
 	
 	private void buildLayout(Collection<Map<Object,Object>> cellsMaps) {
@@ -196,20 +210,22 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	public static final String TAB_EXPENDITURES = "depenses";
 	public static final String TAB_RESOURCES = "ressources";
 	public static final String TAB_INCONSISTENCIES = "incoherences";
+	public static final String TAB_GENERATED_ACTS = "actesgeneres";
 	public static final List<TabMenu.Tab> TABS = List.of(
 		new TabMenu.Tab("Récapitulatif",TAB_SUMMARY)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.RegulatoryAct.NAME_PLURAL,TAB_REGULATORY_ACTS)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.Expenditure.NAME_PLURAL,TAB_EXPENDITURES)
 		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.Resource.NAME_PLURAL,TAB_RESOURCES)
 		,new TabMenu.Tab("Incohérences",TAB_INCONSISTENCIES)
+		,new TabMenu.Tab(ci.gouv.dgbf.system.collectif.server.api.persistence.GeneratedAct.NAME_PLURAL,TAB_GENERATED_ACTS)
 	);
 
 	public static final String OUTCOME = "legislativeActVersionReadView";
 	
 	@Getter @Setter @Accessors(chain=true)
-	public static class DataTableListenerImpl extends ExpenditureListPage.DataTableListenerImpl implements Serializable {
+	public static class ExpenditureDataTableListenerImpl extends ExpenditureListPage.DataTableListenerImpl implements Serializable {
 		
-		public DataTableListenerImpl() {
+		public ExpenditureDataTableListenerImpl() {
 			adjustmentEditUserInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;
 		}
 		

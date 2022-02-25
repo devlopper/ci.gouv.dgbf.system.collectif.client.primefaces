@@ -76,8 +76,8 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 			lazyDataModel.setFilterController(filterController = new GeneratedActFilterController());		
 		filterController.build();
 		
-		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
-		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		String vOutcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
+		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(vOutcome);
 		
 		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
 		if(dataTableListenerImpl == null)
@@ -101,9 +101,9 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 						,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 						,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 					@Override
-					protected Object __runExecuteFunction__(AbstractAction action) {				
+					protected Object __runExecuteFunction__(AbstractAction action) {
 						__inject__(GeneratedActController.class).generateByLegislativeActVersion(finalFilterController.getLegislativeActVersionInitial());
-						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OUTCOME).setParameters(finalFilterController.asMap()));
+						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(vOutcome).setParameters(finalFilterController.asMap()));
 						return null;
 					}
 				});
@@ -115,7 +115,7 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 					@Override
 					protected Object __runExecuteFunction__(AbstractAction action) {				
 						__inject__(GeneratedActController.class).deleteByLegislativeActVersion(finalFilterController.getLegislativeActVersionInitial());
-						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OUTCOME).setParameters(finalFilterController.asMap()));
+						Redirector.getInstance().redirect(new Redirector.Arguments().outcome(vOutcome).setParameters(finalFilterController.asMap()));
 						return null;
 					}
 				});
@@ -137,23 +137,14 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(GeneratedAct.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "70");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(GeneratedAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
-			}/*else if(GeneratedAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "A.E.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(GeneratedAct.FIELD_PAYMENT_CREDIT_AMOUNT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "C.P.");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(GeneratedAct.FIELD_AUDIT.equals(fieldName)) {
+			}else if(GeneratedAct.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
-				map.put(Column.FIELD_WIDTH, "200");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-			}else if(GeneratedAct.FIELD_INCLUDED_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Inclus");
-				map.put(Column.FIELD_WIDTH, "70");
-			}*/
+				map.put(Column.FIELD_WIDTH, "200");
+			}
 			
 			return map;
 		}

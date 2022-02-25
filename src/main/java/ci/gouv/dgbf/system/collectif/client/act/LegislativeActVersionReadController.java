@@ -58,6 +58,7 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 		addLabelValue(cellsMaps, "Numéro", StringHelper.get(legislativeActVersion.getNumber()));
 		addLabelValue(cellsMaps, "Code", legislativeActVersion.getCode());
 		addLabelValue(cellsMaps, "Libellé", legislativeActVersion.getName());
+		addLabelValue(cellsMaps, "Génération des actes", Boolean.TRUE.equals(legislativeActVersion.getActGeneratable()) ? "Actes à générer" : "Actes générés");	
 		addLabelValue(cellsMaps, "Audit", legislativeActVersion.get__audit__());
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);

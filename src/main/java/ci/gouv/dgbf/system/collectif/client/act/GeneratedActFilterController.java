@@ -17,6 +17,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.persistence.query.Filter;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
@@ -46,17 +47,17 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	
 	@Override
 	protected Object getInputSelectOneInitialValue(String fieldName, Class<?> klass) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return legislativeActInitial;
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return legislativeActVersionInitial;
 		return super.getInputSelectOneInitialValue(fieldName, klass);
 	}
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeActVersion.class);
-		buildInputSelectOne(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeActVersion.class);
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
@@ -73,9 +74,9 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActSelectOne((LegislativeAct) value);
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName))
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName))
 			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		return null;
 	}
@@ -173,7 +174,7 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.addAll(List.of(GeneratedAct.FIELD_CODE,GeneratedAct.FIELD_NAME));
-		columnsFieldsNames.addAll(List.of(GeneratedAct.FIELD_AUDIT));
+		columnsFieldsNames.addAll(List.of(GeneratedAct.FIELD___AUDIT__));
 		return columnsFieldsNames;
 	}
 	
@@ -187,9 +188,9 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
-		if(FIELD_BUDGETARY_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
+		if(FIELD_LEGISLATIVE_ACT_SELECT_ONE.equals(fieldName) || input == legislativeActSelectOne)
 			return Parameters.LEGISLATIVE_ACT_IDENTIFIER;
-		if(FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
+		if(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE.equals(fieldName) || input == legislativeActVersionSelectOne)
 			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
 		return super.buildParameterName(fieldName, input);
 	}
@@ -199,6 +200,8 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 		Map<String, List<String>> map = new LinkedHashMap<>();
 		if(legislativeActVersionInitial != null)
 			map.put(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, List.of(legislativeActVersionInitial.getIdentifier()));
+		if(StringHelper.isNotBlank(parameterTabIdentifier))
+			map.put(TabMenu.Tab.PARAMETER_NAME, List.of(parameterTabIdentifier));
 		return map;
 	}
 	
@@ -217,6 +220,6 @@ public class GeneratedActFilterController extends AbstractFilterController imple
 		return populateFilter(new Filter.Dto(), controller,initial);
 	}
 	
-	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
-	public static final String FIELD_BUDGETARY_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_SELECT_ONE = "legislativeActSelectOne";
+	public static final String FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 }
