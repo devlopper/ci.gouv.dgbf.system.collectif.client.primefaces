@@ -17,6 +17,8 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputC
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
+import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
@@ -35,7 +37,7 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 
 	@Override
 	protected Form __buildForm__() {		
-		return buildForm();
+		return buildForm(Form.FIELD_CONTAINER,this);
 	}
 	
 	@Override
@@ -65,6 +67,15 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 		public void act(Form form) {
 			Data data = (Data) form.getEntity();
 			__inject__(LegislativeActController.class).create(new LegislativeAct().setCode(data.getCode()).setName(data.getName()).setExercise(data.getExercise()));
+		}
+		
+		@Override
+		public void redirect(Form form, Object request) {
+			AbstractPageContainerManagedImpl page = (AbstractPageContainerManagedImpl) form.getContainer();
+			if(page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog()))
+				Redirector.getInstance().redirect(new Redirector.Arguments().outcome(LegislativeActVersionReadPage.OUTCOME));
+			else
+				super.redirect(form, request);
 		}
 	}
 	
