@@ -144,6 +144,9 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			if(RegulatoryAct.FIELD_YEAR.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exercice");
 				map.put(Column.FIELD_WIDTH, "70");
+			}else if(RegulatoryAct.FIELD_CODE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Code");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(RegulatoryAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
 			}else if(RegulatoryAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT.equals(fieldName)) {
@@ -159,6 +162,9 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 			}else if(RegulatoryAct.FIELD_INCLUDED_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Inclus");
 				map.put(Column.FIELD_WIDTH, "70");
+			}else if(RegulatoryAct.FIELD_DATE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Date");
+				map.put(Column.FIELD_WIDTH, "150");
 			}
 			
 			return map;
@@ -189,7 +195,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(RegulatoryActDto.JSONS_YEAR_NAME_ENTRY_AUTHORIZATION_AMOUNT_PAYMENT_CREDIT_AMOUNT_INCLUDED_AS_STRING,RegulatoryActDto.JSON___AUDIT__);
+			return List.of(RegulatoryActDto.JSONS_CODE_NAME_YEAR_DATE_AS_STRING_ENTRY_AUTHORIZATION_AMOUNT_PAYMENT_CREDIT_AMOUNT_INCLUDED_AND_INCLUDED_AS_STRING);
 		}
 		
 		@Override

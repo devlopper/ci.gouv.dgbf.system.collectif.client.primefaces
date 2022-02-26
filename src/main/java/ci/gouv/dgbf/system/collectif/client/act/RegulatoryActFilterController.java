@@ -230,7 +230,9 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_YEAR,RegulatoryAct.FIELD_NAME,RegulatoryAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT,RegulatoryAct.FIELD_PAYMENT_CREDIT_AMOUNT));
+		if(legislativeActInitial == null)
+			columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_YEAR));
+		columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_CODE,RegulatoryAct.FIELD_NAME,RegulatoryAct.FIELD_DATE_AS_STRING,RegulatoryAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT,RegulatoryAct.FIELD_PAYMENT_CREDIT_AMOUNT));
 		if(includedInitial == null)
 			columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_INCLUDED_AS_STRING));
 		columnsFieldsNames.addAll(List.of(RegulatoryAct.FIELD_AUDIT));
