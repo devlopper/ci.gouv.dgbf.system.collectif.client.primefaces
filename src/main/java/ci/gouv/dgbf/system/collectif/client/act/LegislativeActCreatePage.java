@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.collectif.client.act;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import org.cyk.utility.__kernel__.object.__static__.controller.annotation.Input;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoice;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOne;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputChoiceOneCombo;
+import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputDate;
 import org.cyk.utility.__kernel__.object.__static__.controller.annotation.InputText;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.data.Form;
@@ -51,7 +54,7 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 		MapHelper.writeByKeyDoNotOverride(map, Form.FIELD_ENTITY_CLASS, Data.class);
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ACTION, Action.CREATE);
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);
-		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_EXERCISE,Data.FIELD_CODE,Data.FIELD_NAME));
+		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_EXERCISE,Data.FIELD_DATE,Data.FIELD_CODE,Data.FIELD_NAME));
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListenerImpl());		
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_LISTENER, new FormListenerImpl());
 		Form form = Form.build(map);
@@ -64,9 +67,9 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 	
 	public static class FormListenerImpl extends Form.Listener.AbstractImpl implements Serializable {
 		@Override
-		public void act(Form form) {
+		public void act(Form form) { 
 			Data data = (Data) form.getEntity();
-			__inject__(LegislativeActController.class).create(new LegislativeAct().setCode(data.getCode()).setName(data.getName()).setExercise(data.getExercise()));
+			__inject__(LegislativeActController.class).create(new LegislativeAct().setCode(data.getCode()).setName(data.getName()).setExercise(data.getExercise()).setDate(TimeHelper.getLocalDateFromMilliseconds(data.getDate().getTime())));
 		}
 		
 		@Override
@@ -86,9 +89,11 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 			Map<Object, Object> map = super.getInputArguments(form, fieldName);
 			if(LegislativeAct.FIELD_CODE.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Code");
-			}else if(LegislativeAct.FIELD_NAME.equals(fieldName)) {
+			}else if(Data.FIELD_NAME.equals(fieldName)) {
 				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Libellé");
-			}else if(LegislativeAct.FIELD_EXERCISE.equals(fieldName)) {
+			}else if(Data.FIELD_DATE.equals(fieldName)) {
+				map.put(AbstractInput.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE, "Date");
+			}else if(Data.FIELD_EXERCISE.equals(fieldName)) {
 				map.put(AbstractInputChoice.AbstractConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Exercice");
 				Collection<Exercise> choices = __inject__(ExerciseController.class).get();
 				map.put(AbstractInputChoice.FIELD_CHOICES,choices);
@@ -107,11 +112,13 @@ public class LegislativeActCreatePage extends AbstractEntityEditPageContainerMan
 	@Getter @Setter
 	public static class Data {
 		@NotNull @Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private Exercise exercise;
+		@NotNull @Input @InputDate private Date date;
 		@Input @InputText private String code;
 		@Input @InputText private String name;
 		
+		public static final String FIELD_EXERCISE = "exercise";
+		public static final String FIELD_DATE = "date";
 		public static final String FIELD_CODE = "code";
 		public static final String FIELD_NAME = "name";
-		public static final String FIELD_EXERCISE = "exercise";
 	}
 }

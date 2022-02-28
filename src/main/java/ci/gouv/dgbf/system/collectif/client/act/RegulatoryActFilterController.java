@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.collectif.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +10,15 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
+import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Calendar;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
@@ -32,11 +36,13 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class RegulatoryActFilterController extends AbstractFilterController implements Serializable {
 
-private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,includedSelectOne;
+	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,includedSelectOne;
+	private Calendar dateLowerThanOrEqualCalendar,dateGreaterThanOrEqualCalendar;
 	
 	private LegislativeAct legislativeActInitial;
 	private LegislativeActVersion legislativeActVersionInitial;
 	private Boolean includedInitial;
+	private Date dateLowerThanOrEqualInitial,dateGreaterThanOrEqualInitial;
 	
 	public RegulatoryActFilterController() {
 		if(legislativeActVersionInitial == null)
@@ -44,6 +50,8 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_INCLUDED));
+		dateLowerThanOrEqualInitial = ValueConverter.getInstance().convertToDate(NumberHelper.getLong(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_DATE_LOWER_THAN_OR_EQUAL)));
+		dateGreaterThanOrEqualInitial = ValueConverter.getInstance().convertToDate(NumberHelper.getLong(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_DATE_GREATER_THAN_OR_EQUAL)));
 	}
 	
 	@Override
@@ -58,10 +66,21 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	}
 	
 	@Override
+	protected Date getInputCalendarInitialValue(String fieldName) {
+		if(FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR.equals(fieldName))
+			return dateLowerThanOrEqualInitial;
+		if(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR.equals(fieldName))
+			return dateGreaterThanOrEqualInitial;
+		return super.getInputCalendarInitialValue(fieldName);
+	}
+	
+	@Override
 	protected void buildInputs() {
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_INCLUDED_SELECT_ONE, Boolean.class);
+		buildInputCalendar(FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR);
+		buildInputCalendar(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR);
 		
 		enableValueChangeListeners();
 		selectByValueSystemIdentifier();		
@@ -69,7 +88,7 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	
 	private void enableValueChangeListeners() {
 		if(legislativeActSelectOne != null)
-			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
+			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne,dateGreaterThanOrEqualCalendar,dateLowerThanOrEqualCalendar));
 		if(legislativeActVersionSelectOne != null)
 			legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
@@ -92,6 +111,10 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			return buildLegislativeActVersionSelectOne((LegislativeActVersion) value);
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName))
 			return buildIncludedSelectOne((Boolean) value);
+		if(FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR.equals(fieldName))
+			return buildDateLowerThanOrEqualCalendar((Date) value);
+		if(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR.equals(fieldName))
+			return buildDateGreaterThanOrEqualCalendar((Date) value);
 		return null;
 	}
 	
@@ -107,8 +130,11 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 					legislativeActVersionSelectOne.updateChoices();
 					legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
 				}
+				/*if(dateLowerThanOrEqualCalendar != null && legislativeAct != null && legislativeAct.getDateAsTimestamp() != null) {
+					dateLowerThanOrEqualCalendar.setValue(new Date(legislativeAct.getDateAsTimestamp()));
+				}*/
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acte");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeAct.NAME);
 		//input.setValueAsFirstChoiceIfNull();
 		//input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
@@ -132,12 +158,20 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 				super.select(input, legislativeActVersion);
 				
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Version");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
 		return input;
 	}
 	
 	private SelectOneCombo buildIncludedSelectOne(Boolean included) {
 		return SelectOneCombo.buildUnknownYesNoOnly((Boolean) included, "Inclus");
+	}
+	
+	private Calendar buildDateLowerThanOrEqualCalendar(Date date) {
+		return Calendar.build(Calendar.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Au",Calendar.FIELD_VALUE,date);
+	}
+	
+	private Calendar buildDateGreaterThanOrEqualCalendar(Date date) {
+		return Calendar.build(Calendar.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Du",Calendar.FIELD_VALUE,date);
 	}
 	
 	@Override
@@ -153,8 +187,12 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			return AbstractInput.getValue(legislativeActVersionSelectOne) == null;
 		if(LegislativeActVersion.class.equals(klass))
 			return Boolean.TRUE;
-		if(input == includedSelectOne)
-			return input.getValue() != null;
+		//if(input == includedSelectOne)
+		//	return input.getValue() != null;
+		//if(input == dateGreaterThanOrEqualCalendar)
+		//	return dateGreaterThanOrEqualCalendar.getValue() != null;
+		//if(input == dateLowerThanOrEqualCalendar)
+		//	return dateLowerThanOrEqualCalendar.getValue() != null;
 		return super.isSelectRedirectorArgumentsParameter(klass, input);
 	}
 	
@@ -166,32 +204,47 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			return Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER;
 		if(FIELD_INCLUDED_SELECT_ONE.equals(fieldName) || input == includedSelectOne)
 			return Parameters.REGULATORY_ACT_INCLUDED;
+		if(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR.equals(fieldName) || input == dateGreaterThanOrEqualCalendar)
+			return Parameters.REGULATORY_ACT_DATE_GREATER_THAN_OR_EQUAL;
+		if(FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR.equals(fieldName) || input == dateLowerThanOrEqualCalendar)
+			return Parameters.REGULATORY_ACT_DATE_LOWER_THAN_OR_EQUAL;
 		return super.buildParameterName(fieldName, input);
 	}
 	
+	/*
 	@Override
 	protected String buildParameterValue(AbstractInput<?> input) {
 		if(input == includedSelectOne)
 			return input.getValue() == null ? null : input.getValue().toString();
 		return super.buildParameterValue(input);
 	}
-	
+	*/
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(legislativeActSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne,Cell.FIELD_WIDTH,4));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne,Cell.FIELD_WIDTH,3));	
 		}
 		
 		if(legislativeActVersionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,4));
 		}
 		
 		if(includedSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne,Cell.FIELD_WIDTH,legislativeActSelectOne==null && legislativeActVersionSelectOne == null ? 10 : 2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,includedSelectOne,Cell.FIELD_WIDTH,1));
+		}
+		
+		if(dateGreaterThanOrEqualCalendar != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dateGreaterThanOrEqualCalendar.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dateGreaterThanOrEqualCalendar,Cell.FIELD_WIDTH,5));
+		}
+		
+		if(dateLowerThanOrEqualCalendar != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dateLowerThanOrEqualCalendar.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dateLowerThanOrEqualCalendar,Cell.FIELD_WIDTH,5));
 		}
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,1));	
@@ -223,8 +276,11 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 				stringBuilder.append(" inclus ");
 			else
 				stringBuilder.append(" non inclus ");	
-		}	
+		}
 		stringBuilder.append(" dans le "+legislativeActInitial.getName()+" | "+legislativeActVersionInitial.getName());
+		if(dateGreaterThanOrEqualInitial != null || dateLowerThanOrEqualInitial != null) {
+			stringBuilder.append(String.format("| %s - %s ",dateGreaterThanOrEqualInitial == null ? "<":TimeHelper.formatDate(dateGreaterThanOrEqualInitial),dateLowerThanOrEqualInitial == null ? ">":TimeHelper.formatDate(dateLowerThanOrEqualInitial)));
+		}
 		return stringBuilder.toString();
 	}
 	
@@ -247,6 +303,14 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 		return (LegislativeActVersion) AbstractInput.getValue(legislativeActVersionSelectOne);
 	}
 	
+	public Date getDateLowerThanOrEqual() {
+		return (Date) AbstractInput.getValue(dateLowerThanOrEqualCalendar);
+	}
+	
+	public Date getDateGreaterThanOrEqual() {
+		return (Date) AbstractInput.getValue(dateGreaterThanOrEqualCalendar);
+	}
+	
 	public Boolean getIncluded() {
 		return (Boolean) AbstractInput.getValue(includedSelectOne);
 	}
@@ -259,7 +323,13 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.legislativeActInitial : controller.getLegislativeAct()), filter);
 		else
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, FieldHelper.readSystemIdentifier(legislativeActVersion), filter);
-		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);		
+		filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_INCLUDED, controller.getIncluded(), filter);
+		Date date = controller.getDateGreaterThanOrEqual();
+		if(date != null)
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_DATE_GREATER_THAN_OR_EQUAL, date.getTime(), filter);
+		date = controller.getDateLowerThanOrEqual();
+		if(date != null)
+			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.REGULATORY_ACT_DATE_LOWER_THAN_OR_EQUAL, date.getTime(), filter);
 		return filter;
 	}
 	
@@ -270,4 +340,6 @@ private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,in
 	public static final String FIELD_LEGISLATIVE_ACT_SELECT_ONE = "legislativeActSelectOne";
 	public static final String FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE = "legislativeActVersionSelectOne";
 	public static final String FIELD_INCLUDED_SELECT_ONE = "includedSelectOne";
+	public static final String FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR = "dateLowerThanOrEqualCalendar";
+	public static final String FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR = "dateGreaterThanOrEqualCalendar";
 }

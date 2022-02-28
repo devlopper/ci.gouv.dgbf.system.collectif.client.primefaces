@@ -54,6 +54,7 @@ public class LegislativeActReadController extends AbstractReadController impleme
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		addLabelValue(cellsMaps, "Exercice", legislativeAct.getExerciseAsString());
+		addLabelValue(cellsMaps, "Date", legislativeAct.getDateAsString());
 		addLabelValue(cellsMaps, "Numéro", StringHelper.get(legislativeAct.getNumber()));
 		addLabelValue(cellsMaps, "Code", legislativeAct.getCode());
 		addLabelValue(cellsMaps, "Libellé", legislativeAct.getName());

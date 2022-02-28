@@ -50,7 +50,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
-				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION
+				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT_DATE_AS_TIMESTAMP
 						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE
 						,LegislativeActVersionDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
