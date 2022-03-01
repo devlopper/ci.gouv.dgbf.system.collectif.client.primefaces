@@ -3,6 +3,7 @@ package ci.gouv.dgbf.system.collectif.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,9 +51,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
-				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT_DATE_AS_TIMESTAMP
-						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE
-						,LegislativeActVersionDto.JSON___AUDIT__)
+				.projections(LegislativeActVersionDto.JSONS_STRINGS,LegislativeActVersionDto.JSONS_AMOUTNS,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSONS_LEGISLATIVE_ACT_FROM_DATE_AS_TIMESTAMP_DATE_AS_TIMESTAMP
+						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE,LegislativeActVersionDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
 		if(legislativeActVersion == null)
 			return;
@@ -118,6 +118,10 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private void buildTabRegulatoryActs(Collection<Map<Object,Object>> cellsMaps) {
 		regulatoryActFilterController = new RegulatoryActFilterController();
 		regulatoryActFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		if(legislativeActVersion.getActFromDateAsTimestamp() != null)
+			regulatoryActFilterController.setDateGreaterThanOrEqualInitial(new Date(legislativeActVersion.getActFromDateAsTimestamp()));
+		if(legislativeActVersion.getActDateAsTimestamp() != null)
+			regulatoryActFilterController.setDateLowerThanOrEqualInitial(new Date(legislativeActVersion.getActDateAsTimestamp()));
 		//HttpServletRequest request = __inject__(HttpServletRequest.class);
 		//if(!request.getParameterMap().keySet().contains(Parameters.REGULATORY_ACT_INCLUDED))
 		//	regulatoryActFilterController.setIncludedInitial(Boolean.TRUE);
