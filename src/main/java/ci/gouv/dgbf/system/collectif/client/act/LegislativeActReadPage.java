@@ -49,6 +49,8 @@ public class LegislativeActReadPage extends AbstractPageContainerManagedImpl imp
 		legislativeAct = __inject__(LegislativeActController.class).getOne(new Controller.GetArguments().projections(LegislativeActDto.JSON_IDENTIFIER,LegislativeActDto.JSONS_STRINGS,LegislativeActDto.JSONS_AMOUTNS
 				,LegislativeActDto.JSON_DEFAULT_VERSION_IDENTIFIER,LegislativeActDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
+		if(legislativeAct == null)
+			return;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		buildTabMenu(cellsMaps);
 		buildTab(cellsMaps);
