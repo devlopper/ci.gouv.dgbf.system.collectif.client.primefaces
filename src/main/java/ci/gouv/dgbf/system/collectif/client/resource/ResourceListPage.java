@@ -16,16 +16,19 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.Case;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.Value;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.collectif.client.expenditure.ExpenditureAdjustPage;
 import ci.gouv.dgbf.system.collectif.server.api.service.ResourceDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Revenue;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Resource;
@@ -119,6 +122,15 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
+		Map<String, List<String>> parameters = filterController.asMap();
+		
+		if(Boolean.TRUE.equals(dataTableListenerImpl.adjustmentEditable)) {
+			
+		}else {
+			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ResourceAdjustPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
+				, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
+		}
+		
 		return dataTable;
 	}
 	
@@ -131,7 +143,8 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		private ResourceFilterController filterController;
 		//private Resource resourceAmountsSum;
 		//private Boolean showCodeOnlyWherePossible;
-		private Boolean adjustmentEditable/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
+		protected Boolean adjustmentEditable/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
+		protected UserInterfaceAction adjustmentEditUserInterfaceAction;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -274,7 +287,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS,ResourceDto.JSON___AUDIT__);
+			return List.of(ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS_WITHOUT_AVAILABLE,ResourceDto.JSON___AUDIT__);
 		}
 		
 		@Override

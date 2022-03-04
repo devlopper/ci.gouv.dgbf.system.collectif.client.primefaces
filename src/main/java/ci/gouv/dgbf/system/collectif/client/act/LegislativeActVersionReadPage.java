@@ -168,7 +168,8 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		resourceFilterController.setLegislativeActVersionInitial(legislativeActVersion);
 		resourceFilterController.setReadOnlyByFieldsNames(ResourceFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ResourceFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		resourceFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_RESOURCES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME)));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new ResourceDataTableListenerImpl())));
 		//resourceFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
@@ -230,6 +231,15 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	public static class ExpenditureDataTableListenerImpl extends ExpenditureListPage.DataTableListenerImpl implements Serializable {
 		
 		public ExpenditureDataTableListenerImpl() {
+			adjustmentEditUserInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;
+		}
+		
+	}
+	
+	@Getter @Setter @Accessors(chain=true)
+	public static class ResourceDataTableListenerImpl extends ResourceListPage.DataTableListenerImpl implements Serializable {
+		
+		public ResourceDataTableListenerImpl() {
 			adjustmentEditUserInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;
 		}
 		
