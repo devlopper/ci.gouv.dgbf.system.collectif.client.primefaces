@@ -28,11 +28,11 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
-import ci.gouv.dgbf.system.collectif.client.expenditure.ExpenditureAdjustPage;
+import ci.gouv.dgbf.system.collectif.client.ResourceActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.server.api.service.ResourceDto;
-import ci.gouv.dgbf.system.collectif.server.client.rest.Revenue;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Resource;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ResourceAmounts;
+import ci.gouv.dgbf.system.collectif.server.client.rest.Revenue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -106,6 +106,9 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
 		filterController.getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
+		if(filterController.getActivitySelectionController() == null)
+			filterController.setActivitySelectionController(new ResourceActivitySelectionController());
+		filterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).outcome(outcome);
 		
 		DataTableListenerImpl dataTableListenerImpl = (DataTableListenerImpl) MapHelper.readByKey(arguments, DataTable.FIELD_LISTENER);
 		if(dataTableListenerImpl == null)

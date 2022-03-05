@@ -147,9 +147,11 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
-				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl())));
+		DataTable dataTable = ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl());
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable));
+		
 		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
@@ -168,9 +170,11 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		resourceFilterController.setLegislativeActVersionInitial(legislativeActVersion);
 		resourceFilterController.setReadOnlyByFieldsNames(ResourceFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ResourceFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		resourceFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_RESOURCES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME
-				,DataTable.FIELD_LISTENER,new ResourceDataTableListenerImpl())));
-		//resourceFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
+		DataTable dataTable = ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new ResourceDataTableListenerImpl());
+		resourceFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_RESOURCES);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable));
+		
 		/*
 		cellsMaps.add(MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
 			@Override
@@ -190,9 +194,11 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 		expenditureFilterController.setAvailableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial(Boolean.TRUE);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
-				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl())));
+		DataTable dataTable = ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
+				,DataTable.FIELD_LISTENER,new ExpenditureDataTableListenerImpl());
 		expenditureFilterController.getActivitySelectionController().getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_INCONSISTENCIES);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable));
+		
 	}
 	
 	private void buildTabGeneratedActs(Collection<Map<Object,Object>> cellsMaps) {

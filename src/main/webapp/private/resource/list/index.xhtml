@@ -13,13 +13,12 @@
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(resourceListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{resourceListPage.dataTable}"/>   			
     		</ui:decorate>
-    		<!--
+    	
     		<ui:fragment rendered="#{resourceListPage.dataTable.filterController.activitySelectionController != null}">
-	    		<ui:include src="/private/activity/__selection__.xhtml">
-		    		<ui:param name="activitySelectionController" value="#{resourceListPage.dataTable.filterController.activitySelectionController}"/>
+	    		<ui:include src="/private/resourceactivity/__selection__.xhtml">
+		    		<ui:param name="resourceActivitySelectionController" value="#{resourceListPage.dataTable.filterController.activitySelectionController}"/>
 		    	</ui:include>
 	    	</ui:fragment>
-	    	-->
     	</ui:define>
 	</cyk:page>
 </html>
