@@ -21,6 +21,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
@@ -40,6 +41,7 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNature;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EconomicNatureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureNature;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureNatureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.FundingSource;
@@ -137,20 +139,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		
 		adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO));
 		availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO));
+		
+		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
+			Filter.Dto filter = new Filter.Dto();
+			populateFilter(filter, this, Boolean.TRUE);
+			expendituresAmountsSum = ResponseHelper.getEntity(Expenditure.class,__inject__(ExpenditureController.class).getAmountsSums(filter));
+		}
 		//readExpenditureAountsSum();
 	}
 	
 	public ExpenditureFilterController() {
-		this(null);
-	}
-	
-	public Expenditure sumExpendituresAmounts() {
-		/*if(expendituresAmountsSum == null)
-			expendituresAmountsSum = EntityReader.getInstance().readOne(Expenditure.class, new Arguments<Expenditure>()
-				.queryIdentifier(ExpenditureQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.flags(ExpenditureQuerier.FLAG_SUM_ALL_AMOUNTS).filter(instantiateFilter(this,Boolean.TRUE)));
-		*/
-		return expendituresAmountsSum;
+		this(Boolean.TRUE);
 	}
 	
 	@Override

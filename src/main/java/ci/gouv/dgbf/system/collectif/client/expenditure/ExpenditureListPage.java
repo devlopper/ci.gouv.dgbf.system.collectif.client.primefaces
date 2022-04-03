@@ -153,7 +153,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			}else if(Expenditure.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
-				map.put(Column.FIELD_WIDTH, "200");
+				map.put(Column.FIELD_WIDTH, "200"); 
 			}
 			
 			//Amounts
