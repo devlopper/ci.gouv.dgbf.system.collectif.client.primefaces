@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractReadController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.panel.Panel;
 
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
@@ -42,19 +44,26 @@ public abstract class AbstractExpenditureAmountsReadController<AMOUNTS extends E
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		
-		addLabelValue(cellsMaps, "Budget initial", amounts == null ? null : StringHelper.get(amounts.getInitial()));
-		addLabelValue(cellsMaps, "Mouvement", amounts == null ? null : StringHelper.get(amounts.getMovement()));
-		addLabelValue(cellsMaps, "Budget actuel", amounts == null ? null : StringHelper.get(amounts.getActual()));
-		addLabelValue(cellsMaps, "Mouvement inclu", amounts == null ? null : StringHelper.get(amounts.getMovementIncluded()));
-		addLabelValue(cellsMaps, "Disponible", amounts == null ? null : StringHelper.get(amounts.getAvailable()));
+		addLabelValue(cellsMaps, "Budget initial", amounts == null ? null : NumberHelper.format(amounts.getInitial()));
+		addLabelValue(cellsMaps, "Mouvement", amounts == null ? null : NumberHelper.format(amounts.getMovement()));
+		addLabelValue(cellsMaps, "Budget actuel", amounts == null ? null : NumberHelper.format(amounts.getActual()));
+		addLabelValue(cellsMaps, "Mouvement inclu", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
+		addLabelValue(cellsMaps, "Disponible", amounts == null ? null : NumberHelper.format(amounts.getAvailable()));
 		
-		addLabelValue(cellsMaps, "Ajustement attendu", amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustment()));
-		addLabelValue(cellsMaps, "Ajustement saisi", amounts == null ? null : StringHelper.get(amounts.getAdjustment()));
-		addLabelValue(cellsMaps, "Ecart ajustement(attendu - saisi)", amounts == null ? null : StringHelper.get(amounts.getExpectedAdjustmentMinusAdjustment()));
+		addLabelValue(cellsMaps, "Ajustement attendu", amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
+		addLabelValue(cellsMaps, "Ajustement saisi", amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
+		addLabelValue(cellsMaps, "Ecart ajustement(attendu - saisi)", amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
-		addLabelValue(cellsMaps, "Total(Budget actuel - Mouvement inclu + Ajustement saisi)", amounts == null ? null : StringHelper.get(amounts.getActualMinusMovementIncludedPlusAdjustment()));
+		addLabelValue(cellsMaps, "Total(Budget actuel - Mouvement inclu + Ajustement saisi)", amounts == null ? null : NumberHelper.format(amounts.getActualMinusMovementIncludedPlusAdjustment()));
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps
 				,Layout.FIELD_CONTAINER,Panel.build(Panel.FIELD_HEADER,name,Panel.FIELD_TOGGLEABLE,Boolean.TRUE));
+	}
+	
+	@Override
+	protected OutputText buildValueOutputText(String value) {
+		OutputText outputText = super.buildValueOutputText(value);
+		outputText.setStyle("float: right;");
+		return outputText;
 	}
 }

@@ -85,8 +85,10 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private Boolean isPaymentCreditAdjustmentEditable;
 	
 	private Expenditure expendituresAmountsSum;
+	private Boolean computeLegislativeActVersionSumsAndTotal;
 	
-	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {		
+	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
+		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(legislativeActVersionInitial == null)
 			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(computeLegislativeActVersionSumsAndTotal);
 		if(legislativeActInitial == null)
@@ -140,11 +142,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO));
 		availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO));
 		
-		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
-			Filter.Dto filter = new Filter.Dto();
-			populateFilter(filter, this, Boolean.TRUE);
-			expendituresAmountsSum = ResponseHelper.getEntity(Expenditure.class,__inject__(ExpenditureController.class).getAmountsSums(filter));
-		}
 		//readExpenditureAountsSum();
 	}
 	
@@ -154,6 +151,11 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	@Override
 	public ExpenditureFilterController build() {
+		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
+			Filter.Dto filter = new Filter.Dto();
+			populateFilter(filter, this, Boolean.TRUE);
+			expendituresAmountsSum = ResponseHelper.getEntity(Expenditure.class,__inject__(ExpenditureController.class).getAmountsSums(filter));
+		}
 		if(activitySelectionController == null)
 			activitySelectionController = new ActivitySelectionController();
 		//activitySelectionController.setIsMultiple(Boolean.TRUE);
