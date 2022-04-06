@@ -137,7 +137,7 @@ public class GeneratedActListPage extends AbstractEntityListPageContainerManaged
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(GeneratedAct.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "150");
+				//map.put(Column.FIELD_WIDTH, "300");
 			}else if(GeneratedAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
 			}else if(GeneratedAct.FIELD___AUDIT__.equals(fieldName)) {

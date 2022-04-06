@@ -8,7 +8,6 @@ import java.util.Map;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
-import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractReadController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
@@ -50,9 +49,9 @@ public abstract class AbstractExpenditureAmountsReadController<AMOUNTS extends E
 		addLabelValue(cellsMaps, "Mouvement inclu", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
 		addLabelValue(cellsMaps, "Disponible", amounts == null ? null : NumberHelper.format(amounts.getAvailable()));
 		
-		addLabelValue(cellsMaps, "Ajustement attendu", amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
-		addLabelValue(cellsMaps, "Ajustement saisi", amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
-		addLabelValue(cellsMaps, "Ecart ajustement(attendu - saisi)", amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
+		addLabelValue(cellsMaps, LABEL_EXPECTED_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
+		addLabelValue(cellsMaps, LABEL_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
+		addLabelValue(cellsMaps, LABEL_ADJUSTMENT_GAP, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
 		addLabelValue(cellsMaps, "Total(Budget actuel - Mouvement inclu + Ajustement saisi)", amounts == null ? null : NumberHelper.format(amounts.getActualMinusMovementIncludedPlusAdjustment()));
 		
@@ -63,7 +62,22 @@ public abstract class AbstractExpenditureAmountsReadController<AMOUNTS extends E
 	@Override
 	protected OutputText buildValueOutputText(String value) {
 		OutputText outputText = super.buildValueOutputText(value);
-		outputText.setStyle("float: right;");
+		outputText.addStyle("float: right;");
 		return outputText;
 	}
+	
+	@Override
+	protected void addLabelControl(Collection<Map<Object, Object>> cellsMaps, String label, Object control) {
+		if(label.equals(LABEL_ADJUSTMENT)) {
+			OutputText outputText = (OutputText) control;
+			outputText.addStyle("font-weight: bold;");
+		}
+		super.addLabelControl(cellsMaps, label, control);
+	}
+	
+	/**/
+	
+	public static final String LABEL_EXPECTED_ADJUSTMENT = "Ajustement attendu";
+	public static final String LABEL_ADJUSTMENT = "Ajustement saisi";
+	public static final String LABEL_ADJUSTMENT_GAP = "Ecart ajustement(attendu - saisi)";
 }
