@@ -14,6 +14,12 @@
     			<ui:param name="layout" value="#{legislativeActReadPage.layout}"/> 		
     		</ui:decorate>
     		
+    		<ui:fragment rendered="#{legislativeActReadPage.resourceFilterController.activitySelectionController != null}">
+	    		<ui:include src="/private/resourceactivity/__selection__.xhtml">
+		    		<ui:param name="resourceActivitySelectionController" value="#{legislativeActReadPage.resourceFilterController.activitySelectionController}"/>
+		    	</ui:include>
+	    	</ui:fragment>
+    		
     		<ui:fragment rendered="#{legislativeActReadPage.expenditureFilterController.activitySelectionController != null}">
 	    		<ui:include src="/private/activity/__selection__.xhtml">
 		    		<ui:param name="activitySelectionController" value="#{legislativeActReadPage.expenditureFilterController.activitySelectionController}"/>

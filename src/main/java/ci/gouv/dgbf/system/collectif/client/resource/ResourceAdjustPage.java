@@ -19,6 +19,7 @@ import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
@@ -54,6 +55,8 @@ public class ResourceAdjustPage extends AbstractPageContainerManagedImpl impleme
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
 		filterController = new ResourceFilterController();
+		if(Boolean.TRUE.equals(getIsRenderTypeDialog()))
+			filterController.setRenderType(AbstractFilterController.RenderType.NONE);
 		filterController.setIsRevenueAdjustmentEditable(Boolean.TRUE);
 	}
 
@@ -70,7 +73,7 @@ public class ResourceAdjustPage extends AbstractPageContainerManagedImpl impleme
 	}
 	
 	private DataTable buildDataTable() {
-		dataTable = ResourceListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl()
+		dataTable = ResourceListPage.buildDataTable(DataTable.FIELD_LISTENER,new DataTableListenerImpl().setAdjustmentEditable(Boolean.TRUE)
 				,DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL,new LazyDataModel().setFilterController(filterController)
 				,ResourceListPage.OUTCOME,OUTCOME
 				,DataTable.FIELD_RENDER_TYPE,org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection.RenderType.INPUT

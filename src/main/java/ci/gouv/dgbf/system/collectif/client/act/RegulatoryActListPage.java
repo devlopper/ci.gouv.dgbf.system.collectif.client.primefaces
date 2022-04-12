@@ -146,7 +146,7 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 				map.put(Column.FIELD_WIDTH, "70");
 			}else if(RegulatoryAct.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "100");
+				//map.put(Column.FIELD_WIDTH, "100");
 			}else if(RegulatoryAct.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Désignation");
 			}else if(RegulatoryAct.FIELD_ENTRY_AUTHORIZATION_AMOUNT.equals(fieldName)) {
