@@ -21,6 +21,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Abstract
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
@@ -39,6 +40,7 @@ import ci.gouv.dgbf.system.collectif.server.client.rest.Resource;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ResourceActivity;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ResourceActivityController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ResourceAmounts;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ResourceController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Section;
 import ci.gouv.dgbf.system.collectif.server.client.rest.SectionController;
 import lombok.Getter;
@@ -62,11 +64,12 @@ public class ResourceFilterController extends AbstractFilterController implement
 	private ResourceActivity activityInitial;
 	private EconomicNature economicNatureInitial;
 	
-	private Boolean isRevenueAdjustmentEditable;
+	private Boolean isRevenueAdjustmentEditable,computeLegislativeActVersionSumsAndTotal;
 	
 	private Resource resourcesAmountsSum;
 	
-	public ResourceFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {		
+	public ResourceFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
+		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(legislativeActVersionInitial == null)
 			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(computeLegislativeActVersionSumsAndTotal);
 		if(legislativeActInitial == null)
@@ -95,25 +98,19 @@ public class ResourceFilterController extends AbstractFilterController implement
 
 		if(economicNatureInitial == null)
 			economicNatureInitial = __inject__(EconomicNatureController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ECONOMIC_NATURE_IDENTIFIER));
-		
-		//readResourceAountsSum();
 	}
 	
 	public ResourceFilterController() {
-		this(null);
-	}
-	
-	public Resource sumResourcesAmounts() {
-		/*if(resourcesAmountsSum == null)
-			resourcesAmountsSum = EntityReader.getInstance().readOne(Resource.class, new Arguments<Resource>()
-				.queryIdentifier(ResourceQuerier.QUERY_IDENTIFIER_READ_DYNAMIC_ONE)
-				.flags(ResourceQuerier.FLAG_SUM_ALL_AMOUNTS).filter(instantiateFilter(this,Boolean.TRUE)));
-		*/
-		return resourcesAmountsSum;
+		this(Boolean.TRUE);
 	}
 	
 	@Override
 	public ResourceFilterController build() {
+		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
+			Filter.Dto filter = new Filter.Dto();
+			populateFilter(filter, this, Boolean.TRUE);
+			resourcesAmountsSum = ResponseHelper.getEntity(Resource.class,__inject__(ResourceController.class).getAmountsSums(filter));
+		}
 		if(activitySelectionController == null)
 			activitySelectionController = new ResourceActivitySelectionController();
 		activitySelectionController.build();
@@ -446,9 +443,10 @@ public class ResourceFilterController extends AbstractFilterController implement
 			columnsFieldsNames.add(Resource.FIELD_ECONOMIC_NATURE_AS_STRING);
 
 		addAmountsColumnsNames(columnsFieldsNames, ResourceAmounts.FIELD_INITIAL,ResourceAmounts.FIELD_MOVEMENT,ResourceAmounts.FIELD_ACTUAL
-				,ResourceAmounts.FIELD_MOVEMENT_INCLUDED//,ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED
+				//,ResourceAmounts.FIELD_MOVEMENT_INCLUDED//,ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED
 				//,ResourceAmounts.FIELD_AVAILABLE
-				,ResourceAmounts.FIELD_ADJUSTMENT,ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+				,ResourceAmounts.FIELD_ADJUSTMENT,ResourceAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
+				//,ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				);
 		columnsFieldsNames.add(Resource.FIELD___AUDIT__);
 		return columnsFieldsNames;

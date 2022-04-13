@@ -169,7 +169,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.collectif.server.api.persistence.ResourceActivity.NAME);
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Resource.FIELD_ECONOMIC_NATURE_AS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.collectif.server.api.persistence.EconomicNature.INITIALS);
+				map.put(Column.FIELD_HEADER_TEXT, ci.gouv.dgbf.system.collectif.server.api.persistence.EconomicNature.NAME);
 			}else if(Resource.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
 				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
@@ -182,8 +182,8 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ResourceAmounts.FIELD_INITIAL, fieldName,Boolean.FALSE, filterController);
 			else if(isRevenue(ResourceAmounts.FIELD_MOVEMENT, fieldName))
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ResourceAmounts.FIELD_MOVEMENT, fieldName,Boolean.FALSE, filterController);
-			else if(isRevenue(ResourceAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ResourceAmounts.FIELD_MOVEMENT_INCLUDED, fieldName,Boolean.FALSE, filterController);
+			//else if(isRevenue(ResourceAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
+			//	setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(M)", ResourceAmounts.FIELD_MOVEMENT_INCLUDED, fieldName,Boolean.FALSE, filterController);
 			else if(isRevenue(ResourceAmounts.FIELD_ACTUAL, fieldName))
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ResourceAmounts.FIELD_ACTUAL, fieldName,Boolean.FALSE, filterController);
 			else if(isRevenue(ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
@@ -191,11 +191,11 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 			else if(isRevenue(ResourceAmounts.FIELD_AVAILABLE, fieldName))
 				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ResourceAmounts.FIELD_AVAILABLE, fieldName, Boolean.FALSE, filterController);
 			else if(isRevenue(ResourceAmounts.FIELD_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Variation(V)", ResourceAmounts.FIELD_ADJUSTMENT, fieldName, adjustmentEditable, filterController);
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement(B)", ResourceAmounts.FIELD_ADJUSTMENT, fieldName, adjustmentEditable, filterController);
 			else if(isRevenue(ResourceAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+V", ResourceAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName, adjustmentEditable, filterController);
-			else if(isRevenue(ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName,Boolean.FALSE, filterController);
+				setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A+B)", ResourceAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName, adjustmentEditable, filterController);
+			//else if(isRevenue(ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+			//	setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A+B)", ResourceAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName,Boolean.FALSE, filterController);
 			
 			return map;
 		}
@@ -251,7 +251,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 
 		private static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String fieldName1,String fieldName2,Boolean editable,Resource resourceAmountsSum) {
 			map.put(Column.FIELD_VALUE_TYPE, Value.Type.CURRENCY);
-			map.put(Column.FIELD_WIDTH, "100");
+			map.put(Column.FIELD_WIDTH, "120");
 			map.put(Column.FIELD_HEADER_TEXT, name);
 			map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);
@@ -261,8 +261,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		private static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
 				,Boolean editable,ResourceFilterController filterController) {
-			Resource resourceAmountsSum = filterController == null ? null : filterController.sumResourcesAmounts();			
-			setAmountColumnArgumentsMap(map, name, Resource.FIELD_REVENUE, amountValueFieldName, editable, resourceAmountsSum);
+			setAmountColumnArgumentsMap(map, name, Resource.FIELD_REVENUE, amountValueFieldName, editable, filterController == null ? null : filterController.getResourcesAmountsSum());
 		}
 		
 		private static Number getAmount(Resource resource,String fieldName1,String fieldName2) {
@@ -290,7 +289,7 @@ public class ResourceListPage extends AbstractEntityListPageContainerManagedImpl
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS_WITHOUT_AVAILABLE,ResourceDto.JSON___AUDIT__);
+			return List.of(ResourceDto.JSONS_STRINGS,ResourceDto.JSONS_AMOUTNS,ResourceDto.JSON___AUDIT__);
 		}
 		
 		@Override
