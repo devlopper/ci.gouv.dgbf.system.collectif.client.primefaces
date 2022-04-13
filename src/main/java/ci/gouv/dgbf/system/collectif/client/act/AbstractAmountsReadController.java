@@ -39,17 +39,16 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 	}
 	
 	private Layout buildInfosLayout() {
-		//if(amounts == null)
-		//	return null;
-		System.out.println("AbstractAmountsReadController.buildInfosLayout() +++++++++++++++++++++++");
+		if(amounts == null)
+			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		
 		addLabelValue(cellsMaps, "Budget initial", amounts == null ? null : NumberHelper.format(amounts.getInitial()));
 		addLabelValue(cellsMaps, "Mouvement", amounts == null ? null : NumberHelper.format(amounts.getMovement()));
-		addLabelValue(cellsMaps, "Budget actuel", amounts == null ? null : NumberHelper.format(amounts.getActual()));
+		addLabelValue(cellsMaps, "Budget actuel(A)", amounts == null ? null : NumberHelper.format(amounts.getActual()));
 		
 		if(Boolean.TRUE.equals(hasIncludedMovement()))
-			addLabelValue(cellsMaps, "Mouvement inclu", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
+			addLabelValue(cellsMaps, "Mouvement inclu(B)", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
 		if(Boolean.TRUE.equals(hasAvailable()))
 			addLabelValue(cellsMaps, "Disponible", amounts == null ? null : NumberHelper.format(amounts.getAvailable()));
 		
@@ -57,7 +56,7 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT_GAP, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
-		addLabelValue(cellsMaps, String.format("Collectif(Budget actuel %s+ Ajustement saisi)",hasIncludedMovement() ? "- Mouvement inclu " : ""), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
+		addLabelValue(cellsMaps, String.format("Collectif(A %s+ C)",hasIncludedMovement() ? "- B " : ""), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
 				? amounts.getActualMinusMovementIncludedPlusAdjustment() : amounts.getActualPlusAdjustment()));
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps
