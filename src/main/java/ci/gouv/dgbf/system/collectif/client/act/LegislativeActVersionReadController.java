@@ -22,12 +22,14 @@ import lombok.experimental.Accessors;
 public class LegislativeActVersionReadController extends AbstractReadController implements Serializable {
 
 	private LegislativeActVersion legislativeActVersion;
+	private RevenueReadController revenueReadController;
 	private EntryAuthorizationReadController entryAuthorizationReadController;
 	private PaymentCreditReadController paymentCreditReadController;
 	private DataTable regulatoryActsDataTable;
 
 	public LegislativeActVersionReadController(LegislativeActVersion legislativeActVersion) {
 		this.legislativeActVersion = legislativeActVersion;
+		revenueReadController = new RevenueReadController(legislativeActVersion.getRevenue());
 		entryAuthorizationReadController = new EntryAuthorizationReadController(legislativeActVersion.getEntryAuthorization());
 		paymentCreditReadController = new PaymentCreditReadController(legislativeActVersion.getPaymentCredit());
 		labelWidth = 6;
@@ -35,6 +37,7 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 	
 	@Override
 	public void initialize() {
+		revenueReadController.initialize();
 		entryAuthorizationReadController.initialize();
 		paymentCreditReadController.initialize();
 		super.initialize();
@@ -44,8 +47,9 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		return CollectionHelper.listOf(
 				MapHelper.instantiate(Cell.FIELD_CONTROL,buildInfosLayout(),Cell.FIELD_WIDTH,12)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,6)
-				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,6)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,revenueReadController.getLayout(),Cell.FIELD_WIDTH,4)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,4)
+				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,4)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,buildRegulatoryActsDataTableLayout(),Cell.FIELD_WIDTH,12)
 			);
 	}
