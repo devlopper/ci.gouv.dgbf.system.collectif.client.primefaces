@@ -53,10 +53,10 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 			addLabelValue(cellsMaps, "Disponible", amounts == null ? null : NumberHelper.format(amounts.getAvailable()));
 		
 		addLabelValue(cellsMaps, LABEL_EXPECTED_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
-		addLabelValue(cellsMaps, LABEL_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
+		addLabelValue(cellsMaps, LABEL_ADJUSTMENT+String.format("(%s)", hasIncludedMovement() ? "C" : "B"), amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT_GAP, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
-		addLabelValue(cellsMaps, String.format("Collectif(A %s+ C)",hasIncludedMovement() ? "- B " : ""), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
+		addLabelValue(cellsMaps, String.format("Collectif(%s)",hasIncludedMovement() ? "A-B+C" : "A+B"), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
 				? amounts.getActualMinusMovementIncludedPlusAdjustment() : amounts.getActualPlusAdjustment()));
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps

@@ -45,12 +45,42 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 	
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
-		return CollectionHelper.listOf(
+		/*return CollectionHelper.listOf(
 				MapHelper.instantiate(Cell.FIELD_CONTROL,buildInfosLayout(),Cell.FIELD_WIDTH,12)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,revenueReadController.getLayout(),Cell.FIELD_WIDTH,4)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,entryAuthorizationReadController.getLayout(),Cell.FIELD_WIDTH,4)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,paymentCreditReadController.getLayout(),Cell.FIELD_WIDTH,4)
 				,MapHelper.instantiate(Cell.FIELD_CONTROL,buildRegulatoryActsDataTableLayout(),Cell.FIELD_WIDTH,12)
+			);
+		*/
+		return CollectionHelper.listOf(
+				MapHelper.instantiate(Cell.FIELD_CONTROL,buildInfosLayout(),Cell.FIELD_WIDTH,12)
+				
+				,MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+					@Override
+					public Object buildControl(Cell cell) {
+						RevenueReadController controller = new RevenueReadController(legislativeActVersion.getRevenue());
+						controller.initialize();
+						return controller.getLayout();
+					}
+				},Cell.FIELD_WIDTH,4)
+				,MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+					@Override
+					public Object buildControl(Cell cell) {
+						EntryAuthorizationReadController controller = new EntryAuthorizationReadController(legislativeActVersion.getEntryAuthorization());
+						controller.initialize();
+						return controller.getLayout();
+					}
+				},Cell.FIELD_WIDTH,4)
+				,MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+					@Override
+					public Object buildControl(Cell cell) {
+						PaymentCreditReadController controller = new PaymentCreditReadController(legislativeActVersion.getPaymentCredit());
+						controller.initialize();
+						return controller.getLayout();
+					}
+				},Cell.FIELD_WIDTH,4)
+				//,MapHelper.instantiate(Cell.FIELD_CONTROL,buildRegulatoryActsDataTableLayout(),Cell.FIELD_WIDTH,12)
 			);
 	}
 	
@@ -68,11 +98,11 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	
-	private Layout buildRegulatoryActsDataTableLayout() {
+	/*private Layout buildRegulatoryActsDataTableLayout() {
 		if(regulatoryActsDataTable == null)
 			return null;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,regulatoryActsDataTable,Cell.FIELD_WIDTH,12));
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
-	}	
+	}*/
 }
