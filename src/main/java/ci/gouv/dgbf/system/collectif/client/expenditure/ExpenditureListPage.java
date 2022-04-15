@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.collectif.client.expenditure;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,23 +11,29 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.service.client.Controller;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
+import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
+import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.PaymentCredit;
 import lombok.Getter;
 import lombok.Setter;
@@ -99,6 +106,8 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureAdjustPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
 				, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
 		}
+		
+		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, "updateIncludedMovement()","updateAvailable()");
 		
 		return dataTable;
 	}
@@ -222,7 +231,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS,ExpenditureDto.JSON___AUDIT__);
+			return List.of(ExpenditureDto.JSONS_STRINGS,ExpenditureDto.JSONS_AMOUTNS_WITHOUT_INCLUDED_MOVEMENT_AND_AVAILABLE,ExpenditureDto.JSON___AUDIT__);
 		}
 		
 		@Override
@@ -237,6 +246,52 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				expenditure.setEntryAuthorization(new EntryAuthorization());
 			if(expenditure.getPaymentCredit() == null)
 				expenditure.setPaymentCredit(new PaymentCredit());
+		}
+		
+		public void updateIncludedMovement() {
+			if(CollectionHelper.isEmpty(__list__))
+				return;
+			Filter.Dto filter = new Filter.Dto();
+			filter.addField(Parameters.EXPENDITURES_IDENTIFIERS, FieldHelper.readSystemIdentifiersAsStrings(__list__));
+			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_INCLUDED_MOVEMENT_ONLY).setFilter(filter).setPageable(Boolean.FALSE));
+			if(CollectionHelper.isEmpty(expenditures))
+				return;
+			expenditures.forEach(expenditure -> {
+				for(Expenditure index : __list__) {
+					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
+						if(expenditure.getEntryAuthorization() != null) {
+							index.getEntryAuthorization().setMovementIncluded(expenditure.getEntryAuthorization().getMovementIncluded());
+							index.getEntryAuthorization().computeActualMinusMovementIncludedPlusAdjustment();
+						}
+						if(expenditure.getPaymentCredit() != null) {
+							index.getPaymentCredit().setMovementIncluded(expenditure.getPaymentCredit().getMovementIncluded());
+							index.getPaymentCredit().computeActualMinusMovementIncludedPlusAdjustment();
+						}
+						break;
+					}
+				}
+			});
+		}
+		
+		public void updateAvailable() {
+			if(CollectionHelper.isEmpty(__list__))
+				return;
+			Filter.Dto filter = new Filter.Dto();
+			filter.addField(Parameters.EXPENDITURES_IDENTIFIERS, FieldHelper.readSystemIdentifiersAsStrings(__list__));
+			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_AVAILABLE_ONLY).setFilter(filter).setPageable(Boolean.FALSE));
+			if(CollectionHelper.isEmpty(expenditures))
+				return;
+			expenditures.forEach(expenditure -> {
+				for(Expenditure index : __list__) {
+					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
+						if(expenditure.getEntryAuthorization() != null)
+							index.getEntryAuthorization().setAvailable(expenditure.getEntryAuthorization().getAvailable());
+						if(expenditure.getPaymentCredit() != null)
+							index.getPaymentCredit().setAvailable(expenditure.getPaymentCredit().getAvailable());
+						break;
+					}
+				}
+			});
 		}
 	}
 	

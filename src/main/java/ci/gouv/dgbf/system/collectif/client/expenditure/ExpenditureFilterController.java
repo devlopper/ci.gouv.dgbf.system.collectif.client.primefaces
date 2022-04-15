@@ -154,6 +154,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
 			Filter.Dto filter = new Filter.Dto();
 			populateFilter(filter, this, Boolean.TRUE);
+			filter.addField(Parameters.AMOUNT_SUMABLE_WITHOUT_INCLUDED_MOVEMENT_AND_AVAILABLE, Boolean.TRUE);
 			expendituresAmountsSum = ResponseHelper.getEntity(Expenditure.class,__inject__(ExpenditureController.class).getAmountsSums(filter));
 		}
 		if(activitySelectionController == null)
