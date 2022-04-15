@@ -22,6 +22,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> extends AbstractReadController implements Serializable {
 
+	protected AmountsGetter amountsGetter;
 	protected AMOUNTS amounts;
 	protected String name;
 	
@@ -48,16 +49,35 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 		addLabelValue(cellsMaps, "Budget actuel(A)", amounts == null ? null : NumberHelper.format(amounts.getActual()));
 		
 		if(Boolean.TRUE.equals(hasIncludedMovement()))
-			addLabelValue(cellsMaps, "Mouvement inclu(B)", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
+			//addLabelValue(cellsMaps, "Mouvement inclu(B)", amounts == null ? null : NumberHelper.format(amounts.getMovementIncluded()));
+			addLabelControlUsingMap(cellsMaps, "Mouvement inclu(B)", MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+				@Override
+				public Object buildControl(Cell cell) {
+					return buildValueOutputText(NumberHelper.format(amountsGetter == null ? amounts.getMovementIncluded() : amountsGetter.getMovementIncluded()));
+				}
+			}));
 		if(Boolean.TRUE.equals(hasAvailable()))
-			addLabelValue(cellsMaps, "Disponible", amounts == null ? null : NumberHelper.format(amounts.getAvailable()));
+			//addLabelValue(cellsMaps, "Disponible", amounts == null || amounts.getAvailable() == null ? null : NumberHelper.format(amounts.getAvailable()));
+			addLabelControlUsingMap(cellsMaps, "Disponible", MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+				@Override
+				public Object buildControl(Cell cell) {
+					return buildValueOutputText(NumberHelper.format(amountsGetter == null ? amounts.getAvailable() : amountsGetter.getAvailable()));
+				}
+			}));
 		
 		addLabelValue(cellsMaps, LABEL_EXPECTED_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT+String.format("(%s)", hasIncludedMovement() ? "C" : "B"), amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT_GAP, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
-		addLabelValue(cellsMaps, String.format("Collectif(%s)",hasIncludedMovement() ? "A-B+C" : "A+B"), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
-				? amounts.getActualMinusMovementIncludedPlusAdjustment() : amounts.getActualPlusAdjustment()));
+		//addLabelValue(cellsMaps, String.format("Collectif(%s)",hasIncludedMovement() ? "A-B+C" : "A+B"), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 
+		//		? amounts.getActualMinusMovementIncludedPlusAdjustment() : amounts.getActualPlusAdjustment()));
+		
+		addLabelControlUsingMap(cellsMaps, String.format("Collectif(%s)",hasIncludedMovement() ? "A-B+C" : "A+B"), MapHelper.instantiate(Cell.ConfiguratorImpl.FIELD_CONTROL_BUILD_DEFFERED,Boolean.TRUE,Cell.FIELD_LISTENER,new Cell.Listener.AbstractImpl() {
+			@Override
+			public Object buildControl(Cell cell) {
+				return buildValueOutputText(NumberHelper.format(amountsGetter == null ? (hasIncludedMovement() ? amounts.getActualMinusMovementIncludedPlusAdjustment() : amounts.getActualPlusAdjustment()) : amountsGetter.getActualMinusMovementIncludedPlusAdjustment()));
+			}
+		}));
 		
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.FLEX,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps
 				,Layout.FIELD_CONTAINER,Panel.build(Panel.FIELD_HEADER,name,Panel.FIELD_TOGGLEABLE,Boolean.TRUE));
@@ -92,4 +112,10 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 	public static final String LABEL_EXPECTED_ADJUSTMENT = "Ajustement attendu";
 	public static final String LABEL_ADJUSTMENT = "Ajustement saisi";
 	public static final String LABEL_ADJUSTMENT_GAP = "Ecart ajustement(attendu - saisi)";
+	
+	public static interface AmountsGetter {
+		Long getMovementIncluded();
+		Long getAvailable();
+		Long getActualMinusMovementIncludedPlusAdjustment();
+	}
 }
