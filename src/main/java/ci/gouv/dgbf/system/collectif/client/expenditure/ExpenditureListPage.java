@@ -16,11 +16,14 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.RemoteCommand;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
@@ -30,6 +33,7 @@ import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.EntryAuthorization;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureAmounts;
@@ -87,6 +91,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		if(dataTableListenerImpl == null)
 			arguments.put(DataTable.FIELD_LISTENER, dataTableListenerImpl = new DataTableListenerImpl());
 		dataTableListenerImpl.setFilterController(filterController);
+		dataTableListenerImpl.setLazyDataModel(lazyDataModel);
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Expenditure.class);
@@ -107,8 +112,31 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
 		}
 		
-		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, "updateIncludedMovement()","updateAvailable()");
-		
+		LazyDataModel finalLazyDataModel = lazyDataModel;
+		RemoteCommand remoteCommand = RemoteCommand.build();
+		remoteCommand.setListener(new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				finalLazyDataModel.updateIncludedMovementAndAvailable();;
+				return super.__runExecuteFunction__(action);
+			}
+		});
+		remoteCommand.addUpdatablesUsingStyleClass(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getActualMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText());
+		dataTable.addRemoteCommands(remoteCommand);
+		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, remoteCommand.getName()+"()");
+		/*
+		remoteCommand = RemoteCommand.build();
+		remoteCommand.setListener(new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				finalLazyDataModel.updateAvailable();
+				return super.__runExecuteFunction__(action);
+			}
+		});
+		remoteCommand.addUpdatablesUsingStyleClass(dataTableListenerImpl.getAvailableOutputText());
+		dataTable.addRemoteCommands(remoteCommand);
+		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, remoteCommand.getName()+"()");
+		*/
 		return dataTable;
 	}
 	
@@ -119,10 +147,18 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
 		protected ExpenditureFilterController filterController;
+		protected LazyDataModel lazyDataModel;
 		//private Expenditure expenditureAmountsSum;
 		//private Boolean showCodeOnlyWherePossible;
 		protected Boolean adjustmentEditable,adjustmentEditableInDialog/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
 		protected UserInterfaceAction adjustmentEditUserInterfaceAction;
+		protected OutputText movementIncludedOutputText,actualMinusMovementIncludedPlusAdjustmentOutputText,availableOutputText;
+		
+		public DataTableListenerImpl() {
+			movementIncludedOutputText = OutputText.build();
+			actualMinusMovementIncludedPlusAdjustmentOutputText = OutputText.build();
+			availableOutputText = OutputText.build();
+		}
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
@@ -197,6 +233,18 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			
 			return map;
 		}
+		
+		@Override
+		public OutputText getCellOutputTextByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(column.getFieldName().endsWith(Amounts.FIELD_MOVEMENT_INCLUDED))
+				return movementIncludedOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT))
+				return actualMinusMovementIncludedPlusAdjustmentOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_AVAILABLE))
+				return availableOutputText;
+			return super.getCellOutputTextByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
 		/*
 		@Override
 		public String getStyleClassByRecord(Object record, Integer recordIndex) {
@@ -253,20 +301,14 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				return;
 			Filter.Dto filter = new Filter.Dto();
 			filter.addField(Parameters.EXPENDITURES_IDENTIFIERS, FieldHelper.readSystemIdentifiersAsStrings(__list__));
-			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_INCLUDED_MOVEMENT_ONLY).setFilter(filter).setPageable(Boolean.FALSE));
+			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_INCLUDED_MOVEMENT_ONLY).setFilter(filter)
+					.setPageable(Boolean.FALSE).setPostable(Boolean.TRUE));
 			if(CollectionHelper.isEmpty(expenditures))
 				return;
 			expenditures.forEach(expenditure -> {
 				for(Expenditure index : __list__) {
 					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
-						if(expenditure.getEntryAuthorization() != null) {
-							index.getEntryAuthorization().setMovementIncluded(expenditure.getEntryAuthorization().getMovementIncluded());
-							index.getEntryAuthorization().computeActualMinusMovementIncludedPlusAdjustment();
-						}
-						if(expenditure.getPaymentCredit() != null) {
-							index.getPaymentCredit().setMovementIncluded(expenditure.getPaymentCredit().getMovementIncluded());
-							index.getPaymentCredit().computeActualMinusMovementIncludedPlusAdjustment();
-						}
+						index.copyMovementIncluded(expenditure).computeActualMinusMovementIncludedPlusAdjustment();
 						break;
 					}
 				}
@@ -278,16 +320,33 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				return;
 			Filter.Dto filter = new Filter.Dto();
 			filter.addField(Parameters.EXPENDITURES_IDENTIFIERS, FieldHelper.readSystemIdentifiersAsStrings(__list__));
-			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_AVAILABLE_ONLY).setFilter(filter).setPageable(Boolean.FALSE));
+			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_AVAILABLE_ONLY).setFilter(filter)
+					.setPageable(Boolean.FALSE).setPostable(Boolean.TRUE));
 			if(CollectionHelper.isEmpty(expenditures))
 				return;
 			expenditures.forEach(expenditure -> {
 				for(Expenditure index : __list__) {
 					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
-						if(expenditure.getEntryAuthorization() != null)
-							index.getEntryAuthorization().setAvailable(expenditure.getEntryAuthorization().getAvailable());
-						if(expenditure.getPaymentCredit() != null)
-							index.getPaymentCredit().setAvailable(expenditure.getPaymentCredit().getAvailable());
+						index.copyAvailable(expenditure).computeAvailableMinusMovementIncludedPlusAdjustment();
+						break;
+					}
+				}
+			});
+		}
+		
+		public void updateIncludedMovementAndAvailable() {
+			if(CollectionHelper.isEmpty(__list__))
+				return;
+			Filter.Dto filter = new Filter.Dto();
+			filter.addField(Parameters.EXPENDITURES_IDENTIFIERS, FieldHelper.readSystemIdentifiersAsStrings(__list__));
+			Collection<Expenditure> expenditures = __inject__(ExpenditureController.class).get(new Controller.GetArguments().projections(ExpenditureDto.JSONS_AMOUTNS_WITH_INCLUDED_MOVEMENT_AND_AVAILABLE_ONLY).setFilter(filter)
+					.setPageable(Boolean.FALSE).setPostable(Boolean.TRUE));
+			if(CollectionHelper.isEmpty(expenditures))
+				return;
+			expenditures.forEach(expenditure -> {
+				for(Expenditure index : __list__) {
+					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
+						index.copyMovementIncluded(expenditure).copyAvailable(expenditure).computeActualMinusMovementIncludedPlusAdjustment().computeAvailableMinusMovementIncludedPlusAdjustment();
 						break;
 					}
 				}

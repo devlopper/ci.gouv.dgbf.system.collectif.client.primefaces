@@ -10,38 +10,10 @@
 	
     <cyk:page value="#{expenditureListPage}">
     	<ui:define name="centerCenter">
-    		<p:remoteCommand name="updateIncludedMovement" actionListener="#{expenditureListPage.dataTable.value.updateIncludedMovement()}" update="@(.includedMovement),@(.actualMinusIncludedMovementPlusAdjustment)" autoRun="true" global="false"/>
-    		<p:remoteCommand name="updateAvailable" actionListener="#{expenditureListPage.dataTable.value.updateAvailable()}" update="@(.available)" autoRun="true" global="false"/>
-    		
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(expenditureListPage.dataTable)}">
-    			<ui:param name="dataTable" value="#{expenditureListPage.dataTable}"/> 
-    			
-    			<ui:define name="collectionColumnsAfterRowIndexBodies">				
-		    		<ui:fragment rendered="#{not column.inputable}">
-		    			<ui:decorate template="/collection/datatable/__columns__bodies.xhtml">
-		    				<ui:define name="columnsAfterRowIndexBodies11">
-		    					<p:outputPanel id="entryAuthorizationIncludedMovement" styleClass="includedMovement">
-		    						<h:outputText value="---" rendered="#{record.entryAuthorization.movementIncluded == null}"/>
-		    						<h:outputText value="#{dataTable.getCellValueByRecordByColumn(record,rowIndex,column,columnIndex)}" rendered="#{record.entryAuthorization.movementIncluded != null}"/>
-		    					</p:outputPanel>		    					
-		    				</ui:define>
-		    				<ui:define name="columnsAfterRowIndexBodies13">
-		    					<p:outputPanel id="entryAuthorizationActualMinusIncludedMovementPlusAdjustment" styleClass="actualMinusIncludedMovementPlusAdjustment">
-		    						<h:outputText value="---" rendered="#{record.entryAuthorization.actualMinusMovementIncludedPlusAdjustment == null}"/>
-		    						<h:outputText value="#{dataTable.getCellValueByRecordByColumn(record,rowIndex,column,columnIndex)}" rendered="#{record.entryAuthorization.actualMinusMovementIncludedPlusAdjustment != null}"/>
-		    					</p:outputPanel>
-		    				</ui:define>
-		    				<ui:define name="columnsAfterRowIndexBodies14">
-		    					<p:outputPanel id="entryAuthorizationAvailable" styleClass="available">
-		    						<h:outputText value="---" rendered="#{record.entryAuthorization.available == null}"/>
-		    						<h:outputText value="#{dataTable.getCellValueByRecordByColumn(record,rowIndex,column,columnIndex)}" rendered="#{record.entryAuthorization.available != null}"/>
-		    					</p:outputPanel>		    					
-		    				</ui:define>
-		    			</ui:decorate>
-		    		</ui:fragment>
-				</ui:define>		
+    			<ui:param name="dataTable" value="#{expenditureListPage.dataTable}"/>   			  
     		</ui:decorate>
-    		
+    		 
     		<ui:fragment rendered="#{expenditureListPage.dataTable.filterController.activitySelectionController != null}">
 	    		<ui:include src="/private/activity/__selection__.xhtml">
 		    		<ui:param name="activitySelectionController" value="#{expenditureListPage.dataTable.filterController.activitySelectionController}"/>
