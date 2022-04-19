@@ -51,7 +51,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ExpenditureFilterController();
+		filterController = new ExpenditureFilterController(Boolean.FALSE);
 	}
 	
 	@Override
