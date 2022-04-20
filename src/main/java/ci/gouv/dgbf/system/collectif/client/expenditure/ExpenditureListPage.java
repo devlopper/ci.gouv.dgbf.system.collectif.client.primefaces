@@ -107,7 +107,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		ExpenditureFilterController finalFilterController = filterController;
 		LazyDataModel finalLazyDataModel = lazyDataModel;
 		
-		RemoteCommand remoteCommand = dataTable.instantiateRemoteCommandWithFooterUpdate(new AbstractAction.Listener.AbstractImpl() {
+		RemoteCommand remoteCommand = dataTable.instantiateRemoteCommandWithFooterUpdate(REMOTE_COMMAND_UPDATE_INCLUDED_MOVEMENT_AVAILABLE_SUMS,new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			public Object act(AbstractAction action) {
 				finalLazyDataModel.updateIncludedMovementAndAvailable();
@@ -116,7 +116,6 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				return null;
 			}
 		}, List.of(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getActualMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText()));
-		remoteCommand.setName(REMOTE_COMMAND_UPDATE_INCLUDED_MOVEMENT_AVAILABLE_SUMS);
 		
 		Map<String, List<String>> parameters = filterController.asMap();
 		
@@ -211,7 +210,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvements Inclus(B)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mvt Icls(B)","Mouvements Inclus(B)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
@@ -223,13 +222,13 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
 						, fieldName,isInvestment(), Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement(C)", ExpenditureAmounts.FIELD_ADJUSTMENT
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajmt(C)", "Ajustement(C)", ExpenditureAmounts.FIELD_ADJUSTMENT
 						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+B", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
 						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-B+C)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif","Collectif(A-B+C)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			
 			return map;

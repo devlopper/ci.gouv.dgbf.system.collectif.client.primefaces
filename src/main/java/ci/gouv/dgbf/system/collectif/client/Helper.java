@@ -11,8 +11,10 @@ import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.string.Case;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
+import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
@@ -70,10 +72,10 @@ public interface Helper {
 		return value;
 	}
 	
-	public static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String fieldName1,String fieldName2,Boolean editable,Object amountsSum) {
+	public static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String title,String fieldName1,String fieldName2,Boolean editable,Object amountsSum) {
 		map.put(Column.FIELD_VALUE_TYPE, Value.Type.CURRENCY);
 		map.put(Column.FIELD_WIDTH, "120");
-		map.put(Column.FIELD_HEADER_TEXT, name);
+		map.put(Column.FIELD_HEADER_OUTPUT_TEXT, OutputText.build(OutputText.FIELD_VALUE,name,OutputText.FIELD_TITLE,ValueHelper.defaultToIfBlank(title, name)/*,OutputText.FIELD_STYLE,"color:red;font-size: 80%;"*/));
 		map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
 		map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);
 		map.put(Column.ConfiguratorImpl.FIELD_SHOW_FOOTER, Boolean.TRUE);
@@ -92,16 +94,21 @@ public interface Helper {
 		//map.put(Column.ConfiguratorImpl.FIELD_FOOTER_OUTPUT_TEXT_VALUE, readAmount(amountsSum, fieldName1, fieldName2));
 	}
 	
-	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
+	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String title,String amountValueFieldName,String fieldName
 			,Boolean both,Boolean editable,Object amountsSum) {
 		if(Boolean.TRUE.equals(both)) {
 			if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_ENTRY_AUTHORIZATION,amountValueFieldName,fieldName))
-				setAmountColumnArgumentsMap(map, name+" A.E.", Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
+				setAmountColumnArgumentsMap(map, name+" A.E.",title, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
 			else if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_PAYMENT_CREDIT,amountValueFieldName,fieldName))
-				setAmountColumnArgumentsMap(map, name+" C.P.", Expenditure.FIELD_PAYMENT_CREDIT, amountValueFieldName, editable, amountsSum);
+				setAmountColumnArgumentsMap(map, name+" C.P.",title, Expenditure.FIELD_PAYMENT_CREDIT, amountValueFieldName, editable, amountsSum);
 		}else {
-			setAmountColumnArgumentsMap(map, name, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
+			setAmountColumnArgumentsMap(map, name,title, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
 		}
+	}
+	
+	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
+			,Boolean both,Boolean editable,Object amountsSum) {
+		setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, name, name, amountValueFieldName, fieldName, both, editable, amountsSum);
 	}
 	
 	public static Number readAmount(Object instance,String fieldName1,String fieldName2) {
@@ -149,7 +156,7 @@ public interface Helper {
 		public interface Amounts {
 			
 			static void processColumnArguments(Map<Object,Object> map,String fieldName,Boolean both,Boolean editable,Object amountsSum) {
-				if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_INITIAL, fieldName))
+				/*if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_INITIAL, fieldName))
 					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_INITIAL, fieldName
 							, both,editable, amountsSum);
 				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_MOVEMENT, fieldName))
@@ -181,7 +188,7 @@ public interface Helper {
 							, fieldName, both,editable, amountsSum);
 				else if(Helper.isEntryAuthorizationOrPaymentCredit(ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
 					Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif(A-M+V)", ci.gouv.dgbf.system.collectif.server.client.rest.Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
-							, both,editable, amountsSum);
+							, both,editable, amountsSum);*/
 			}
 		}
 	}

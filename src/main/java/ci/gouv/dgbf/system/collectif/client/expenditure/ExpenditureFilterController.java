@@ -650,7 +650,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			if(actionInitial == null && activityInitial == null)
 				__strings__.add(budgetSpecializationUnitInitial.toString());
 			else
-				__strings__.add((budgetSpecializationUnitInitial.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnitInitial.getCode());
+				__strings__.add((budgetSpecializationUnitInitial.getCode() != null && budgetSpecializationUnitInitial.getCode().startsWith("1") ? "Dotation":"Programme")+" "+budgetSpecializationUnitInitial.getCode());
 		}
 		if(actionInitial != null) {
 			if(activityInitial == null)
