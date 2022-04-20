@@ -109,6 +109,8 @@ public class ExpenditureAdjustPage extends AbstractPageContainerManagedImpl impl
 							initialValues.put(updated.getIdentifier(), new Long[] {updated.getEntryAuthorization(Boolean.TRUE).getAdjustment(),updated.getPaymentCredit(Boolean.TRUE).getAdjustment()});
 						});
 						PrimeFaces.current().ajax().update(":form:"+dataTable.getIdentifier());
+						if(!Boolean.TRUE.equals(isRenderTypeDialog))
+							dataTable.getRemoteCommandByName(ExpenditureListPage.REMOTE_COMMAND_UPDATE_INCLUDED_MOVEMENT_AVAILABLE_SUMS).executeScript();
 						return ResponseHelper.getEntity(String.class, response);
 					}
 				},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");

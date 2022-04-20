@@ -17,15 +17,16 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.AbstractCommand;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.RemoteCommand;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 import org.primefaces.model.SortOrder;
 
@@ -103,6 +104,20 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
 		
+		ExpenditureFilterController finalFilterController = filterController;
+		LazyDataModel finalLazyDataModel = lazyDataModel;
+		
+		RemoteCommand remoteCommand = dataTable.instantiateRemoteCommandWithFooterUpdate(new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			public Object act(AbstractAction action) {
+				finalLazyDataModel.updateIncludedMovementAndAvailable();
+				finalLazyDataModel.updateSums();
+				dataTable.setColumnsFootersValuesFromMaster(finalFilterController.getExpendituresAmountsSum());
+				return null;
+			}
+		}, List.of(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getActualMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText()));
+		remoteCommand.setName(REMOTE_COMMAND_UPDATE_INCLUDED_MOVEMENT_AVAILABLE_SUMS);
+		
 		Map<String, List<String>> parameters = filterController.asMap();
 		
 		if(Boolean.TRUE.equals(dataTableListenerImpl.adjustmentEditable)) {
@@ -110,33 +125,19 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		}else {
 			dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureAdjustPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
 				, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
+			if(UserInterfaceAction.OPEN_VIEW_IN_DIALOG.equals(dataTableListenerImpl.adjustmentEditUserInterfaceAction)) {
+				AbstractCommand command = CollectionHelper.getLast(dataTable.getHeaderToolbarLeftCommands());
+				command.getAjaxes().get("dialogReturn").setListener(new AbstractAction.Listener.AbstractImpl() {
+					@Override
+					public Object act(AbstractAction action) {
+						remoteCommand.executeScript();
+						return null;
+					}
+				});
+			}
+			
 		}
 		
-		LazyDataModel finalLazyDataModel = lazyDataModel;
-		RemoteCommand remoteCommand = RemoteCommand.build();
-		remoteCommand.setListener(new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				finalLazyDataModel.updateIncludedMovementAndAvailable();;
-				return super.__runExecuteFunction__(action);
-			}
-		});
-		remoteCommand.addUpdatablesUsingStyleClass(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getActualMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText());
-		dataTable.addRemoteCommands(remoteCommand);
-		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, remoteCommand.getName()+"()");
-		/*
-		remoteCommand = RemoteCommand.build();
-		remoteCommand.setListener(new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				finalLazyDataModel.updateAvailable();
-				return super.__runExecuteFunction__(action);
-			}
-		});
-		remoteCommand.addUpdatablesUsingStyleClass(dataTableListenerImpl.getAvailableOutputText());
-		dataTable.addRemoteCommands(remoteCommand);
-		dataTable.getAjaxes().get("page").addEventScipts(Event.COMPLETE, remoteCommand.getName()+"()");
-		*/
 		return dataTable;
 	}
 	
@@ -243,6 +244,14 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			if(column.getFieldName().endsWith(Amounts.FIELD_AVAILABLE))
 				return availableOutputText;
 			return super.getCellOutputTextByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+			if(value == null && columnIndex > 7)
+				value = "chargement...";
+			return value;
 		}
 		
 		/*
@@ -352,7 +361,17 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				}
 			});
 		}
+		
+		public void updateSums() {
+			if(CollectionHelper.isEmpty(__list__)/* || __first__ > 0*/)
+				return;
+			Filter.Dto filter = ExpenditureFilterController.instantiateFilter(filterController, Boolean.TRUE);
+			filter.addField(Parameters.AMOUNT_SUMABLE, Boolean.TRUE);
+			filterController.setExpendituresAmountsSum(ResponseHelper.getEntity(Expenditure.class,__inject__(ExpenditureController.class).getAmountsSums(filter)));
+		}
 	}
+	
+	public static final String REMOTE_COMMAND_UPDATE_INCLUDED_MOVEMENT_AVAILABLE_SUMS = "update_included_movement_available_sums";
 	
 	public static final String OUTCOME = "expenditureListView";
 }

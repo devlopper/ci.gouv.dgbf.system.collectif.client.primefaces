@@ -77,7 +77,19 @@ public interface Helper {
 		map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
 		map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);
 		map.put(Column.ConfiguratorImpl.FIELD_SHOW_FOOTER, Boolean.TRUE);
-		map.put(Column.ConfiguratorImpl.FIELD_FOOTER_OUTPUT_TEXT_VALUE, readAmount(amountsSum, fieldName1, fieldName2));
+		map.put(Column.ConfiguratorImpl.FIELD_LISTENER, new Column.Listener.AbstractImpl() {
+			@Override
+			public Object readFooterValueFromMaster(Object master, String fieldName) {
+				if(master == null)
+					return null;
+				if(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT.equals(fieldName) && ((Expenditure)master).getEntryAuthorization() != null)
+					return ((Expenditure)master).getEntryAuthorization().getAdjustment();
+				if(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT.equals(fieldName) && ((Expenditure)master).getPaymentCredit() != null)
+					return ((Expenditure)master).getPaymentCredit().getAdjustment();
+				return super.readFooterValueFromMaster(master, fieldName);
+			}
+		});
+		//map.put(Column.ConfiguratorImpl.FIELD_FOOTER_OUTPUT_TEXT_VALUE, readAmount(amountsSum, fieldName1, fieldName2));
 	}
 	
 	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
