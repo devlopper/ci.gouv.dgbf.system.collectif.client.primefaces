@@ -67,6 +67,12 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	protected String __getWindowTitleValue__() {
 		if(legislativeActVersion == null)
 			return "Aucune version collectif budgétaire trouvée";
+		/*
+		if(readController != null)
+			return legislativeActVersion.getName()+" - "+TABS.stream().filter(tab -> tab.getParameterValue().equals(TAB_SUMMARY)).findFirst().get().getName();
+		if(regulatoryActFilterController != null)
+			return regulatoryActFilterController.generateWindowTitleValue(tabMenu.getSelected().getName());
+		*/
 		return legislativeActVersion.getName();
 	}
 	
@@ -101,7 +107,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	}
 	
 	private void buildTabSummary(Collection<Map<Object,Object>> cellsMaps) {
-		LegislativeActVersionReadController readController = new LegislativeActVersionReadController(legislativeActVersion);
+		readController = new LegislativeActVersionReadController(legislativeActVersion);
 		readController.initialize();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,readController.getLayout()));
 		/*

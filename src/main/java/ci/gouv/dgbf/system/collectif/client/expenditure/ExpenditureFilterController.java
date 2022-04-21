@@ -181,6 +181,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return sectionInitial;
 		if(FIELD_EXPENDITURE_NATURE_SELECT_ONE.equals(fieldName))
 			return expenditureNatureInitial;
+		if(FIELD_BUDGET_CATEGORY_SELECT_ONE.equals(fieldName))
+			return budgetCategoryInitial;
 		if(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE.equals(fieldName))
 			return budgetSpecializationUnitInitial;
 		if(FIELD_ACTION_SELECT_ONE.equals(fieldName))
@@ -227,6 +229,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		sectionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,expenditureNatureSelectOne,budgetSpecializationUnitSelectOne,actionSelectOne,activitySelectOne));
 		expenditureNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
+		budgetCategorySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
 		actionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
 		activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne));
@@ -238,6 +241,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	private void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
+		budgetCategorySelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		sectionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	
@@ -282,6 +286,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			return Parameters.SECTION_IDENTIFIER;
 		if(input == expenditureNatureSelectOne)
 			return Parameters.EXPENDITURE_NATURE_IDENTIFIER;
+		if(input == budgetCategorySelectOne)
+			return Parameters.BUDGET_CATEGORY_IDENTIFIER;
 		if(input == budgetSpecializationUnitSelectOne)
 			return Parameters.BUDGET_SPECIALIZATION_UNIT_IDENTIFIER;
 		if(input == actionSelectOne)
@@ -322,7 +328,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 					legislativeActVersionSelectOne.updateChoices();
 				legislativeActVersionSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier(); 
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Acte");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeAct.NAME);
 		//input.setValueAsFirstChoiceIfNull();
 		//input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
@@ -346,7 +352,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				super.select(input, legislativeActVersion);
 				
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Version");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Version"
+				,SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE,ci.gouv.dgbf.system.collectif.server.api.persistence.LegislativeActVersion.NAME);
 		return input;
 	}
 	
@@ -364,12 +371,12 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			public void select(AbstractInputChoiceOne input, BudgetCategory budgetCategory) {
 				super.select(input, budgetCategory);
 				
-				if(budgetSpecializationUnitSelectOne != null) {
+				/*if(budgetSpecializationUnitSelectOne != null) {
 					budgetSpecializationUnitSelectOne.updateChoices();
 					budgetSpecializationUnitSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
-				}
+				}*/
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"C.B.",SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE,"Catégorie de budget");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.BudgetCategory.NAME);
 		input.updateChoices();
 		return input;
 	}
@@ -423,7 +430,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 					//activitySelectOne.selectFirstChoice();
 				}
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"N.D.",SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE,ci.gouv.dgbf.system.collectif.server.api.persistence.ExpenditureNature.NAME);
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.ExpenditureNature.NAME,SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE
+				,ci.gouv.dgbf.system.collectif.server.api.persistence.ExpenditureNature.NAME);
 		input.updateChoices();
 		input.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		return input;
@@ -539,7 +547,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"N.E.");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.EconomicNature.INITIALS,SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE
+				,ci.gouv.dgbf.system.collectif.server.api.persistence.EconomicNature.NAME);
 		return input;
 	}
 	
@@ -559,7 +568,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
 				return choices;
 			}
-		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"S.F.");
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.FundingSource.INITIALS
+				,SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_TITLE,ci.gouv.dgbf.system.collectif.server.api.persistence.FundingSource.NAME);
 		return input;
 	}
 	
@@ -595,37 +605,37 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
 		if(legislativeActSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne.getOutputLabel().setTitle("Acte budgétaire"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActSelectOne,Cell.FIELD_WIDTH,7));	
 		}
 		
 		if(legislativeActVersionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel().setTitle("Version de l'acte budgétaire"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,3));
-		}
-		
-		if(sectionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,5));	
 		}
 		
 		if(budgetCategorySelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,2));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetCategorySelectOne,Cell.FIELD_WIDTH,5));	
 		}
 		
 		if(expenditureNatureSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,2));	
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,expenditureNatureSelectOne,Cell.FIELD_WIDTH,5));	
+		}
+		
+		if(sectionSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,sectionSelectOne,Cell.FIELD_WIDTH,11));	
 		}
 		
 		if(budgetSpecializationUnitSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne.getOutputLabel().setTitle("Unité de spécialisation du budget"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,budgetSpecializationUnitSelectOne,Cell.FIELD_WIDTH,3));
 		}
 
 		if(actionSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actionSelectOne.getOutputLabel().setTitle("Action"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actionSelectOne,Cell.FIELD_WIDTH,7));
 		}
 		
@@ -636,17 +646,17 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		}
 		
 		if(economicNatureSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,economicNatureSelectOne.getOutputLabel().setTitle("Nature économique"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,economicNatureSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,economicNatureSelectOne,Cell.FIELD_WIDTH,11));
 		}
 		
 		if(fundingSourceSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne.getOutputLabel().setTitle("Source de financement"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fundingSourceSelectOne,Cell.FIELD_WIDTH,2));
 		}
 		
 		if(lessorSelectOne != null) {
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne.getOutputLabel().setTitle("Bailleur"),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,lessorSelectOne,Cell.FIELD_WIDTH,8));
 		}
 		
@@ -669,7 +679,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		strings.add(prefix);
 		
 		Collection<String> __strings__ = new ArrayList<>();
-		
 		if(legislativeActInitial != null)
 			__strings__.add(legislativeActInitial.getName());
 		if(legislativeActVersionInitial != null)
@@ -678,12 +687,14 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 			strings.add(StringHelper.concatenate(__strings__, " - "));
 		
 		__strings__ = new ArrayList<>();
+		if(budgetCategoryInitial != null)
+			__strings__.add(budgetCategoryInitial.getName());
 		if(sectionInitial != null)
 			__strings__.add("Section "+sectionInitial.getCode());
 		
 		if(activityInitial == null) {
 			if(expenditureNatureInitial != null)
-				__strings__.add("Nature de dépense "+expenditureNatureInitial.toString());
+				__strings__.add(expenditureNatureInitial.getName());
 		}
 		
 		if(budgetSpecializationUnitInitial != null) {
@@ -853,6 +864,16 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		addParameter(map, Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, legislativeActVersionInitial);
 		if(!map.containsKey(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER))
 			addParameter(map, Parameters.LEGISLATIVE_ACT_IDENTIFIER, legislativeActInitial);
+		
+		if(budgetCategoryInitial != null && budgetSpecializationUnitInitial == null && actionInitial == null && activityInitial == null)
+			addParameter(map, buildParameterName(budgetCategorySelectOne), budgetCategoryInitial);
+		
+		if(expenditureNatureInitial != null && activityInitial == null)
+			addParameter(map, buildParameterName(expenditureNatureSelectOne), expenditureNatureInitial);
+		
+		if(sectionInitial != null && budgetSpecializationUnitInitial == null && actionInitial == null && activityInitial == null)
+			addParameter(map, buildParameterName(sectionSelectOne), sectionInitial);
+		
 		addParameter(map, Parameters.ACTIVITY_IDENTIFIER, activityInitial);
 		addParameter(map, Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO, availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial);
 		return map;
