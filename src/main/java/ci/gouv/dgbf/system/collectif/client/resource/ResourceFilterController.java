@@ -71,7 +71,7 @@ public class ResourceFilterController extends AbstractFilterController implement
 	public ResourceFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(computeLegislativeActVersionSumsAndTotal);
+			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter();
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		

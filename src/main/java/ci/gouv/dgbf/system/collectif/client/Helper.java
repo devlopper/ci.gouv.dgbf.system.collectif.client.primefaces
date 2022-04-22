@@ -19,9 +19,12 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.BudgetCategoryDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExerciseDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
+import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetCategory;
+import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetCategoryController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Exercise;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExerciseController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
@@ -44,20 +47,37 @@ public interface Helper {
 		return DependencyInjection.inject(LegislativeActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_IDENTIFIER), null);
 	}
 	
-	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(String identifier,Boolean computeSumsAndTotal) {
-		Controller.GetArguments arguments = new Controller.GetArguments();
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(String identifier) {
+		Controller.GetArguments arguments = new Controller.GetArguments() {
+			@Override
+			public void listenIdentifierIsBlank() {
+				setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE));
+			}
+		};
+		arguments.setIdentifierBlankable(Boolean.TRUE);
 		arguments.setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
 				,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE));
-		if(StringHelper.isBlank(identifier)) {
+		/*if(StringHelper.isBlank(identifier)) {
 			arguments.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE));
 			return DependencyInjection.inject(LegislativeActVersionController.class).getOne(arguments);
-		}
+		}*/
 		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifier(identifier, arguments);
 	}
 	
-	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(Boolean computeSumsAndTotal) {
-		return getLegislativeActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-				, computeSumsAndTotal);
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter() {
+		return getLegislativeActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER));
+	}
+	
+	public static BudgetCategory getBudgetCategoryFromRequestParameter(String identifier) {
+		Controller.GetArguments arguments = new Controller.GetArguments() {
+			@Override
+			public void listenIdentifierIsBlank() {
+				setFilter(new Filter.Dto().addField(Parameters.DEFAULT_VALUE, Boolean.TRUE));
+			}
+		};
+		arguments.setIdentifierBlankable(Boolean.TRUE);
+		arguments.setProjections(List.of(BudgetCategoryDto.JSON_IDENTIFIER,BudgetCategoryDto.JSON_CODE,BudgetCategoryDto.JSON_NAME));
+		return DependencyInjection.inject(BudgetCategoryController.class).getByIdentifier(identifier, arguments);
 	}
 	
 	public static Boolean isEntryAuthorizationOrPaymentCredit(String amountTypeFieldName,String amountValueFieldName,String fieldName) {

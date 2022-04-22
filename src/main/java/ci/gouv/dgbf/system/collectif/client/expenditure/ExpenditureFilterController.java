@@ -93,7 +93,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(computeLegislativeActVersionSumsAndTotal);
+			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter();
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		
