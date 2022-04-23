@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.time.TimeHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
@@ -22,11 +21,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Calendar
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.service.client.Controller;
 
-import ci.gouv.dgbf.system.collectif.client.Helper;
+import ci.gouv.dgbf.system.collectif.client.AbstractFilterControllerBasedLegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
@@ -36,22 +33,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true)
-public class RegulatoryActFilterController extends AbstractFilterController implements Serializable {
+public class RegulatoryActFilterController extends AbstractFilterControllerBasedLegislativeActVersion implements Serializable {
 
-	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,includedSelectOne;
+	private SelectOneCombo includedSelectOne;
 	private Calendar dateLowerThanOrEqualCalendar,dateGreaterThanOrEqualCalendar;
 	
-	private LegislativeAct legislativeActInitial;
-	private LegislativeActVersion legislativeActVersionInitial;
 	private Boolean includedInitial;
 	private Date dateLowerThanOrEqualInitial,dateGreaterThanOrEqualInitial;
 	
 	public RegulatoryActFilterController() {
-		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
-		if(legislativeActInitial == null)
-			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_INCLUDED));
 		dateLowerThanOrEqualInitial = ValueConverter.getInstance().convertToDate(NumberHelper.getLong(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_DATE_LOWER_THAN_OR_EQUAL)));
 		dateGreaterThanOrEqualInitial = ValueConverter.getInstance().convertToDate(NumberHelper.getLong(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_DATE_GREATER_THAN_OR_EQUAL)));

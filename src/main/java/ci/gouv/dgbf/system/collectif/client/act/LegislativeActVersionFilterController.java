@@ -23,6 +23,7 @@ import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import lombok.Getter;
@@ -38,7 +39,7 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 	
 	public LegislativeActVersionFilterController() {
 		if(legislativeActInitial == null)
-			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(null);
+			legislativeActInitial = __inject__(LegislativeActController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_IDENTIFIER));
 	}
 	
 	@Override

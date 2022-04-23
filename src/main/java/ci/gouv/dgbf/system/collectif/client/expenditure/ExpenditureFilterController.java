@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueConverter;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
@@ -24,13 +23,13 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 
+import ci.gouv.dgbf.system.collectif.client.AbstractFilterControllerBasedLegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActionDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActivityDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetSpecializationUnitDto;
-import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Activity;
@@ -61,17 +60,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true)
-public class ExpenditureFilterController extends AbstractFilterController implements Serializable {
+public class ExpenditureFilterController extends AbstractFilterControllerBasedLegislativeActVersion implements Serializable {
 
-	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,sectionSelectOne,expenditureNatureSelectOne,budgetCategorySelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
+	private SelectOneCombo sectionSelectOne,expenditureNatureSelectOne,budgetCategorySelectOne,budgetSpecializationUnitSelectOne,actionSelectOne
 		,activitySelectOne,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne,adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroSelectOne,availableMinusIncludedMovementPlusAdjustmentLessThanZeroSelectOne;
 	private ActivitySelectionController activitySelectionController;
 	
 	private Boolean isLegislativeActColumnShowable,isLegislativeActVersionColumnShowable,isSectionColumnShowable,isExpenditureNatureColumnShowable
 	,isBudgetSpecializationUnitColumnShowable,isActionColumnShowable,isActivityColumnShowable,isFundingSourceColumnShowable,isLessorColumnShowable;
 	
-	private LegislativeAct legislativeActInitial;
-	private LegislativeActVersion legislativeActVersionInitial;
 	private Section sectionInitial;
 	private AdministrativeUnit administrativeUnitInitial;
 	private ExpenditureNature expenditureNatureInitial;
@@ -93,12 +90,6 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	
 	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
-		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
-		if(legislativeActInitial == null)
-			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
-		
 		if(activityInitial == null) {
 			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER)
 					,new Controller.GetArguments().projections(ActivityDto.JSON_IDENTIFIER,ActivityDto.JSON_CODE,ActivityDto.JSON_NAME,ActivityDto.JSONS_BUDGET_CATEGORY_SECTION_ADMINISTRATIVE_UNIT_EXPENDITURE_NATURE_BUDGET_SPECIALIZATION_UNIT_ACTION

@@ -11,8 +11,6 @@ import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
@@ -20,33 +18,22 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOn
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.service.client.Controller;
 
-import ci.gouv.dgbf.system.collectif.client.Helper;
+import ci.gouv.dgbf.system.collectif.client.AbstractFilterControllerBasedLegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
+import ci.gouv.dgbf.system.collectif.server.client.rest.GeneratedAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
-import ci.gouv.dgbf.system.collectif.server.client.rest.GeneratedAct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true)
-public class GeneratedActFilterController extends AbstractFilterController implements Serializable {
+public class GeneratedActFilterController extends AbstractFilterControllerBasedLegislativeActVersion implements Serializable {
 
-	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne;
-	
-	private LegislativeAct legislativeActInitial;
-	private LegislativeActVersion legislativeActVersionInitial;
-	
 	public GeneratedActFilterController() {
-		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
-		if(legislativeActInitial == null)
-			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
+		
 	}
 	
 	@Override

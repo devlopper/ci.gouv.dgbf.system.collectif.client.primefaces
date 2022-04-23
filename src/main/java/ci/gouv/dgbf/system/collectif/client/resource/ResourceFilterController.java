@@ -14,7 +14,6 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
@@ -24,11 +23,10 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 
-import ci.gouv.dgbf.system.collectif.client.Helper;
+import ci.gouv.dgbf.system.collectif.client.AbstractFilterControllerBasedLegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.client.ResourceActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetSpecializationUnitDto;
-import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ResourceActivityDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnit;
 import ci.gouv.dgbf.system.collectif.server.client.rest.BudgetSpecializationUnitController;
@@ -49,17 +47,15 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true)
-public class ResourceFilterController extends AbstractFilterController implements Serializable {
+public class ResourceFilterController extends AbstractFilterControllerBasedLegislativeActVersion implements Serializable {
 
-	private SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,sectionSelectOne,budgetSpecializationUnitSelectOne
+	private SelectOneCombo sectionSelectOne,budgetSpecializationUnitSelectOne
 		,activitySelectOne,economicNatureSelectOne;
 	private ResourceActivitySelectionController activitySelectionController;
 	
 	private Boolean isLegislativeActColumnShowable,isLegislativeActVersionColumnShowable,isSectionColumnShowable
 	,isBudgetSpecializationUnitColumnShowable,isActivityColumnShowable;
 	
-	private LegislativeAct legislativeActInitial;
-	private LegislativeActVersion legislativeActVersionInitial;
 	private Section sectionInitial;
 	private BudgetSpecializationUnit budgetSpecializationUnitInitial;
 	private ResourceActivity activityInitial;
@@ -71,12 +67,6 @@ public class ResourceFilterController extends AbstractFilterController implement
 	
 	public ResourceFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
-		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
-		if(legislativeActInitial == null)
-			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
-		
 		if(activityInitial == null) {
 			activityInitial = __inject__(ResourceActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.RESOURCE_ACTIVITY_IDENTIFIER)
 					,new Controller.GetArguments().projections(ResourceActivityDto.JSON_IDENTIFIER,ResourceActivityDto.JSON_CODE,ResourceActivityDto.JSON_NAME,ResourceActivityDto.JSONS_SECTION_BUDGET_SPECIALIZATION_UNIT
