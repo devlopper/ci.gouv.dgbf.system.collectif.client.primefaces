@@ -47,25 +47,26 @@ public interface Helper {
 		return DependencyInjection.inject(LegislativeActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_IDENTIFIER), null);
 	}
 	
-	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter(String identifier) {
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameters(String identifier) {
 		Controller.GetArguments arguments = new Controller.GetArguments() {
-			@Override
+			/*@Override
 			public void listenIdentifierIsBlank() {
 				setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE));
-			}
+			}*/
 		};
-		arguments.setIdentifierBlankable(Boolean.TRUE);
+		//arguments.setIdentifierBlankable(Boolean.TRUE);
+		
 		arguments.setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
 				,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE));
 		/*if(StringHelper.isBlank(identifier)) {
 			arguments.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE));
 			return DependencyInjection.inject(LegislativeActVersionController.class).getOne(arguments);
 		}*/
-		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifier(identifier, arguments);
+		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(identifier, arguments);
 	}
 	
-	public static LegislativeActVersion getLegislativeActVersionFromRequestParameter() {
-		return getLegislativeActVersionFromRequestParameter(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER));
+	public static LegislativeActVersion getLegislativeActVersionFromRequestParameters() {
+		return getLegislativeActVersionFromRequestParameters(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER));
 	}
 	
 	public static BudgetCategory getBudgetCategoryFromRequestParameter(String identifier) {

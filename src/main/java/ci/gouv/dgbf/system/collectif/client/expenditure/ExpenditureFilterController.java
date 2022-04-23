@@ -30,6 +30,7 @@ import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActionDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.ActivityDto;
 import ci.gouv.dgbf.system.collectif.server.api.service.BudgetSpecializationUnitDto;
+import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Action;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ActionController;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Activity;
@@ -93,7 +94,8 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter();
+			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
+					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		
@@ -129,7 +131,7 @@ public class ExpenditureFilterController extends AbstractFilterController implem
 		}
 		
 		if(budgetCategoryInitial == null)
-			budgetCategoryInitial = __inject__(BudgetCategoryController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGET_CATEGORY_IDENTIFIER));
+			budgetCategoryInitial = __inject__(BudgetCategoryController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.BUDGET_CATEGORY_IDENTIFIER));
 		
 		if(sectionInitial == null)
 			sectionInitial = __inject__(SectionController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.SECTION_IDENTIFIER));

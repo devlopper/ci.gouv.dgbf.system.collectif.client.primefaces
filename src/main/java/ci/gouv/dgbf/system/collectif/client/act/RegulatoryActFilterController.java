@@ -22,9 +22,11 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.Calendar
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
@@ -46,7 +48,8 @@ public class RegulatoryActFilterController extends AbstractFilterController impl
 	
 	public RegulatoryActFilterController() {
 		if(legislativeActVersionInitial == null)
-			legislativeActVersionInitial = Helper.getLegislativeActVersionFromRequestParameter(null);
+			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
+					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
 		if(legislativeActInitial == null)
 			legislativeActInitial = Helper.getLegislativeActFromRequestParameter(legislativeActVersionInitial);
 		includedInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.REGULATORY_ACT_INCLUDED));

@@ -5,21 +5,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.collectif.client.Helper;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.collectif.server.api.service.LegislativeActVersionDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeAct;
 import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -136,6 +141,12 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 	
 	public static Filter.Dto instantiateFilter(LegislativeActVersionFilterController controller,Boolean initial) {
 		return populateFilter(new Filter.Dto(), controller,initial);
+	}
+	
+	public static LegislativeActVersion getFromRequestParameter() {
+		return DependencyInjection.inject(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
+				, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
+						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE)));
 	}
 	
 	public static final String FIELD_BUDGETARY_ACT_SELECT_ONE = "legislativeActSelectOne";
