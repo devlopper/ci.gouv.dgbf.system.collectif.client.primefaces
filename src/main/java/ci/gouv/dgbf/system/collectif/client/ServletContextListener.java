@@ -38,5 +38,6 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		//ClientRequestFilterImpl.LOG_LEVEL = Level.INFO;
 		
 		//org.cyk.utility.service.client.ClientRequestFilter.LOG_LEVEL = java.util.logging.Level.INFO;
+		ci.gouv.dgbf.system.collectif.server.client.rest.ApplicationLifeCycleListener.initialize();
 	}	
 }

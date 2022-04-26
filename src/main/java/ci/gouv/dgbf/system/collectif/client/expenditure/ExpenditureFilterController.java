@@ -150,6 +150,12 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 	}
 	
 	@Override
+	protected void buildFilterCommandButton() {
+		super.buildFilterCommandButton();
+		filterCommandButton.setImmediate(Boolean.TRUE);
+	}
+	
+	@Override
 	public ExpenditureFilterController build() {
 		if(Boolean.TRUE.equals(computeLegislativeActVersionSumsAndTotal)) {
 			Filter.Dto filter = new Filter.Dto();
