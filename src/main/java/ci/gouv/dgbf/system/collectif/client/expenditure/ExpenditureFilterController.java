@@ -152,7 +152,13 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 	@Override
 	protected void buildFilterCommandButton() {
 		super.buildFilterCommandButton();
-		filterCommandButton.setImmediate(Boolean.TRUE);
+		//filterCommandButton.setImmediate(Boolean.TRUE);
+		/*System.out.println("ExpenditureFilterController.buildFilterCommandButton() 0 ::: "+filterCommandButton.getProcess());
+		Collection<AbstractInput> inputs = CollectionHelper.filterByInstanceOf(AbstractInput.class, getInputs());
+		if(CollectionHelper.isNotEmpty(inputs))
+			filterCommandButton.setProcess(inputs.stream().map(input -> String.format("@(.%s)",input.getStyleClassAsIdentifier())).collect(Collectors.joining(",")));
+		System.out.println("ExpenditureFilterController.buildFilterCommandButton() 1 ::: "+filterCommandButton.getProcess());
+		*/
 	}
 	
 	@Override
@@ -211,9 +217,11 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
 		buildInputSelectOne(FIELD_ACTION_SELECT_ONE, Action.class);
 		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, Activity.class);
+		/*
 		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);
 		buildInputSelectOne(FIELD_FUNDING_SOURCE_SELECT_ONE, FundingSource.class);
 		buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
+		*/
 		buildInputSelectOne(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE, Boolean.class);
 		buildInputSelectOne(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE, Boolean.class);
 		
@@ -231,10 +239,14 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		budgetCategorySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		budgetSpecializationUnitSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,actionSelectOne,activitySelectOne));		
 		actionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,activitySelectOne));
-		activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne));
+		activitySelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE/*,economicNatureSelectOne,fundingSourceSelectOne,lessorSelectOne*/));
+		
+		//TODO there is a bug : when funding source or lessor is selected click on button does not work
+		/*
 		economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		fundingSourceSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 		lessorSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
+		*/
 	}
 	
 	private void selectByValueSystemIdentifier() {
@@ -564,7 +576,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 				else
 					choices = __inject__(FundingSourceController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				//CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				CollectionHelper.addElementAt(choices, 0, null);
 				return choices;
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.collectif.server.api.persistence.FundingSource.INITIALS
@@ -585,7 +598,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 				else
 					choices = __inject__(LessorController.class).getByParentIdentifier(Parameters.ACTIVITY_IDENTIFIER
 						, (String)FieldHelper.readSystemIdentifier(activitySelectOne.getValue()));
-				CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				//CollectionHelper.addNullAtFirstIfSizeGreaterThanOne(choices);
+				CollectionHelper.addElementAt(choices, 0, null);
 				return choices;
 			}
 		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Bailleur");
