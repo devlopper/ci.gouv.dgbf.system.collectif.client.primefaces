@@ -76,6 +76,12 @@
 			<artifactId>jee-utility-primefaces</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.cyk.jee.utility.file.excel</groupId>
+			<artifactId>jee-utility-file-excel</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>
