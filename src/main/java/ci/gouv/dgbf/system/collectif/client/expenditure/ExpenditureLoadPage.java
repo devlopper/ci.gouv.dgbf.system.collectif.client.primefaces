@@ -60,7 +60,8 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	private Collection<Expenditure> expenditures = new ArrayList<>();
 	private DataTable dataTable;
 	
-	private Collection<String> nullCodes,duplicatesIdentifiers,unknownActivitiesCodes,unknownEconomicsNaturesCodes,unknownFundingsSourcesCodes,unknownLessorsCodes;
+	private Collection<String> undefinedActivitiesCodesIdentifiers,undefinedEconomicsNaturesCodesIdentifiers,undefinedFundingsSourcesCodesIdentifiers,undefinedLessorsCodesIdentifiers
+	,duplicatesIdentifiers,unknownActivitiesCodes,unknownEconomicsNaturesCodes,unknownFundingsSourcesCodes,unknownLessorsCodes;
 	
 	@Override
 	protected void __listenAfterPostConstruct__() {
@@ -118,11 +119,17 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 		Response response = controller.verifyLoadable(expenditures);
 		String message = ResponseHelper.getEntity(String.class, response);
 		Severity severity = null;
-		if(ResponseHelper.hasHeaderAny(response,ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNKNOWN_ACTIVITIES_CODES
-				,ExpenditureService.HEADER_UNKNOWN_ECONOMICS_NATURES_CODES,ExpenditureService.HEADER_UNKNOWN_FUNDINGS_SOURCES_CODES,ExpenditureService.HEADER_UNKNOWN_LESSORS_CODES)) {
+		if(ResponseHelper.hasHeaderAny(response,ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS
+				,ExpenditureService.HEADER_UNDEFINED_FUNDINGS_SOURCES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_LESSORS_CODES_IDENTIFIERS
+				,ExpenditureService.HEADER_UNKNOWN_ACTIVITIES_CODES,ExpenditureService.HEADER_UNKNOWN_ECONOMICS_NATURES_CODES,ExpenditureService.HEADER_UNKNOWN_FUNDINGS_SOURCES_CODES,ExpenditureService.HEADER_UNKNOWN_LESSORS_CODES)) {
 			severity = Severity.WARNING;
 			duplicatesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS),","));
-			nullCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_CODES_IDENTIFIERS),","));
+			
+			undefinedActivitiesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS),","));
+			undefinedEconomicsNaturesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS),","));
+			undefinedFundingsSourcesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_FUNDINGS_SOURCES_CODES_IDENTIFIERS),","));
+			undefinedLessorsCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_LESSORS_CODES_IDENTIFIERS),","));
+			
 			unknownActivitiesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_ACTIVITIES_CODES),","));
 			unknownEconomicsNaturesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_ECONOMICS_NATURES_CODES),","));
 			unknownFundingsSourcesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_FUNDINGS_SOURCES_CODES),","));
@@ -163,17 +170,22 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 		public String getStyleClassByRecord(Object record, Integer recordIndex) {
 			if(record instanceof Expenditure && duplicatesIdentifiers != null && duplicatesIdentifiers.contains(((Expenditure)record).getIdentifier()))
 				return "cyk-background-red";
-			if(record instanceof Expenditure && nullCodes != null && nullCodes.contains(((Expenditure)record).getIdentifier()))
-				return "cyk-background-yellow";
 			return super.getStyleClassByRecord(record, recordIndex);
 		}
 		
 		@Override
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(isUndefinedCode(record, column, Expenditure.FIELD_ACTIVITY_CODE, undefinedActivitiesCodesIdentifiers) || isUndefinedCode(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, undefinedEconomicsNaturesCodesIdentifiers)
+					|| isUndefinedCode(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, undefinedFundingsSourcesCodesIdentifiers) || isUndefinedCode(record, column, Expenditure.FIELD_LESSOR_CODE, undefinedLessorsCodesIdentifiers))
+				return "cyk-background-undefined-code";
 			if(isUnknownCode(record, column, Expenditure.FIELD_ACTIVITY_CODE, unknownActivitiesCodes) || isUnknownCode(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, unknownEconomicsNaturesCodes)
 					|| isUnknownCode(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, unknownFundingsSourcesCodes) || isUnknownCode(record, column, Expenditure.FIELD_LESSOR_CODE, unknownLessorsCodes))
 				return "cyk-background-unknown-code";
 			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
+		}
+		
+		private Boolean isUndefinedCode(Object record, Column column,String fieldName,Collection<String> identifiers) {
+			return record instanceof Expenditure && column != null && fieldName.equals(column.getFieldName()) && identifiers != null && identifiers.contains(FieldHelper.read(record,Expenditure.FIELD_IDENTIFIER));
 		}
 		
 		private Boolean isUnknownCode(Object record, Column column,String fieldName,Collection<String> codes) {
