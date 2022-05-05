@@ -21,6 +21,7 @@ import org.cyk.utility.__kernel__.user.interface_.message.MessageRenderer;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.user.interface_.message.Severity;
 import org.cyk.utility.client.controller.web.ComponentHelper;
+import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
@@ -40,9 +41,12 @@ import org.cyk.utility.rest.ResponseHelper;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
+import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureService;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Expenditure;
 import ci.gouv.dgbf.system.collectif.server.client.rest.ExpenditureController;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersion;
+import ci.gouv.dgbf.system.collectif.server.client.rest.LegislativeActVersionController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -50,11 +54,14 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implements Serializable  {
 
+	private LegislativeActVersion legislativeActVersion;
+	
 	@Inject WorkBookGetter workBookGetter;
 	@Inject SheetGetter sheetGetter;
 	@Inject SheetReader sheetReader;
 	
 	@Inject ExpenditureController controller;
+	@Inject LegislativeActVersionController legislativeActVersionController;
 	
 	private Layout layout;
 	private Collection<Expenditure> expenditures = new ArrayList<>();
@@ -66,6 +73,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	@Override
 	protected void __listenAfterPostConstruct__() {
 		super.__listenAfterPostConstruct__();
+		legislativeActVersion = legislativeActVersionController.getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER));
 		buildLayout();
 	}
 	
@@ -116,7 +124,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	}
 	
 	private void verify() {
-		Response response = controller.verifyLoadable(expenditures);
+		Response response = controller.verifyLoadable(legislativeActVersion,expenditures);
 		String message = ResponseHelper.getEntity(String.class, response);
 		Severity severity = null;
 		if(ResponseHelper.hasHeaderAny(response,ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS
@@ -141,7 +149,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	
 	@Override
 	protected String __getWindowTitleValue__() {
-		return "Chargement d'ajustements de dépenses à partir d'un fichier";
+		return String.format("Chargement d'ajustements de dépenses dans %s à partir de fichier",legislativeActVersion == null ? "???" : legislativeActVersion.getName());
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
