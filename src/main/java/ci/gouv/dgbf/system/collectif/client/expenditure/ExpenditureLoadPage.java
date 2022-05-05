@@ -28,16 +28,15 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.FileUpload;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
-import org.cyk.utility.file.excel.Sheet;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.file.excel.SheetGetter;
 import org.cyk.utility.file.excel.SheetReader;
-import org.cyk.utility.file.excel.WorkBook;
 import org.cyk.utility.file.excel.WorkBookGetter;
 import org.cyk.utility.rest.ResponseHelper;
+import org.omnifaces.util.Ajax;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
@@ -56,8 +55,6 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 
 	private LegislativeActVersion legislativeActVersion;
 	
-	@Inject WorkBookGetter workBookGetter;
-	@Inject SheetGetter sheetGetter;
 	@Inject SheetReader sheetReader;
 	
 	@Inject ExpenditureController controller;
@@ -79,14 +76,12 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	
 	private void buildLayout() {
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		FileUpload fileUpload = FileUpload.build(FileUpload.FIELD_AUTO,Boolean.TRUE,FileUpload.FIELD_ALLOW_TYPES,"/(\\.|\\/)(xlsx)$/");
-		fileUpload.setEventScript(Event.START, "alert('Uploading...');");
+		FileUpload fileUpload = FileUpload.build(FileUpload.FIELD_MODE,"advanced",FileUpload.FIELD_MULTIPLE,Boolean.TRUE,FileUpload.FIELD_FILE_LIMIT,5,/*FileUpload.FIELD_AUTO,Boolean.TRUE,*/FileUpload.FIELD_ALLOW_TYPES,"/(\\.|\\/)(xlsx)$/");
+		fileUpload.setEventScript(Event.START, "PF('statusDialog').show();");
 		fileUpload.setListener(new FileUpload.Listener.AbstractImpl() {
 			@Override
 			protected void listenFileUploadedNotEmpty(FileUploadEvent event, byte[] bytes) {
-				WorkBook workBook = workBookGetter.get(bytes);
-				Sheet sheet = sheetGetter.get(workBook, 0);
-				String[][] arrays = sheetReader.read(sheet,null,null,1,null);
+				String[][] arrays = sheetReader.read(new SheetReader.Arguments().setFromRowIndex(1).setSheetGetterArguments(new SheetGetter.Arguments().setWorkBookGetterArguments(new WorkBookGetter.Arguments().setBytes(bytes))));
 				if(arrays != null && arrays.length > 0) {
 					for(Integer index = 0; index < arrays.length; index = index + 1) {
 						String[] array = arrays[index];
@@ -97,11 +92,12 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 				verify();
 				dataTable.setValue(expenditures);
 				fileUpload.setValue(null);
+				Ajax.oncomplete("PF('statusDialog').hide();");
 				PrimeFaces.current().ajax().update(ComponentHelper.GLOBAL_MESSAGES_TARGET_INLINE_CLIENT_IDENTIFIER,":form:"+fileUpload.getIdentifier(),":form:"+dataTable.getIdentifier());
 			}
 		});
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fileUpload,Cell.FIELD_WIDTH,12));
-		
+		/*
 		CommandButton commandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Vérifier",CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.GROWL)
 				,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -112,11 +108,31 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 			}
 		});
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,commandButton,Cell.FIELD_WIDTH,12));
-		
+		*/
 		dataTable = DataTable.build(DataTable.FIELD_VALUE,expenditures,DataTable.FIELD_LAZY,Boolean.FALSE,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
 				,List.of(Expenditure.FIELD_ACTIVITY_CODE,Expenditure.FIELD_ECONOMIC_NATURE_CODE,Expenditure.FIELD_FUNDING_SOURCE_CODE,Expenditure.FIELD_LESSOR_CODE
 						,Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT,Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT)
 				,DataTable.FIELD_RENDER_TYPE,DataTable.RenderType.OUTPUT_UNSELECTABLE,DataTable.FIELD_LISTENER,new DataTableListenerImpl());
+		
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Vérifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.GROWL)
+				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				verify();
+				return null;
+			}
+		});
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Charger",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.INLINE,RenderType.GROWL)
+				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				load();
+				return null;
+			}
+		});
 		
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,dataTable,Cell.FIELD_WIDTH,12));
 		
@@ -125,6 +141,15 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	
 	private void verify() {
 		Response response = controller.verifyLoadable(legislativeActVersion,expenditures);
+		renderMessages(response);
+	}
+	
+	private void load() {
+		Response response = controller.load(legislativeActVersion,expenditures);
+		renderMessages(response);
+	}
+	
+	private void renderMessages(Response response) {
 		String message = ResponseHelper.getEntity(String.class, response);
 		Severity severity = null;
 		if(ResponseHelper.hasHeaderAny(response,ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS
