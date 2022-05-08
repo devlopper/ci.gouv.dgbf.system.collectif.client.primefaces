@@ -11,8 +11,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
@@ -64,8 +62,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	private Collection<Expenditure> expenditures = new ArrayList<>();
 	private DataTable dataTable;
 	
-	private Collection<String> undefinedActivitiesCodesIdentifiers,undefinedEconomicsNaturesCodesIdentifiers,undefinedFundingsSourcesCodesIdentifiers,undefinedLessorsCodesIdentifiers
-	,duplicatesIdentifiers,unknownActivitiesCodes,unknownEconomicsNaturesCodes,unknownFundingsSourcesCodes,unknownLessorsCodes;
+	private ExpenditureService.LoadableVerificationResultDto loadableVerificationResult;
 	
 	@Override
 	protected void __listenAfterPostConstruct__() {
@@ -89,7 +86,9 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 								.setEntryAuthorizationAdjustment(NumberHelper.getLong(array[4])).setPaymentCreditAdjustment(NumberHelper.getLong(array[5])));
 					}
 				}
-				verify();
+				if(!Boolean.TRUE.equals(fileUpload.getMultiple())) {
+					verify();
+				}
 				dataTable.setValue(expenditures);
 				fileUpload.setValue(null);
 				Ajax.oncomplete("PF('statusDialog').hide();");
@@ -97,18 +96,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 			}
 		});
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,fileUpload,Cell.FIELD_WIDTH,12));
-		/*
-		CommandButton commandButton = CommandButton.build(CommandButton.FIELD_VALUE,"Vérifier",CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.GROWL)
-				,CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				verify();
-				return null;
-			}
-		});
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,commandButton,Cell.FIELD_WIDTH,12));
-		*/
+		
 		dataTable = DataTable.build(DataTable.FIELD_VALUE,expenditures,DataTable.FIELD_LAZY,Boolean.FALSE,DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES
 				,List.of(Expenditure.FIELD_ACTIVITY_CODE,Expenditure.FIELD_ECONOMIC_NATURE_CODE,Expenditure.FIELD_FUNDING_SOURCE_CODE,Expenditure.FIELD_LESSOR_CODE
 						,Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT,Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT)
@@ -150,26 +138,13 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	}
 	
 	private void renderMessages(Response response) {
-		String message = ResponseHelper.getEntity(String.class, response);
+		loadableVerificationResult = ResponseHelper.getEntity(ExpenditureService.LoadableVerificationResultDto.class, response);
 		Severity severity = null;
-		if(ResponseHelper.hasHeaderAny(response,ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS
-				,ExpenditureService.HEADER_UNDEFINED_FUNDINGS_SOURCES_CODES_IDENTIFIERS,ExpenditureService.HEADER_UNDEFINED_LESSORS_CODES_IDENTIFIERS
-				,ExpenditureService.HEADER_UNKNOWN_ACTIVITIES_CODES,ExpenditureService.HEADER_UNKNOWN_ECONOMICS_NATURES_CODES,ExpenditureService.HEADER_UNKNOWN_FUNDINGS_SOURCES_CODES,ExpenditureService.HEADER_UNKNOWN_LESSORS_CODES)) {
+		if(loadableVerificationResult.hasWarnings())
 			severity = Severity.WARNING;
-			duplicatesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_DUPLICATES_IDENTIFIERS),","));
-			
-			undefinedActivitiesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_ACTIVITIES_CODES_IDENTIFIERS),","));
-			undefinedEconomicsNaturesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_ECONOMICS_NATURES_CODES_IDENTIFIERS),","));
-			undefinedFundingsSourcesCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_FUNDINGS_SOURCES_CODES_IDENTIFIERS),","));
-			undefinedLessorsCodesIdentifiers = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNDEFINED_LESSORS_CODES_IDENTIFIERS),","));
-			
-			unknownActivitiesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_ACTIVITIES_CODES),","));
-			unknownEconomicsNaturesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_ECONOMICS_NATURES_CODES),","));
-			unknownFundingsSourcesCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_FUNDINGS_SOURCES_CODES),","));
-			unknownLessorsCodes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(response.getHeaderString(ExpenditureService.HEADER_UNKNOWN_LESSORS_CODES),","));
-		}else
+		else
 			severity = Severity.INFORMATION;
-		__inject__(MessageRenderer.class).render(message,severity, RenderType.INLINE);
+		__inject__(MessageRenderer.class).render(loadableVerificationResult.getMessage(),severity, RenderType.INLINE);
 	}
 	
 	@Override
@@ -201,27 +176,39 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 		
 		@Override
 		public String getStyleClassByRecord(Object record, Integer recordIndex) {
-			if(record instanceof Expenditure && duplicatesIdentifiers != null && duplicatesIdentifiers.contains(((Expenditure)record).getIdentifier()))
+			if(record instanceof Expenditure && loadableVerificationResult != null && Boolean.TRUE.equals(loadableVerificationResult.containsDuplicates(((Expenditure)record).getIdentifier())))
 				return "cyk-background-red";
 			return super.getStyleClassByRecord(record, recordIndex);
 		}
 		
 		@Override
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
-			if(isUndefinedCode(record, column, Expenditure.FIELD_ACTIVITY_CODE, undefinedActivitiesCodesIdentifiers) || isUndefinedCode(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, undefinedEconomicsNaturesCodesIdentifiers)
-					|| isUndefinedCode(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, undefinedFundingsSourcesCodesIdentifiers) || isUndefinedCode(record, column, Expenditure.FIELD_LESSOR_CODE, undefinedLessorsCodesIdentifiers))
-				return "cyk-background-undefined-code";
-			if(isUnknownCode(record, column, Expenditure.FIELD_ACTIVITY_CODE, unknownActivitiesCodes) || isUnknownCode(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, unknownEconomicsNaturesCodes)
-					|| isUnknownCode(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, unknownFundingsSourcesCodes) || isUnknownCode(record, column, Expenditure.FIELD_LESSOR_CODE, unknownLessorsCodes))
-				return "cyk-background-unknown-code";
+			if(loadableVerificationResult != null) {
+				if(isUndefined(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUndefinedActivities()) 
+						|| isUndefined(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUndefinedEconomicsNatures())
+						|| isUndefined(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUndefinedFundingsSources()) 
+						|| isUndefined(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUndefinedLessors())
+						|| isUndefined(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUndefinedEntriesAuthorizationsAdjustments())
+						|| isUndefined(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUndefinedPaymentsCreditsAdjustments())
+						)
+					return "cyk-background-undefined";
+				if(isUnknown(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUnknownActivities()) 
+						|| isUnknown(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUnknownEconomicsNatures())
+						|| isUnknown(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUnknownFundingsSources()) 
+						|| isUnknown(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUnknownLessors())
+						|| isUnknown(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUnknownEntriesAuthorizationsAdjustments())
+						|| isUnknown(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUnknownPaymentsCreditsAdjustments())
+						)
+					return "cyk-background-unknown";
+			}			
 			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
-		private Boolean isUndefinedCode(Object record, Column column,String fieldName,Collection<String> identifiers) {
+		private Boolean isUndefined(Object record, Column column,String fieldName,Collection<String> identifiers) {
 			return record instanceof Expenditure && column != null && fieldName.equals(column.getFieldName()) && identifiers != null && identifiers.contains(FieldHelper.read(record,Expenditure.FIELD_IDENTIFIER));
 		}
 		
-		private Boolean isUnknownCode(Object record, Column column,String fieldName,Collection<String> codes) {
+		private Boolean isUnknown(Object record, Column column,String fieldName,Collection<String> codes) {
 			return record instanceof Expenditure && column != null && fieldName.equals(column.getFieldName()) && codes != null && codes.contains(FieldHelper.read(record,fieldName));
 		}
 	}
