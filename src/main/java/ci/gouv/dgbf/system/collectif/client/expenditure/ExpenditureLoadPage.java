@@ -298,4 +298,6 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 			return StringUtils.defaultString(value == null ? "" : value.toString()) + String.format("(%s)",text);
 		}
 	}
+	
+	public static final String OUTCOME = "expenditureLoadView";
 }

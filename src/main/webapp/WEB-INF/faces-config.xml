@@ -33,6 +33,12 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>expenditureLoadView</from-outcome>
+			<to-view-id>/private/expenditure/load/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Resource -->
 		
 		<navigation-case>
