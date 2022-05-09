@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
@@ -73,7 +76,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 	
 	private void buildLayout() {
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
-		FileUpload fileUpload = FileUpload.build(FileUpload.FIELD_MODE,"advanced",FileUpload.FIELD_MULTIPLE,Boolean.TRUE,FileUpload.FIELD_FILE_LIMIT,5,/*FileUpload.FIELD_AUTO,Boolean.TRUE,*/FileUpload.FIELD_ALLOW_TYPES,"/(\\.|\\/)(xlsx)$/");
+		FileUpload fileUpload = FileUpload.build(FileUpload.FIELD_MODE,"advanced",FileUpload.FIELD_MULTIPLE,Boolean.FALSE,FileUpload.FIELD_FILE_LIMIT,1,FileUpload.FIELD_AUTO,Boolean.TRUE,FileUpload.FIELD_ALLOW_TYPES,"/(\\.|\\/)(xlsx)$/");
 		fileUpload.setEventScript(Event.START, "PF('statusDialog').show();");
 		fileUpload.setListener(new FileUpload.Listener.AbstractImpl() {
 			@Override
@@ -82,12 +85,20 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 				if(arrays != null && arrays.length > 0) {
 					for(Integer index = 0; index < arrays.length; index = index + 1) {
 						String[] array = arrays[index];
+						Optional<Expenditure> expenditure = expenditures.stream().filter(i -> ((i.getActivityCode() == null && array[0] == null) || (i.getActivityCode() != null && array[0] != null && i.getActivityCode().equals(array[0]))) 
+								&& ((i.getEconomicNatureCode() == null && array[1] == null) || (i.getEconomicNatureCode() != null && array[1] != null && i.getEconomicNatureCode().equals(array[1])))
+								&& ((i.getFundingSourceCode() == null && array[2] == null) || (i.getFundingSourceCode() != null && array[2] != null && i.getFundingSourceCode().equals(array[2])))
+								&& ((i.getLessorCode() == null && array[3] == null) || (i.getLessorCode() != null && array[3] != null && i.getLessorCode().equals(array[3])))
+								).findFirst();
+						if(expenditure.isPresent())
+							continue;
 						expenditures.add(new Expenditure().setIdentifier(String.valueOf(index+1)).setActivityCode(array[0]).setEconomicNatureCode(array[1]).setFundingSourceCode(array[2]).setLessorCode(array[3])
 								.setEntryAuthorizationAdjustment(NumberHelper.getLong(array[4])).setPaymentCreditAdjustment(NumberHelper.getLong(array[5])));
 					}
 				}
 				if(!Boolean.TRUE.equals(fileUpload.getMultiple())) {
-					verify();
+					if(!CollectionHelper.isEmpty(expenditures))
+						verify();
 				}
 				dataTable.setValue(expenditures);
 				fileUpload.setValue(null);
@@ -103,7 +114,7 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 				,DataTable.FIELD_RENDER_TYPE,DataTable.RenderType.OUTPUT_UNSELECTABLE,DataTable.FIELD_LISTENER,new DataTableListenerImpl());
 		
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Vérifier",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-				,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.GROWL)
+				,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES,List.of(RenderType.INLINE,RenderType.GROWL)
 				,MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -160,18 +171,40 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			if(Expenditure.FIELD_ACTIVITY_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Activité");
+				map.put(Column.FIELD_WIDTH, "90");
 			}else if(Expenditure.FIELD_ECONOMIC_NATURE_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nature économique");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Expenditure.FIELD_FUNDING_SOURCE_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Source de financement");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Expenditure.FIELD_LESSOR_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Bailleur");
+				map.put(Column.FIELD_WIDTH, "75");
 			}else if(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Autorisation d'engagement");
+				map.put(Column.FIELD_HEADER_TEXT, "Ajustement autorisation d'engagement");
 			}else if(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Crédit de paiement");
+				map.put(Column.FIELD_HEADER_TEXT, "Ajustement crédit de paiement");
 			}
 			return map;
+		}
+		
+		@Override
+		public Object getCellValueByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			Object value = super.getCellValueByRecordByColumn(record, recordIndex, column, columnIndex);
+			if(record instanceof Expenditure && column != null && loadableVerificationResult != null) {
+				if(isUndefined(record, recordIndex, column, columnIndex))
+					return formatCellValueByRecordByColumnUndefined(value);
+				if(isUnknown(record, recordIndex, column, columnIndex))
+					return formatCellValueByRecordByColumnUnknown(value);
+				
+				if(column.getFieldName().equals(Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT) || column.getFieldName().equals(Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT))
+					if(isAvailableNotEnough(record, recordIndex, column, columnIndex))
+						return formatCellValueByRecordByColumnAvailableNotEnough(record,value,column.getFieldName());
+					else
+						return formatCellValueByRecordByColumnAvailableEnough(record,value,column.getFieldName());
+			}			
+			return value;
 		}
 		
 		@Override
@@ -184,23 +217,13 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 		@Override
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
 			if(loadableVerificationResult != null) {
-				if(isUndefined(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUndefinedActivities()) 
-						|| isUndefined(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUndefinedEconomicsNatures())
-						|| isUndefined(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUndefinedFundingsSources()) 
-						|| isUndefined(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUndefinedLessors())
-						|| isUndefined(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUndefinedEntriesAuthorizationsAdjustments())
-						|| isUndefined(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUndefinedPaymentsCreditsAdjustments())
-						)
+				if(isUndefined(record, recordIndex, column, columnIndex))
 					return "cyk-background-undefined";
-				if(isUnknown(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUnknownActivities()) 
-						|| isUnknown(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUnknownEconomicsNatures())
-						|| isUnknown(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUnknownFundingsSources()) 
-						|| isUnknown(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUnknownLessors())
-						|| isUnknown(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUnknownEntriesAuthorizationsAdjustments())
-						|| isUnknown(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUnknownPaymentsCreditsAdjustments())
-						)
+				if(isUnknown(record, recordIndex, column, columnIndex))
 					return "cyk-background-unknown";
-			}			
+				if(isAvailableNotEnough(record, recordIndex, column, columnIndex))
+					return "cyk-background-available-not-enough";
+			}
 			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
@@ -210,6 +233,69 @@ public class ExpenditureLoadPage extends AbstractPageContainerManagedImpl implem
 		
 		private Boolean isUnknown(Object record, Column column,String fieldName,Collection<String> codes) {
 			return record instanceof Expenditure && column != null && fieldName.equals(column.getFieldName()) && codes != null && codes.contains(FieldHelper.read(record,fieldName));
+		}
+		
+		private Boolean isAvailableNotEnough(Object record, Column column,String fieldName,Collection<String> identifiers) {
+			return record instanceof Expenditure && column != null && fieldName.equals(column.getFieldName()) && identifiers != null && identifiers.contains(FieldHelper.read(record,Expenditure.FIELD_IDENTIFIER));
+		}
+		
+		private Boolean isUndefined(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			return isUndefined(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUndefinedActivities()) 
+				|| isUndefined(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUndefinedEconomicsNatures())
+				|| isUndefined(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUndefinedFundingsSources()) 
+				|| isUndefined(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUndefinedLessors())
+				|| isUndefined(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUndefinedEntriesAuthorizationsAdjustments())
+				|| isUndefined(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUndefinedPaymentsCreditsAdjustments())
+			;	
+		}
+		
+		private Boolean isUnknown(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			return isUnknown(record, column, Expenditure.FIELD_ACTIVITY_CODE, loadableVerificationResult.getUnknownActivities()) 
+				|| isUnknown(record, column, Expenditure.FIELD_ECONOMIC_NATURE_CODE, loadableVerificationResult.getUnknownEconomicsNatures())
+				|| isUnknown(record, column, Expenditure.FIELD_FUNDING_SOURCE_CODE, loadableVerificationResult.getUnknownFundingsSources()) 
+				|| isUnknown(record, column, Expenditure.FIELD_LESSOR_CODE, loadableVerificationResult.getUnknownLessors())
+				|| isUnknown(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getUnknownEntriesAuthorizationsAdjustments())
+				|| isUnknown(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getUnknownPaymentsCreditsAdjustments())
+			;
+		}
+		
+		private Boolean isAvailableNotEnough(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			return isAvailableNotEnough(record, column, Expenditure.FIELD_ENTRY_AUTHORIZATION_ADJUSTMENT, loadableVerificationResult.getEntryAuthorizationAvailableIsNotEnough()) 
+					|| isAvailableNotEnough(record, column, Expenditure.FIELD_PAYMENT_CREDIT_ADJUSTMENT, loadableVerificationResult.getPaymentCreditAvailableIsNotEnough())
+					;
+		}
+		
+		private Object formatCellValueByRecordByColumnUndefined(Object value) {
+			return formatCellValueByRecordByColumn(value, "Non défini", "collectif-expenditure-load-warning-undefined");
+		}
+		
+		private Object formatCellValueByRecordByColumnUnknown(Object value) {
+			return formatCellValueByRecordByColumn(value, "Inconnu", "collectif-expenditure-load-warning-unknown");
+		}
+		
+		private Object formatCellValueByRecordByColumnAvailableNotEnough(Object record,Object value,String fieldName) {
+			return formatCellValueByRecordByColumnAvailable(record,value,fieldName,"Disponible insuffisant|");
+		}
+		
+		private Object formatCellValueByRecordByColumnAvailableEnough(Object record,Object value,String fieldName) {
+			return formatCellValueByRecordByColumnAvailable(record,value,fieldName,"");
+		}
+		
+		@SuppressWarnings("unchecked")
+		private Object formatCellValueByRecordByColumnAvailable(Object record,Object value,String fieldName,String prefix) {
+			if(Boolean.TRUE.equals(loadableVerificationResult.hasUndefinedActivityOrEconomicNatureOrFundingSourceOrLessorByIdentifier(((Expenditure)record).getIdentifier())))
+				return value;
+			Long adjustment = MapHelper.readByKey((Map<String,Long>)FieldHelper.read(loadableVerificationResult, fieldName),((Expenditure)record).getIdentifier());
+			if(adjustment == null)
+				return value;
+			Long available = MapHelper.readByKey((Map<String,Long>)FieldHelper.read(loadableVerificationResult, StringUtils.replace(fieldName, "Adjustment", "Available")),((Expenditure)record).getIdentifier());
+			if(available == null)
+				return value;
+			return formatCellValueByRecordByColumn(value, String.format("%sA=%s|D=%s",prefix, adjustment, available), "collectif-expenditure-load-warning-available-not-enough");
+		}
+		
+		private Object formatCellValueByRecordByColumn(Object value,String text,String styleClass) {
+			return StringUtils.defaultString(value == null ? "" : value.toString()) + String.format("(%s)",text);
 		}
 	}
 }
