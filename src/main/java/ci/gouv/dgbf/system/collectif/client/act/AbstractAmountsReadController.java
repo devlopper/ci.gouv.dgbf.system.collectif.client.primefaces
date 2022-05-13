@@ -66,7 +66,8 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 			}));
 		
 		addLabelValue(cellsMaps, LABEL_EXPECTED_ADJUSTMENT, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustment()));
-		addLabelValue(cellsMaps, LABEL_ADJUSTMENT+String.format("(%s)", hasIncludedMovement() ? "C" : "B"), amounts == null ? null : NumberHelper.format(amounts.getAdjustment()));
+		addLabelValue(cellsMaps, LABEL_ADJUSTMENT+String.format("(%s)", hasIncludedMovement() ? "C" : "B"), amounts == null ? null : String.format("%s (%s%s%s)", NumberHelper.format(amounts.getAdjustment())
+				,NumberHelper.format(amounts.getAdjustmentGreaterThanZero()),amounts.getAdjustmentLessThanZero() == null || amounts.getAdjustmentLessThanZero() == 0l ? "-":"",NumberHelper.format(amounts.getAdjustmentLessThanZero())));
 		addLabelValue(cellsMaps, LABEL_ADJUSTMENT_GAP, amounts == null ? null : NumberHelper.format(amounts.getExpectedAdjustmentMinusAdjustment()));
 		
 		//addLabelValue(cellsMaps, String.format("Collectif(%s)",hasIncludedMovement() ? "A-B+C" : "A+B"), amounts == null ? null : NumberHelper.format(hasIncludedMovement() 

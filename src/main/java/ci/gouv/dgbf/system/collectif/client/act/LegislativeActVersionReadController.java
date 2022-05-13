@@ -131,7 +131,8 @@ public class LegislativeActVersionReadController extends AbstractReadController 
 		synchronized(LegislativeActVersionReadController.class) {
 			if(legislativeActVersionWithExpendituresAmountsWithoutIncludedMovementAndAvailable == null)
 				legislativeActVersionWithExpendituresAmountsWithoutIncludedMovementAndAvailable = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
-						.projections(LegislativeActVersionDto.JSONS_EXPENDITURES_AMOUTNS_WITHOUT_INCLUDED_MOVEMENT_AND_AVAILABLE).setFilter(new Filter.Dto().addField(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER, this.legislativeActVersion.getIdentifier())));
+						.projections(LegislativeActVersionDto.JSONS_EXPENDITURES_AMOUTNS_WITHOUT_INCLUDED_MOVEMENT_AND_AVAILABLE).setFilter(new Filter.Dto().addField(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER
+								, this.legislativeActVersion.getIdentifier())));
 		}
 	}
 	
