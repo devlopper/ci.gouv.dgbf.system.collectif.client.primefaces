@@ -135,13 +135,15 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 						return null;
 					}
 				});
-			}else  {
-				if(SessionManager.getInstance().isUserHasOneOfRoles("ADMINISTRATEUR")) {
-					dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureLoadPage.OUTCOME
-							, MenuItem.FIELD_VALUE,"Charger à partir d'un fichier excel",MenuItem.FIELD_ICON,"fa fa-download",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
-				}
-			}	
+			}
+			if(SessionManager.getInstance().isUserHasOneOfRoles("ADMINISTRATEUR")) {
+				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureLoadPage.OUTCOME
+						, MenuItem.FIELD_VALUE,"Charger à partir d'un fichier excel",MenuItem.FIELD_ICON,"fa fa-download",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
+			}
 		}
+		
+		
+		
 		return dataTable;
 	}
 	
@@ -226,10 +228,10 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
 						, fieldName,isInvestment(), Boolean.FALSE, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajmt(C)", "Ajustement(C)", ExpenditureAmounts.FIELD_ADJUSTMENT
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName)) {
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement(C)", ExpenditureAmounts.FIELD_ADJUSTMENT
 						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
+			}else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+B", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
 						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))

@@ -8,6 +8,7 @@ import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.Case;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.value.Value;
@@ -62,7 +63,7 @@ public interface Helper {
 	
 	public static void setAmountColumnArgumentsMap(Map<Object,Object> map,String name,String title,String fieldName1,String fieldName2,Boolean editable,Object amountsSum) {
 		map.put(Column.FIELD_VALUE_TYPE, Value.Type.CURRENCY);
-		map.put(Column.FIELD_WIDTH, "120");
+		map.put(Column.FIELD_WIDTH, ExpenditureAmounts.FIELD_ADJUSTMENT.equals(fieldName2) ? "250" : "120");
 		map.put(Column.FIELD_HEADER_OUTPUT_TEXT, OutputText.build(OutputText.FIELD_VALUE,name,OutputText.FIELD_TITLE,ValueHelper.defaultToIfBlank(title, name)/*,OutputText.FIELD_STYLE,"color:red;font-size: 80%;"*/));
 		map.put(Column.FIELD_VISIBLE, VISIBLE_AMOUNTS_COLUMNS_FIELDS_NAME.contains(fieldName2));
 		map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, editable);
@@ -83,19 +84,30 @@ public interface Helper {
 	}
 	
 	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String title,String amountValueFieldName,String fieldName
-			,Boolean both,Boolean editable,Object amountsSum) {
+			,Boolean both,Boolean editable,Expenditure amountsSum) {
+		
+		String suffix = "";
+		if(ExpenditureAmounts.FIELD_ADJUSTMENT.equals(amountValueFieldName) && amountsSum != null)
+			suffix = String.format(" +%s|-%s", NumberHelper.format(amountsSum.getEntryAuthorization().getAdjustmentGreaterThanZero())
+					,NumberHelper.format(Math.abs(amountsSum.getEntryAuthorization().getAdjustmentLessThanZero())));
+		
 		if(Boolean.TRUE.equals(both)) {
-			if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_ENTRY_AUTHORIZATION,amountValueFieldName,fieldName))
-				setAmountColumnArgumentsMap(map, name+" A.E.",title, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
-			else if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_PAYMENT_CREDIT,amountValueFieldName,fieldName))
-				setAmountColumnArgumentsMap(map, name+" C.P.",title, Expenditure.FIELD_PAYMENT_CREDIT, amountValueFieldName, editable, amountsSum);
+			if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_ENTRY_AUTHORIZATION,amountValueFieldName,fieldName)) {
+				name = name+" A.E."+suffix;
+				title = title+" A.E."+suffix;
+				setAmountColumnArgumentsMap(map, name,title, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
+			}else if(isEntryAuthorizationOrPaymentCredit(Expenditure.FIELD_PAYMENT_CREDIT,amountValueFieldName,fieldName)) {
+				name = name+" C.P."+suffix;
+				title = title+" C.P."+suffix;
+				setAmountColumnArgumentsMap(map, name,title, Expenditure.FIELD_PAYMENT_CREDIT, amountValueFieldName, editable, amountsSum);
+			}
 		}else {
-			setAmountColumnArgumentsMap(map, name,title, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
+			setAmountColumnArgumentsMap(map, name+suffix,title+suffix, Expenditure.FIELD_ENTRY_AUTHORIZATION, amountValueFieldName, editable, amountsSum);
 		}
 	}
 	
 	public static void setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(Map<Object,Object> map,String name,String amountValueFieldName,String fieldName
-			,Boolean both,Boolean editable,Object amountsSum) {
+			,Boolean both,Boolean editable,Expenditure amountsSum) {
 		setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, name, name, amountValueFieldName, fieldName, both, editable, amountsSum);
 	}
 	
