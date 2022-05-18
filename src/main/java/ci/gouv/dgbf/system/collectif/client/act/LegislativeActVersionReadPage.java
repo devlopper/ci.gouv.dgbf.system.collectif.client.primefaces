@@ -125,9 +125,10 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	private void buildTabRegulatoryActs(Collection<Map<Object,Object>> cellsMaps) {
 		regulatoryActFilterController = new RegulatoryActFilterController();
 		regulatoryActFilterController.setLegislativeActVersionInitial(legislativeActVersion);
-		if(legislativeActVersion.getActFromDateAsTimestamp() != null)
+		if(regulatoryActFilterController.getDateGreaterThanOrEqualInitial() == null && legislativeActVersion.getActFromDateAsTimestamp() != null)
 			regulatoryActFilterController.setDateGreaterThanOrEqualInitial(new Date(legislativeActVersion.getActFromDateAsTimestamp()));
-		if(legislativeActVersion.getActDateAsTimestamp() != null)
+
+		if(regulatoryActFilterController.getDateLowerThanOrEqualInitial() == null && legislativeActVersion.getActDateAsTimestamp() != null)
 			regulatoryActFilterController.setDateLowerThanOrEqualInitial(new Date(legislativeActVersion.getActDateAsTimestamp()));
 		//HttpServletRequest request = __inject__(HttpServletRequest.class);
 		//if(!request.getParameterMap().keySet().contains(Parameters.REGULATORY_ACT_INCLUDED))

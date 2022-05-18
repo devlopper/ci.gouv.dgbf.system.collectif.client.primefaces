@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public abstract class AbstractFilterControllerBasedLegislativeActVersion extends org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController implements Serializable {
 
-	protected SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne,includedSelectOne;
+	protected SelectOneCombo legislativeActSelectOne,legislativeActVersionSelectOne;
 	
 	protected LegislativeAct legislativeActInitial;
 	protected LegislativeActVersion legislativeActVersionInitial;

@@ -222,7 +222,7 @@ public class RegulatoryActFilterController extends AbstractFilterControllerBased
 		
 		if(legislativeActVersionSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,4));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,legislativeActVersionSelectOne,Cell.FIELD_WIDTH,includedSelectOne == null ? 6 : 4));
 		}
 		
 		if(includedSelectOne != null) {
