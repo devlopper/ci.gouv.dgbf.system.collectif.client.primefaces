@@ -25,10 +25,13 @@ public abstract class AbstractFilterControllerBasedLegislativeActVersion extends
 	protected LegislativeAct legislativeActInitial;
 	protected LegislativeActVersion legislativeActVersionInitial;
 	
-	public AbstractFilterControllerBasedLegislativeActVersion() {
+	public AbstractFilterControllerBasedLegislativeActVersion(LegislativeActVersion pLegislativeActVersionInitial) {
+		legislativeActVersionInitial = pLegislativeActVersionInitial;
 		if(legislativeActVersionInitial == null)
 			legislativeActVersionInitial = __inject__(LegislativeActVersionController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_VERSION_IDENTIFIER)
-					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT)));
+					, new Controller.GetArguments().setProjections(List.of(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSON_CODE,LegislativeActVersionDto.JSON_NAME,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
+							,LegislativeActVersionDto.JSON_ADJUSTABLE
+							)));
 		if(legislativeActVersionInitial != null) {
 			legislativeActInitial = legislativeActVersionInitial.getAct();
 		}
@@ -37,4 +40,11 @@ public abstract class AbstractFilterControllerBasedLegislativeActVersion extends
 			legislativeActInitial = __inject__(LegislativeActController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.LEGISLATIVE_ACT_IDENTIFIER));
 	}
 	
+	public AbstractFilterControllerBasedLegislativeActVersion() {
+		this(null);
+	}
+	
+	public Boolean isAdjustable() {
+		return legislativeActVersionInitial != null && legislativeActVersionInitial.getAdjustable();
+	}
 }

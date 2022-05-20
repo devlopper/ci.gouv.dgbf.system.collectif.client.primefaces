@@ -88,7 +88,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 	private Expenditure expendituresAmountsSum;
 	private Boolean computeLegislativeActVersionSumsAndTotal;
 	
-	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
+	public ExpenditureFilterController(LegislativeActVersion pLegislativeActVersionInitial,Boolean computeLegislativeActVersionSumsAndTotal) {
+		super(pLegislativeActVersionInitial);
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(activityInitial == null) {
 			activityInitial = __inject__(ActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ACTIVITY_IDENTIFIER)
@@ -141,12 +142,18 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		
 		adjustmentsNotEqualZeroOrIncludedMovementNotEqualZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO));
 		availableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial = ValueConverter.getInstance().convertToBoolean(WebController.getInstance().getRequestParameter(Parameters.AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO));
-		
-		//readExpenditureAountsSum();
+	}
+	
+	public ExpenditureFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {
+		this(null,computeLegislativeActVersionSumsAndTotal);
+	}
+	
+	public ExpenditureFilterController(LegislativeActVersion legislativeActVersion) {
+		this(legislativeActVersion,Boolean.TRUE);
 	}
 	
 	public ExpenditureFilterController() {
-		this(Boolean.TRUE);
+		this(null,Boolean.TRUE);
 	}
 	
 	@Override

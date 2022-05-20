@@ -50,10 +50,16 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()
-				.projections(LegislativeActVersionDto.JSONS_STRINGS//,LegislativeActVersionDto.JSONS_RESOURCES_AMOUTNS,LegislativeActVersionDto.JSONS_EXPENDITURES_AMOUTNS
-						,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION,LegislativeActVersionDto.JSONS_LEGISLATIVE_ACT_FROM_DATE_AS_TIMESTAMP_DATE_AS_TIMESTAMP
-						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE,LegislativeActVersionDto.JSON___AUDIT__)
+		legislativeActVersion = __inject__(LegislativeActVersionController.class).getOne(new Controller.GetArguments()//.setPostable(Boolean.TRUE)
+				.projections(LegislativeActVersionDto.JSON_IDENTIFIER,LegislativeActVersionDto.JSONS_STRINGS//,LegislativeActVersionDto.JSONS_RESOURCES_AMOUTNS,LegislativeActVersionDto.JSONS_EXPENDITURES_AMOUTNS
+						,LegislativeActVersionDto.JSON_IS_DEFAULT_VERSION
+						
+						//TODO to be removed if act object has been built with necessary properties
+						,LegislativeActVersionDto.JSONS_LEGISLATIVE_ACT_FROM_DATE_AS_TIMESTAMP_DATE_AS_TIMESTAMP
+						//TODO use a field to build act object and its necessary properties
+						,LegislativeActVersionDto.JSON_LEGISLATIVE_ACT
+						
+						,LegislativeActVersionDto.JSONS_GENERATED_ACT_COUNT_ACT_GENERATABLE_GENERATED_ACT_DELETABLE,LegislativeActVersionDto.JSON_ADJUSTABLE,LegislativeActVersionDto.JSON___AUDIT__)
 				.setFilter(new Filter.Dto().addField(Parameters.DEFAULT_LEGISLATIVE_ACT_VERSION_IN_LATEST_LEGISLATIVE_ACT, Boolean.TRUE)));
 		if(legislativeActVersion == null)
 			return;
@@ -151,8 +157,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	}
 	
 	private void buildTabExpenditures(Collection<Map<Object,Object>> cellsMaps) {
-		expenditureFilterController = new ExpenditureFilterController();
-		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		expenditureFilterController = new ExpenditureFilterController(legislativeActVersion);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		expenditureFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_EXPENDITURES);
 		DataTable dataTable = ExpenditureListPage.buildDataTable(ExpenditureFilterController.class,expenditureFilterController,ExpenditureListPage.OUTCOME,OUTCOME
@@ -174,8 +179,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	}
 	
 	private void buildTabResources(Collection<Map<Object,Object>> cellsMaps) {
-		resourceFilterController = new ResourceFilterController();
-		resourceFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		resourceFilterController = new ResourceFilterController(legislativeActVersion);
 		resourceFilterController.setReadOnlyByFieldsNames(ResourceFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ResourceFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE);
 		resourceFilterController.getOnSelectRedirectorArguments(Boolean.TRUE).addParameter(TabMenu.Tab.PARAMETER_NAME, TAB_RESOURCES);
 		DataTable dataTable = ResourceListPage.buildDataTable(ResourceFilterController.class,resourceFilterController,ResourceListPage.OUTCOME,OUTCOME
@@ -197,8 +201,7 @@ public class LegislativeActVersionReadPage extends AbstractPageContainerManagedI
 	}
 	
 	private void buildTabInconsistencies(Collection<Map<Object,Object>> cellsMaps) {
-		expenditureFilterController = new ExpenditureFilterController();
-		expenditureFilterController.setLegislativeActVersionInitial(legislativeActVersion);
+		expenditureFilterController = new ExpenditureFilterController(legislativeActVersion);
 		expenditureFilterController.setAvailableMinusIncludedMovementPlusAdjustmentLessThanZeroInitial(Boolean.TRUE);
 		expenditureFilterController.setReadOnlyByFieldsNames(ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_SELECT_ONE,ExpenditureFilterController.FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE
 				,ExpenditureFilterController.FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE);

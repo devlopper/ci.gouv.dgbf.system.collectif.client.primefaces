@@ -68,7 +68,7 @@ public class ResourceAdjustPage extends AbstractPageContainerManagedImpl impleme
 	@Override
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
-		revenueAdjustmentInput = buildAdjustmentInput(ResourceAdjustPage.class,FIELD_REVENUE_ADJUSTMENT_INPUT,Resource.FIELD_REVENUE);
+		revenueAdjustmentInput = buildAdjustmentInput(ResourceAdjustPage.class,FIELD_REVENUE_ADJUSTMENT_INPUT,Resource.FIELD_REVENUE,filterController.isAdjustable());
 		buildLayout();
 	}
 	
@@ -128,9 +128,9 @@ public class ResourceAdjustPage extends AbstractPageContainerManagedImpl impleme
 	
 	/**/
 	
-	public static InputNumber buildAdjustmentInput(Class<?> klass,String inputFieldName,String resourceFieldName) {
+	public static InputNumber buildAdjustmentInput(Class<?> klass,String inputFieldName,String resourceFieldName,Boolean adjustable) {
 		InputNumber input = InputNumber.build(InputNumber.FIELD_MIN_VALUE,Long.MIN_VALUE,InputNumber.FIELD_MAX_VALUE,Long.MAX_VALUE
-				,InputNumber.FIELD_DECIMAL_PLACES,0,InputNumber.FIELD_INPUT_STYLE_CLASS,"cyk-text-align-right");
+				,InputNumber.FIELD_DECIMAL_PLACES,0,InputNumber.FIELD_INPUT_STYLE_CLASS,"cyk-text-align-right",InputNumber.FIELD_READ_ONLY,!Boolean.TRUE.equals(adjustable));
 		input.setBindingByDerivation(StringHelper.getVariableNameFrom(klass.getSimpleName())+"."+inputFieldName
 				, "record."+resourceFieldName+".adjustment");
 		return input;

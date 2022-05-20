@@ -65,7 +65,8 @@ public class ResourceFilterController extends AbstractFilterControllerBasedLegis
 	
 	private Resource resourcesAmountsSum;
 	
-	public ResourceFilterController(Boolean computeLegislativeActVersionSumsAndTotal) {	
+	public ResourceFilterController(LegislativeActVersion pLegislativeActVersion,Boolean computeLegislativeActVersionSumsAndTotal) {
+		super(pLegislativeActVersion);
 		this.computeLegislativeActVersionSumsAndTotal = computeLegislativeActVersionSumsAndTotal;
 		if(activityInitial == null) {
 			activityInitial = __inject__(ResourceActivityController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.RESOURCE_ACTIVITY_IDENTIFIER)
@@ -92,8 +93,12 @@ public class ResourceFilterController extends AbstractFilterControllerBasedLegis
 			economicNatureInitial = __inject__(EconomicNatureController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.ECONOMIC_NATURE_IDENTIFIER));
 	}
 	
+	public ResourceFilterController(LegislativeActVersion pLegislativeActVersion) {
+		this(pLegislativeActVersion,Boolean.TRUE);
+	}
+	
 	public ResourceFilterController() {
-		this(Boolean.TRUE);
+		this(null,Boolean.TRUE);
 	}
 	
 	@Override
