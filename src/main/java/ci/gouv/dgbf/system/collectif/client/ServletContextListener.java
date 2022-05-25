@@ -9,6 +9,7 @@ import org.cyk.user.interface_.theme.web.jsf.primefaces.atlantis.dgbf.DesktopDef
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.client.controller.component.menu.MenuBuilderMapInstantiator;
 import org.cyk.utility.client.deployment.AbstractServletContextListener;
+import org.cyk.utility.report.jasper.client.ReportServlet;
 
 //import ci.gouv.dgbf.system.collectif.client.controller.impl.ApplicationScopeLifeCycleListener;
 
@@ -39,5 +40,7 @@ public class ServletContextListener extends AbstractServletContextListener imple
 		
 		//org.cyk.utility.service.client.ClientRequestFilter.LOG_LEVEL = java.util.logging.Level.INFO;
 		ci.gouv.dgbf.system.collectif.server.client.rest.ApplicationLifeCycleListener.initialize();
+		
+		ReportServlet.LISTENER = new ReportServletListenerImpl();
 	}	
 }

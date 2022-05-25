@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.cyk.jee.utility.report.jasper.client</groupId>
 			<artifactId>jee-utility-report-jasper-client</artifactId>
-			<version>0.1.0</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>

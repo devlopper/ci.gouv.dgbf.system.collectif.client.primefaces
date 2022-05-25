@@ -1,14 +1,19 @@
 package ci.gouv.dgbf.system.collectif.client.expenditure;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbException;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -18,21 +23,26 @@ import org.cyk.utility.__kernel__.session.SessionManager;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.Event;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.AbstractCommand;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Button;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.RemoteCommand;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
+import org.cyk.utility.javascript.OpenWindowScriptBuilder;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.report.jasper.client.ReportServlet;
 import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.collectif.client.ActivitySelectionController;
 import ci.gouv.dgbf.system.collectif.client.Helper;
+import ci.gouv.dgbf.system.collectif.client.ReportServletListenerImpl;
 import ci.gouv.dgbf.system.collectif.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.collectif.server.api.service.ExpenditureDto;
 import ci.gouv.dgbf.system.collectif.server.client.rest.Amounts;
@@ -141,8 +151,22 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 						dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureLoadPage.OUTCOME
 								, MenuItem.FIELD_VALUE,"Charger à partir d'un fichier excel",MenuItem.FIELD_ICON,"fa fa-download",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
 					}
-			}	
+			}
 		}
+		Map<String,List<String>> parametersMap = finalFilterController.asMap();
+		if(parametersMap != null && !parametersMap.isEmpty()) {
+			Button button = Button.build(MenuItem.FIELD_VALUE,"Imprimer la saisie des ajustements",MenuItem.FIELD_ICON,"fa fa-print");
+			String parametersAsJson;
+			try {
+				parametersAsJson = URLEncoder.encode(JsonbBuilder.create().toJson(parametersMap.entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().get(0)))),"UTF-8");
+			} catch (Exception exception) {
+				parametersAsJson = null;
+				exception.printStackTrace();
+			}
+			button.setEventScript(Event.CLICK, OpenWindowScriptBuilder.getInstance().build(ReportServlet.formatPath(ReportServletListenerImpl.EXPENDITURE_ADJUSTMENT_IS_NOT_ZERO, parametersAsJson) ,"Edition de la saisie des ajustements"));
+			dataTable.addHeaderToolbarLeftCommands(button);
+		}
+		
 		return dataTable;
 	}
 	
