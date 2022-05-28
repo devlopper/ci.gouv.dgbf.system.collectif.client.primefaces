@@ -29,7 +29,7 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 	public AbstractAmountsReadController(AMOUNTS amounts,String name) {
 		this.amounts = amounts;
 		this.name = name;
-		labelWidth = 8;
+		labelWidth = 6;
 	}
 	
 	@Override
@@ -45,6 +45,7 @@ public abstract class AbstractAmountsReadController<AMOUNTS extends Amounts> ext
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
 		
 		addLabelValue(cellsMaps, "Budget initial", amounts == null ? null : NumberHelper.format(amounts.getInitial()));
+		addLabelValue(cellsMaps, "Budget actuel à date", amounts == null ? null : NumberHelper.format(amounts.getActualAtLegislativeActDate()));
 		addLabelValue(cellsMaps, "Mouvement", amounts == null ? null : NumberHelper.format(amounts.getMovement()));
 		addLabelValue(cellsMaps, "Budget actuel(A)", amounts == null ? null : NumberHelper.format(amounts.getActual()));
 		

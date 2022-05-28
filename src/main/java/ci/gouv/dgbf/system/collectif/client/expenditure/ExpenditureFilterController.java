@@ -781,7 +781,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isLessorColumnShowable,Boolean.TRUE)) && lessorInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_LESSOR_AS_STRING);
 		
-		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment(), ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
+		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment(), ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE
+				,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
 				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
 				,ExpenditureAmounts.FIELD_AVAILABLE);
 		columnsFieldsNames.add(Expenditure.FIELD___AUDIT__);

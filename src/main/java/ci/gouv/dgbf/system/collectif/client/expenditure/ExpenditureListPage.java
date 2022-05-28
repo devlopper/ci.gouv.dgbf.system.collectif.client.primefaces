@@ -1,7 +1,6 @@
 package ci.gouv.dgbf.system.collectif.client.expenditure;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbException;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
@@ -155,7 +153,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		}
 		Map<String,List<String>> parametersMap = finalFilterController.asMap();
 		if(parametersMap != null && !parametersMap.isEmpty()) {
-			Button button = Button.build(MenuItem.FIELD_VALUE,"Imprimer la saisie des ajustements",MenuItem.FIELD_ICON,"fa fa-print");
+			Button button = Button.build(MenuItem.FIELD_VALUE,"Imprimer les ajustements",MenuItem.FIELD_ICON,"fa fa-print");
 			String parametersAsJson;
 			try {
 				parametersAsJson = URLEncoder.encode(JsonbBuilder.create().toJson(parametersMap.entrySet().stream().collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue().get(0)))),"UTF-8");
@@ -163,7 +161,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				parametersAsJson = null;
 				exception.printStackTrace();
 			}
-			button.setEventScript(Event.CLICK, OpenWindowScriptBuilder.getInstance().build(ReportServlet.formatPath(ReportServletListenerImpl.EXPENDITURE_ADJUSTMENT_IS_NOT_ZERO, parametersAsJson) ,"Edition de la saisie des ajustements"));
+			button.setEventScript(Event.CLICK, OpenWindowScriptBuilder.getInstance().build(ReportServlet.formatPath(ReportServletListenerImpl.EXPENDITURE_ADJUSTMENT_IS_NOT_ZERO, parametersAsJson) ,"Edition des ajustements"));
 			dataTable.addHeaderToolbarLeftCommands(button);
 		}
 		
@@ -236,6 +234,9 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
 						, null,Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel à date", ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
