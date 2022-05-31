@@ -123,7 +123,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		}
 		
 		if(budgetCategoryInitial == null)
-			budgetCategoryInitial = __inject__(BudgetCategoryController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.BUDGET_CATEGORY_IDENTIFIER));
+			budgetCategoryInitial = __inject__(BudgetCategoryController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.BUDGET_CATEGORY_IDENTIFIER));
+			//budgetCategoryInitial = __inject__(BudgetCategoryController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.BUDGET_CATEGORY_IDENTIFIER));
 		
 		if(sectionInitial == null)
 			sectionInitial = __inject__(SectionController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.SECTION_IDENTIFIER));
@@ -781,9 +782,20 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		if(Boolean.TRUE.equals(ValueHelper.defaultToIfBlank(isLessorColumnShowable,Boolean.TRUE)) && lessorInitial == null)
 			columnsFieldsNames.add(Expenditure.FIELD_LESSOR_AS_STRING);
 		
-		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment(), ExpenditureAmounts.FIELD_INITIAL,ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE
-				,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_ACTUAL
-				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+		Helper.addAmountsColumnsNames(columnsFieldsNames,isEntryAuthorizationAdjustmentEditable,isInvestment()
+				//Initial
+				,ExpenditureAmounts.FIELD_INITIAL
+				//Movement
+				,ExpenditureAmounts.FIELD_MOVEMENT,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED
+				//Actual
+				,ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED,ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE,ExpenditureAmounts.FIELD_ACTUAL
+				//Adjustment
+				,ExpenditureAmounts.FIELD_ADJUSTMENT
+				//Global Adjustment
+				,ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+				//Final
+				,ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT,ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+				//Available
 				,ExpenditureAmounts.FIELD_AVAILABLE);
 		columnsFieldsNames.add(Expenditure.FIELD___AUDIT__);
 		return columnsFieldsNames;

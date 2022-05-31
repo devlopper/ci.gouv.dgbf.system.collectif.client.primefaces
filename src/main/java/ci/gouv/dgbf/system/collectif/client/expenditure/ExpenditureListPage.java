@@ -124,7 +124,8 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				dataTable.setColumnsFootersValuesFromMaster(finalFilterController.getExpendituresAmountsSum());
 				return null;
 			}
-		}, List.of(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getActualMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText()));
+		}, List.of(dataTableListenerImpl.getMovementIncludedOutputText(),dataTableListenerImpl.getInitialPlusMovementIncludedOutputText(),dataTableListenerImpl.getMovementIncludedPlusAdjustmentOutputText()
+				,dataTableListenerImpl.getInitialPlusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getActualAtLegislativeActDateMinusMovementIncludedPlusAdjustmentOutputText(),dataTableListenerImpl.getAvailableOutputText()));
 		
 		Map<String, List<String>> parameters = filterController.asMap();
 		
@@ -180,11 +181,17 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 		//private Boolean showCodeOnlyWherePossible;
 		protected Boolean adjustmentEditable,adjustmentEditableInDialog/*,amountsColumnsFootersShowable/*,entryAuthorizationAndPaymentCreditShowable*/;
 		protected UserInterfaceAction adjustmentEditUserInterfaceAction;
-		protected OutputText movementIncludedOutputText,actualMinusMovementIncludedPlusAdjustmentOutputText,availableOutputText;
+		protected OutputText initialOutputText,movementIncludedOutputText,initialPlusMovementIncludedOutputText,movementIncludedPlusAdjustmentOutputText,initialPlusMovementIncludedPlusAdjustmentOutputText
+		,actualAtLegislativeActDateMinusMovementIncludedPlusAdjustmentOutputText,availableOutputText;
 		
 		public DataTableListenerImpl() {
+			initialOutputText = OutputText.build();
 			movementIncludedOutputText = OutputText.build();
-			actualMinusMovementIncludedPlusAdjustmentOutputText = OutputText.build();
+			initialPlusMovementIncludedOutputText = OutputText.build();
+			
+			movementIncludedPlusAdjustmentOutputText = OutputText.build();
+			initialPlusMovementIncludedPlusAdjustmentOutputText = OutputText.build();
+			actualAtLegislativeActDateMinusMovementIncludedPlusAdjustmentOutputText = OutputText.build();
 			availableOutputText = OutputText.build();
 		}
 		
@@ -231,46 +238,66 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			
 			//Amounts
 			
+			//Inital
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial", ExpenditureAmounts.FIELD_INITIAL, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Initial(A)", ExpenditureAmounts.FIELD_INITIAL, fieldName
 						, null,Boolean.FALSE, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel à date", ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName
-						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			//Movement
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mouvement(B)", ExpenditureAmounts.FIELD_MOVEMENT, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mvt Icls(B)","Mouvements Inclus(B)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Mvt Icls(C)","Mouvements Inclus(C)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			//Actual
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel calculé(D=A+C)", ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel à date(E)", ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(A)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel(F)", ExpenditureAmounts.FIELD_ACTUAL, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Actuel Calculé", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED, fieldName
+			
+			//Adjustment
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement(G)", ExpenditureAmounts.FIELD_ADJUSTMENT
+						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement global(H=C+G)", ExpenditureAmounts.FIELD_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
+			
+			//Final
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif=(I=A+C+G)", ExpenditureAmounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
 						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
+				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif à date=(J=E-C+G)", ExpenditureAmounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
+						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
+
+			//Available
 			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_AVAILABLE, fieldName))
 				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Disponible", ExpenditureAmounts.FIELD_AVAILABLE
 						, fieldName,isInvestment(), Boolean.FALSE, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ADJUSTMENT, fieldName)) {
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Ajustement(C)", ExpenditureAmounts.FIELD_ADJUSTMENT
-						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
-			}else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "A+B", ExpenditureAmounts.FIELD_ACTUAL_PLUS_ADJUSTMENT
-						, fieldName, isInvestment(),adjustmentEditable, filterController.getExpendituresAmountsSum());
-			else if(Helper.isEntryAuthorizationOrPaymentCredit(ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName))
-				Helper.setEntryAuthorizationOrPaymentCreditColumnsArgumentsMaps(map, "Collectif","Collectif(A-B+C)", ExpenditureAmounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT, fieldName
-						, isInvestment(),Boolean.FALSE, filterController.getExpendituresAmountsSum());
 			
 			return map;
 		}
 		
 		@Override
 		public OutputText getCellOutputTextByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(column.getFieldName().endsWith(Amounts.FIELD_INITIAL))
+				return initialOutputText;
 			if(column.getFieldName().endsWith(Amounts.FIELD_MOVEMENT_INCLUDED))
 				return movementIncludedOutputText;
-			if(column.getFieldName().endsWith(Amounts.FIELD_ACTUAL_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT))
-				return actualMinusMovementIncludedPlusAdjustmentOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED))
+				return initialPlusMovementIncludedOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT))
+				return movementIncludedPlusAdjustmentOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT))
+				return initialPlusMovementIncludedPlusAdjustmentOutputText;
+			if(column.getFieldName().endsWith(Amounts.FIELD_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT))
+				return actualAtLegislativeActDateMinusMovementIncludedPlusAdjustmentOutputText;
 			if(column.getFieldName().endsWith(Amounts.FIELD_AVAILABLE))
 				return availableOutputText;
 			return super.getCellOutputTextByRecordByColumn(record, recordIndex, column, columnIndex);
@@ -334,7 +361,7 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			if(expenditure.getPaymentCredit() == null)
 				expenditure.setPaymentCredit(new PaymentCredit());
 		}
-		
+		/*
 		public void updateIncludedMovement() {
 			if(CollectionHelper.isEmpty(__list__))
 				return;
@@ -347,7 +374,8 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			expenditures.forEach(expenditure -> {
 				for(Expenditure index : __list__) {
 					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
-						index.copyMovementIncluded(expenditure).computeActualMinusMovementIncludedPlusAdjustment();
+						index.copyMovementIncluded(expenditure).computeAmountsByMethodsNames(Amounts.COMPUTE_INITIAL_PLUS_MOVEMENT_INCLUDED,Amounts.COMPUTE_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+								,Amounts.COMPUTE_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT,Amounts.COMPUTE_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 						break;
 					}
 				}
@@ -366,13 +394,13 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			expenditures.forEach(expenditure -> {
 				for(Expenditure index : __list__) {
 					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
-						index.copyAvailable(expenditure).computeAvailableMinusMovementIncludedPlusAdjustment();
+						index.copyAvailable(expenditure).computeAmountsByMethodsNames(Amounts.COMPUTE_AVAILABLE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 						break;
 					}
 				}
 			});
 		}
-		
+		*/
 		public void updateIncludedMovementAndAvailable() {
 			if(CollectionHelper.isEmpty(__list__))
 				return;
@@ -385,7 +413,9 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 			expenditures.forEach(expenditure -> {
 				for(Expenditure index : __list__) {
 					if(expenditure.getIdentifier().equals(index.getIdentifier())) {
-						index.copyMovementIncluded(expenditure).copyAvailable(expenditure).computeActualMinusMovementIncludedPlusAdjustment().computeAvailableMinusMovementIncludedPlusAdjustment();
+						index.copyMovementIncluded(expenditure).copyAvailable(expenditure).computeAmountsByMethodsNames(Amounts.COMPUTE_INITIAL_PLUS_MOVEMENT_INCLUDED
+								,Amounts.COMPUTE_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT,Amounts.COMPUTE_INITIAL_PLUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT
+								,Amounts.COMPUTE_ACTUAL_AT_LEGISLATIVE_ACT_DATE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT,Amounts.COMPUTE_AVAILABLE_MINUS_MOVEMENT_INCLUDED_PLUS_ADJUSTMENT);
 						break;
 					}
 				}
