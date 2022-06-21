@@ -46,20 +46,19 @@ public class GeneratedActFilterController extends AbstractFilterControllerBasedL
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeActVersion.class);
-		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);	
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
 		legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	

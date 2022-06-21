@@ -43,18 +43,17 @@ public class LegislativeActFilterController extends AbstractFilterController imp
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_EXERCISE_SELECT_ONE, Exercise.class);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		exerciseSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		exerciseSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
 	

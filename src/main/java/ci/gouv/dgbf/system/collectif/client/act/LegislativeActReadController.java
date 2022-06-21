@@ -33,10 +33,10 @@ public class LegislativeActReadController extends AbstractReadController impleme
 	}
 	
 	@Override
-	public void initialize() {
+	public AbstractReadController initialize() {
 		entryAuthorizationReadController.initialize();
 		paymentCreditReadController.initialize();
-		super.initialize();
+		return super.initialize();
 	}
 	
 	@Override

@@ -216,7 +216,7 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeAct.class);
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_BUDGET_CATEGORY_SELECT_ONE, BudgetCategory.class);
@@ -231,13 +231,11 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		buildInputSelectOne(FIELD_LESSOR_SELECT_ONE, Lessor.class);
 		*/
 		buildInputSelectOne(FIELD_ADJUSTMENTS_NOT_EQUAL_ZERO_OR_INCLUDED_MOVEMENT_NOT_EQUAL_ZERO_SELECT_ONE, Boolean.class);
-		buildInputSelectOne(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE, Boolean.class);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		buildInputSelectOne(FIELD_AVAILABLE_MINUS_INCLUDED_MOVEMENT_PLUS_ADJUSTMENT_LESS_THAN_ZERO_SELECT_ONE, Boolean.class);	
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
 		if(legislativeActVersionSelectOne != null)
@@ -257,7 +255,8 @@ public class ExpenditureFilterController extends AbstractFilterControllerBasedLe
 		*/
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		budgetCategorySelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();

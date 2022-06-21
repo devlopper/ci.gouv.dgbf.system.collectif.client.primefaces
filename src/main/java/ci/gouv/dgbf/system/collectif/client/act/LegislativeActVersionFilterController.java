@@ -50,19 +50,18 @@ public class LegislativeActVersionFilterController extends AbstractFilterControl
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_BUDGETARY_ACT_SELECT_ONE, LegislativeActVersion.class);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}

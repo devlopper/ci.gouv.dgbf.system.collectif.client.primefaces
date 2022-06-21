@@ -132,19 +132,17 @@ public class ResourceFilterController extends AbstractFilterControllerBasedLegis
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeAct.class);
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_SECTION_SELECT_ONE, Section.class);
 		buildInputSelectOne(FIELD_BUDGET_SPECIALIZATION_UNIT_SELECT_ONE, BudgetSpecializationUnit.class);
 		buildInputSelectOne(FIELD_ACTIVITY_SELECT_ONE, ResourceActivity.class);
-		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		buildInputSelectOne(FIELD_ECONOMIC_NATURE_SELECT_ONE, EconomicNature.class);	
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne));
 		if(legislativeActVersionSelectOne != null)
@@ -159,7 +157,8 @@ public class ResourceFilterController extends AbstractFilterControllerBasedLegis
 			economicNatureSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		if(sectionSelectOne != null)

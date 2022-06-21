@@ -68,25 +68,24 @@ public class RegulatoryActFilterController extends AbstractFilterControllerBased
 	}
 	
 	@Override
-	protected void buildInputs() {
+	protected void __buildInputs__() {
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_LEGISLATIVE_ACT_VERSION_SELECT_ONE, LegislativeActVersion.class);
 		buildInputSelectOne(FIELD_INCLUDED_SELECT_ONE, Boolean.class);
 		buildInputCalendar(FIELD_DATE_LOWER_THAN_OR_EQUAL_CALENDAR);
-		buildInputCalendar(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR);
-		
-		enableValueChangeListeners();
-		selectByValueSystemIdentifier();		
+		buildInputCalendar(FIELD_DATE_GREATER_THAN_OR_EQUAL_CALENDAR);	
 	}
 	
-	private void enableValueChangeListeners() {
+	@Override
+	protected void enableValueChangeListeners() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE,legislativeActVersionSelectOne,dateGreaterThanOrEqualCalendar,dateLowerThanOrEqualCalendar));
 		if(legislativeActVersionSelectOne != null)
 			legislativeActVersionSelectOne.enableValueChangeListener(CollectionHelper.listOf(Boolean.TRUE));
 	}
 	
-	private void selectByValueSystemIdentifier() {
+	@Override
+	protected void selectByValueSystemIdentifier() {
 		if(legislativeActSelectOne != null)
 			legislativeActSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		else if(legislativeActVersionSelectOne != null) {
