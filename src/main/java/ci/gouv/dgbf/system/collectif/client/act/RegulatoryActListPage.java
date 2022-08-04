@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -94,6 +95,11 @@ public class RegulatoryActListPage extends AbstractEntityListPageContainerManage
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("60");
+		
+		Map<String, List<String>> parameters = filterController.asMap();
+		
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,RegulatoryActLegislativeActVersionEditIncludedPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
+				, MenuItem.FIELD_VALUE,"Inclure",MenuItem.FIELD_ICON,"fa fa-long-arrow-down",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
 		
 		RegulatoryActFilterController finalFilterController = filterController;
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Inclure", "fa fa-long-arrow-down", new MenuItem.Listener.AbstractImpl() {

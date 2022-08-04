@@ -1,0 +1,1 @@
+/subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-parameters, value=3000)

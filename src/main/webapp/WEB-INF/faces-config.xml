@@ -61,6 +61,12 @@
 			<redirect />
 		</navigation-case>
 		
+		<navigation-case>
+			<from-outcome>regulatoryActLegislativeActVersionEditIncludedView</from-outcome>
+			<to-view-id>/private/regulatoryact/legislativeact/version/editincluded.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
 		<!-- Generated Act -->
 		
 		<navigation-case>

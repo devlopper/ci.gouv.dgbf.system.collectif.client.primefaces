@@ -136,20 +136,20 @@ public class ExpenditureListPage extends AbstractEntityListPageContainerManagedI
 				dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureAdjustPage.OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
 						, MenuItem.FIELD_VALUE,"Ajuster",MenuItem.FIELD_ICON,"fa fa-pencil",MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(dataTableListenerImpl.adjustmentEditUserInterfaceAction, UserInterfaceAction.NAVIGATE_TO_VIEW));
 					
-					if(UserInterfaceAction.OPEN_VIEW_IN_DIALOG.equals(dataTableListenerImpl.adjustmentEditUserInterfaceAction)) {
-						AbstractCommand command = CollectionHelper.getLast(dataTable.getHeaderToolbarLeftCommands());
-						command.getAjaxes().get("dialogReturn").setListener(new AbstractAction.Listener.AbstractImpl() {
-							@Override
-							public Object act(AbstractAction action) {
-								remoteCommand.executeScript();
-								return null;
-							}
-						});
-					}
-					if(SessionManager.getInstance().isUserHasOneOfRoles("ADMINISTRATEUR")) {
-						dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureLoadPage.OUTCOME
-								, MenuItem.FIELD_VALUE,"Charger à partir d'un fichier excel",MenuItem.FIELD_ICON,"fa fa-download",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
-					}
+				if(UserInterfaceAction.OPEN_VIEW_IN_DIALOG.equals(dataTableListenerImpl.adjustmentEditUserInterfaceAction)) {
+					AbstractCommand command = CollectionHelper.getLast(dataTable.getHeaderToolbarLeftCommands());
+					command.getAjaxes().get("dialogReturn").setListener(new AbstractAction.Listener.AbstractImpl() {
+						@Override
+						public Object act(AbstractAction action) {
+							remoteCommand.executeScript();
+							return null;
+						}
+					});
+				}
+				if(SessionManager.getInstance().isUserHasOneOfRoles("ADMINISTRATEUR")) {
+					dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,ExpenditureLoadPage.OUTCOME
+							, MenuItem.FIELD_VALUE,"Charger à partir d'un fichier excel",MenuItem.FIELD_ICON,"fa fa-download",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
+				}
 			}
 		}
 		Map<String,List<String>> parametersMap = finalFilterController.asMap();

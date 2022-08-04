@@ -7,6 +7,8 @@ import org.cyk.utility.__kernel__.icon.Icon;
 import org.cyk.utility.client.controller.component.menu.MenuBuilder;
 import org.cyk.utility.client.controller.component.menu.MenuItemBuilder;
 
+import ci.gouv.dgbf.system.collectif.client.act.RegulatoryActLegislativeActVersionEditIncludedPage;
+
 @ci.gouv.dgbf.system.collectif.server.api.System
 public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.controller.component.menu.AbstractMenuBuilderMapInstantiatorImpl implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,6 +22,9 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 						,__inject__(MenuItemBuilder.class).setCommandableName("Collectif budgétaire en cours").setCommandableNavigationIdentifier("legislativeActReadView").setCommandableIcon(Icon.PLUS)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Collectifs budgétaires").setCommandableNavigationIdentifier("legislativeActListView").setCommandableIcon(Icon.LIST)
 						,__inject__(MenuItemBuilder.class).setCommandableName("Versions collectifs budgétaires").setCommandableNavigationIdentifier("legislativeActVersionListView").setCommandableIcon(Icon.LIST)
+						
+						,__inject__(MenuItemBuilder.class).setCommandableName("Marquer les actes").setCommandableNavigationIdentifier(RegulatoryActLegislativeActVersionEditIncludedPage.OUTCOME).setCommandableIcon(Icon.LINK)
+						
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lister les dépenses").setCommandableNavigationIdentifier("expenditureListView").setCommandableIcon(Icon.LIST)
 						,__inject__(MenuItemBuilder.class).setCommandableName("Ajuster les dépenses").setCommandableNavigationIdentifier("expenditureAdjustView").setCommandableIcon(Icon.PENCIL)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lister les ressources").setCommandableNavigationIdentifier("resourceListView").setCommandableIcon(Icon.LIST)
