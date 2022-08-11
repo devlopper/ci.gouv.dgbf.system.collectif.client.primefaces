@@ -803,3 +803,16 @@ f1b5933fe4b5: Layer already exists
 849cb74592b3: Layer already exists
 1d6b632415ad: Pushed
 v0.0.0-202207271727: digest: sha256:77a1672bd82c2ef76dd5867c49e9073ccc2175205c38657a4d56d228c3008c39 size: 1375
+Publishing with time stamp : v0.0.0-202208041456 
+The push refers to repository [10.3.4.18:5000/mic-collectif]
+b01bcc8da1b5: Preparing
+12663f91593e: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+13f0b213c32d: Layer already exists
+f1b5933fe4b5: Layer already exists
+12663f91593e: Layer already exists
+849cb74592b3: Layer already exists
+b01bcc8da1b5: Pushed
+v0.0.0-202208041456: digest: sha256:f270c0a5d9e0a182d1a9d9f536d25d50c036b7f862765015024cfbe62e749e5c size: 1375
